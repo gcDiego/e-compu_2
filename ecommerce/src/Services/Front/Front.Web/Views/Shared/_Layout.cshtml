@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -13,6 +13,7 @@
         <a asp-controller="Store" asp-action="Index">Catálogo</a>
         @if (Context.Session.GetString("AccessToken") is null)
         {
+            <a class="button outline" asp-controller="Account" asp-action="Register">Crear cuenta</a>
             <a class="button primary" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
         }
         else
