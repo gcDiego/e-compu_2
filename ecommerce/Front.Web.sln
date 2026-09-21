@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A0224830-AE61-4EB7-B9AD-AE1E210EB56D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{1CD515CD-564A-4BE2-A8BF-976909D55CEA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Front", "Front", "{78D9BC84-C01C-44E2-A6F6-CF3E5C0DF2A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Front.Web", "src\Services\Front\Front.Web\Front.Web.csproj", "{413C1614-FF1E-49CA-8C51-AEF9BA53046F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{413C1614-FF1E-49CA-8C51-AEF9BA53046F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{413C1614-FF1E-49CA-8C51-AEF9BA53046F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{413C1614-FF1E-49CA-8C51-AEF9BA53046F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{413C1614-FF1E-49CA-8C51-AEF9BA53046F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1CD515CD-564A-4BE2-A8BF-976909D55CEA} = {A0224830-AE61-4EB7-B9AD-AE1E210EB56D}
+		{78D9BC84-C01C-44E2-A6F6-CF3E5C0DF2A6} = {1CD515CD-564A-4BE2-A8BF-976909D55CEA}
+		{413C1614-FF1E-49CA-8C51-AEF9BA53046F} = {78D9BC84-C01C-44E2-A6F6-CF3E5C0DF2A6}
+	EndGlobalSection
+EndGlobal
