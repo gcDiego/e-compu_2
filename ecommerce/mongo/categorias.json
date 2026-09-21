@@ -1,0 +1,37 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d3"},
+    "activo": true,
+    "descripcion": "PCs",
+    "fechaRegistro": {"$date": "2025-05-01T13:53:35.350Z"},
+    "idSqlOriginal": 1
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d4"},
+    "activo": true,
+    "descripcion": "Laptops",
+    "fechaRegistro": {"$date": "2025-05-01T13:53:35.350Z"},
+    "idSqlOriginal": 2
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d5"},
+    "activo": true,
+    "descripcion": "Perifericos",
+    "fechaRegistro": {"$date": "2025-05-01T13:53:35.350Z"},
+    "idSqlOriginal": 3
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d6"},
+    "activo": true,
+    "descripcion": "Memorias RAM",
+    "fechaRegistro": {"$date": "2025-05-01T13:53:35.350Z"},
+    "idSqlOriginal": 4
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d7"},
+    "activo": true,
+    "descripcion": "Discos Duros",
+    "fechaRegistro": {"$date": "2025-05-17T09:53:25.893Z"},
+    "idSqlOriginal": 7
+  }
+]

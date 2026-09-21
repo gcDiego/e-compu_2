@@ -1,0 +1,58 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515cb"},
+    "activo": true,
+    "descripcion": "HP",
+    "fechaRegistro": {"$date": "2025-05-01T13:57:11.933Z"},
+    "idSqlOriginal": 1
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515cc"},
+    "activo": true,
+    "descripcion": "DELL",
+    "fechaRegistro": {"$date": "2025-05-01T13:57:11.933Z"},
+    "idSqlOriginal": 2
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515cd"},
+    "activo": true,
+    "descripcion": "Lenovo",
+    "fechaRegistro": {"$date": "2025-05-01T13:57:11.933Z"},
+    "idSqlOriginal": 3
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ce"},
+    "activo": true,
+    "descripcion": "ASUS",
+    "fechaRegistro": {"$date": "2025-05-01T13:57:11.933Z"},
+    "idSqlOriginal": 4
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515cf"},
+    "activo": true,
+    "descripcion": "Acer",
+    "fechaRegistro": {"$date": "2025-05-01T13:57:11.933Z"},
+    "idSqlOriginal": 5
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d0"},
+    "activo": true,
+    "descripcion": "Nvidia",
+    "fechaRegistro": {"$date": "2025-05-04T11:26:17.330Z"},
+    "idSqlOriginal": 7
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d1"},
+    "activo": true,
+    "descripcion": "Samsung",
+    "fechaRegistro": {"$date": "2025-05-17T09:53:41.750Z"},
+    "idSqlOriginal": 9
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d2"},
+    "activo": true,
+    "descripcion": "Cisco",
+    "fechaRegistro": {"$date": "2026-06-05T21:31:18.117Z"},
+    "idSqlOriginal": 10
+  }
+]

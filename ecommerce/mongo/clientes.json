@@ -1,0 +1,242 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+    "apellidos": "Usuario",
+    "clave": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "correo": "xitas56007@inkight.com",
+    "fechaRegistro": {"$date": "2025-05-13T23:22:51.740Z"},
+    "idSqlOriginal": 1,
+    "nombres": "Prueba",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515dd"},
+    "apellidos": "todos",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "irc2390@gmail.com",
+    "fechaRegistro": {"$date": "2025-06-25T10:33:02.550Z"},
+    "idSqlOriginal": 2,
+    "nombres": "hola",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515de"},
+    "apellidos": "1616",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "shsh5252",
+    "fechaRegistro": {"$date": "2025-09-06T13:23:00.853Z"},
+    "idSqlOriginal": 1002,
+    "nombres": "15151",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515df"},
+    "apellidos": "Martinez",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "yoana@.com",
+    "fechaRegistro": {"$date": "2025-09-06T13:32:26.567Z"},
+    "idSqlOriginal": 1003,
+    "nombres": "Yoana",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e0"},
+    "apellidos": "42424",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "2342424",
+    "fechaRegistro": {"$date": "2025-09-06T13:39:11.390Z"},
+    "idSqlOriginal": 1004,
+    "nombres": "4244242",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e1"},
+    "apellidos": "Martinez",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "yoanam651@gmail.com",
+    "fechaRegistro": {"$date": "2025-09-06T13:50:24.323Z"},
+    "idSqlOriginal": 1005,
+    "nombres": "Joana",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e2"},
+    "apellidos": "del Bicentenario (Temoaya, State Of Mexico)",
+    "clave": "e55e1e7c29b840875747e70d4fea170eeae36a879375fb1bef83dcb55250e23b",
+    "correo": "wekov56556@ncien.com",
+    "fechaRegistro": {"$date": "2025-09-06T14:46:41.423Z"},
+    "idSqlOriginal": 1006,
+    "nombres": "Universidad",
+    "restablecer": true,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e3"},
+    "apellidos": "romero",
+    "clave": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "correo": "darioromeropatricio@gmail.com",
+    "fechaRegistro": {"$date": "2026-05-23T12:49:49.383Z"},
+    "idSqlOriginal": 1007,
+    "nombres": "Dario",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": "{\"iv\":\"084cd4c7cbbf533f13d87f72de70e593\",\"encryptedData\":\"e4523565f8897f1ae62a5557e30116b0ff418b2e93430a2e5971363507de70c23a6500b25ce0020dae21cfb64ea621c608fef6940597a9253a5dfb212aaae0ace5704afedbdf6a380defc40d400fef6b2df5efc7a019d0e6678f8dcca3e7e62ffdd53dc58b90de6c73ec08d8c6d3063bb043c4f19a8a558b4114466b276ebc43\"}",
+      "keyId": "29053cd0-22b6-4041-927c-b08fd45c5ec8",
+      "clientWalletAddressUrl": "https://ilp.interledger-test.dev/c6536d7c",
+      "sendingWalletAddressUrl": "https://ilp.interledger-test.dev/c6536d7c"
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e4"},
+    "apellidos": "paulino",
+    "clave": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "correo": "paulinofloreserick@gmail.com",
+    "fechaRegistro": {"$date": "2026-05-24T00:35:12.637Z"},
+    "idSqlOriginal": 1008,
+    "nombres": "erick",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e5"},
+    "apellidos": "cdbsiubihbdihbhdcbhjdbckjdnjncdnkcsnlknsndsnldnkncdojncdnkjdcnkjcndskjbnbdhjdbkj",
+    "clave": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "correo": "odhnsojnkldnkjlndskjnkjldsnkjndskjlnkjcnlknkl@ocjbkjbdckj",
+    "fechaRegistro": {"$date": "2026-06-02T11:46:29.410Z"},
+    "idSqlOriginal": 1009,
+    "nombres": "ljjnadobnvojnjnfdoadvnojneonjonjndfjnvosndknosanvosniourbniovnjvnkjsnkjdbnvoiuebihbckmlacbskjvnpuobv",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e6"},
+    "apellidos": "kdcnklndcndcnsklcdnsklndklsnksdnclndnklndckldcnkln",
+    "clave": "3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121",
+    "correo": "calderon123@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-02T14:34:42.550Z"},
+    "idSqlOriginal": 1010,
+    "nombres": "lzdkmklmdklmckdksncndlkndklndlknkldnkcnkljndckjndc",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e7"},
+    "apellidos": "dtcfygvubhinjkmlbjhvgcfytcgvbhjkmlknbjvh",
+    "clave": "3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121",
+    "correo": "calderon3123@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-02T15:11:20.930Z"},
+    "idSqlOriginal": 1011,
+    "nombres": "dxcfbhjkmlmlmmlnmknmknlnjlnjlu",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e8"},
+    "apellidos": "Paulino Flores ",
+    "clave": "e5c9fd8b30603ba55975377a71f6aa22e2c5c2b0855552303c94e69889ebd830",
+    "correo": "erickpaulinoflores@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-02T18:18:42.173Z"},
+    "idSqlOriginal": 1012,
+    "nombres": "Erick",
+    "restablecer": true,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515e9"},
+    "apellidos": "Paulino Flores ",
+    "clave": "48d4c7e1555e7818e63147139629ee58712ac2e16c490f848196ca8f2b24f598",
+    "correo": "erickpaulinoflo123res@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-02T19:23:29.510Z"},
+    "idSqlOriginal": 1013,
+    "nombres": "Erick",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ea"},
+    "apellidos": "Paulino Flores ",
+    "clave": "3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121",
+    "correo": "paulinofloreserick2022@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-02T23:30:14.980Z"},
+    "idSqlOriginal": 1014,
+    "nombres": "Erick",
+    "restablecer": false,
+    "wallet": {
+      "privateKey": null,
+      "keyId": null,
+      "clientWalletAddressUrl": null,
+      "sendingWalletAddressUrl": null
+    }
+  }
+]

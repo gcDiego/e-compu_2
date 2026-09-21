@@ -1,0 +1,260 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f3"},
+    "cliente": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+      "nombres": "Prueba",
+      "apellidos": "Usuario",
+      "correo": "xitas56007@inkight.com"
+    },
+    "contacto": "hola",
+    "detalle": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "cantidad": 1,
+        "total": 78
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+        "nombreProducto": "RAM DDR4",
+        "cantidad": 2,
+        "total": 1400
+      }
+    ],
+    "direccion": "Tejocote",
+    "fechaVenta": {"$date": "2025-06-05T18:21:03.417Z"},
+    "idLocalidad": "150101",
+    "idSqlOriginal": 4,
+    "idTransaccion": "code0001",
+    "montoTotal": 1478,
+    "seguimiento": {
+      "estadoActual": "confirmado",
+      "numeroGuia": null,
+      "paqueteria": null,
+      "ubicacionActual": {
+        "ciudad": "Toluca",
+        "municipio": "Toluca",
+        "estado": "México"
+      },
+      "historial": [
+        {
+          "estado": "confirmado",
+          "fecha": {"$date": "2025-06-05T18:21:03.417Z"},
+          "descripcion": "Compra confirmada",
+          "ubicacion": {
+            "ciudad": "Toluca",
+            "municipio": "Toluca",
+            "estado": "México"
+          }
+        }
+      ]
+    },
+    "telefono": "7221154168",
+    "totalProducto": 2
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f4"},
+    "cliente": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+      "nombres": "Prueba",
+      "apellidos": "Usuario",
+      "correo": "xitas56007@inkight.com"
+    },
+    "contacto": "hola",
+    "detalle": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "cantidad": 1,
+        "total": 78
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+        "nombreProducto": "RAM DDR4",
+        "cantidad": 1,
+        "total": 700
+      }
+    ],
+    "direccion": "CALLE SIN NOMBRE SN, EJIDO LA CUADRILLA, SAN DIEGO ALCALÁ, TEMOAYA, ESTADO DE MÉXICO.",
+    "fechaVenta": {"$date": "2025-06-06T17:59:00.420Z"},
+    "idLocalidad": "150101",
+    "idSqlOriginal": 5,
+    "idTransaccion": "06G5302772762044L",
+    "montoTotal": 778,
+    "seguimiento": {
+      "estadoActual": "confirmado",
+      "numeroGuia": null,
+      "paqueteria": null,
+      "ubicacionActual": {
+        "ciudad": "Toluca",
+        "municipio": "Toluca",
+        "estado": "México"
+      },
+      "historial": [
+        {
+          "estado": "confirmado",
+          "fecha": {"$date": "2025-06-06T17:59:00.420Z"},
+          "descripcion": "Compra confirmada",
+          "ubicacion": {
+            "ciudad": "Toluca",
+            "municipio": "Toluca",
+            "estado": "México"
+          }
+        }
+      ]
+    },
+    "telefono": "7221154168",
+    "totalProducto": 2
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f5"},
+    "cliente": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+      "nombres": "Prueba",
+      "apellidos": "Usuario",
+      "correo": "xitas56007@inkight.com"
+    },
+    "contacto": "Emilio",
+    "detalle": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+        "nombreProducto": "RAM DDR4",
+        "cantidad": 1,
+        "total": 700
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "cantidad": 2,
+        "total": 1600
+      }
+    ],
+    "direccion": "OYAMEL S/N, 4",
+    "fechaVenta": {"$date": "2025-06-07T07:22:26.327Z"},
+    "idLocalidad": "150201",
+    "idSqlOriginal": 6,
+    "idTransaccion": "8GS30948WA2458602",
+    "montoTotal": 2300,
+    "seguimiento": {
+      "estadoActual": "confirmado",
+      "numeroGuia": null,
+      "paqueteria": null,
+      "ubicacionActual": {
+        "ciudad": "Toluca",
+        "municipio": "Toluca",
+        "estado": "México"
+      },
+      "historial": [
+        {
+          "estado": "confirmado",
+          "fecha": {"$date": "2025-06-07T07:22:26.327Z"},
+          "descripcion": "Compra confirmada",
+          "ubicacion": {
+            "ciudad": "Toluca",
+            "municipio": "Toluca",
+            "estado": "México"
+          }
+        }
+      ]
+    },
+    "telefono": "7228688285",
+    "totalProducto": 2
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f6"},
+    "cliente": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+      "nombres": "Prueba",
+      "apellidos": "Usuario",
+      "correo": "xitas56007@inkight.com"
+    },
+    "contacto": "Emilio",
+    "detalle": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "cantidad": 2,
+        "total": 1600
+      }
+    ],
+    "direccion": "Domicilio Conocido S/N, San Diego Alcalá, 50850 Temoaya, Méx.",
+    "fechaVenta": {"$date": "2025-06-07T07:47:03.647Z"},
+    "idLocalidad": "150201",
+    "idSqlOriginal": 7,
+    "idTransaccion": "10M12179V01969004",
+    "montoTotal": 1600,
+    "seguimiento": {
+      "estadoActual": "confirmado",
+      "numeroGuia": null,
+      "paqueteria": null,
+      "ubicacionActual": {
+        "ciudad": "Toluca",
+        "municipio": "Toluca",
+        "estado": "México"
+      },
+      "historial": [
+        {
+          "estado": "confirmado",
+          "fecha": {"$date": "2025-06-07T07:47:03.647Z"},
+          "descripcion": "Compra confirmada",
+          "ubicacion": {
+            "ciudad": "Toluca",
+            "municipio": "Toluca",
+            "estado": "México"
+          }
+        }
+      ]
+    },
+    "telefono": "7221154168",
+    "totalProducto": 1
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f7"},
+    "cliente": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+      "nombres": "Prueba",
+      "apellidos": "Usuario",
+      "correo": "xitas56007@inkight.com"
+    },
+    "contacto": "Emilio",
+    "detalle": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "cantidad": 1,
+        "total": 800
+      }
+    ],
+    "direccion": "CALLE SIN NOMBRE SN, EJIDO LA CUADRILLA,  SAN DIEGO ALCALÁ, TEMOAYA, ESTADO DE MÉXICO.",
+    "fechaVenta": {"$date": "2025-06-07T10:36:31.960Z"},
+    "idLocalidad": "150201",
+    "idSqlOriginal": 8,
+    "idTransaccion": "0CP117403P0466404",
+    "montoTotal": 800,
+    "seguimiento": {
+      "estadoActual": "confirmado",
+      "numeroGuia": null,
+      "paqueteria": null,
+      "ubicacionActual": {
+        "ciudad": "Toluca",
+        "municipio": "Toluca",
+        "estado": "México"
+      },
+      "historial": [
+        {
+          "estado": "confirmado",
+          "fecha": {"$date": "2025-06-07T10:36:31.960Z"},
+          "descripcion": "Compra confirmada",
+          "ubicacion": {
+            "ciudad": "Toluca",
+            "municipio": "Toluca",
+            "estado": "México"
+          }
+        }
+      ]
+    },
+    "telefono": "7228688285",
+    "totalProducto": 1
+  }
+]

@@ -1,0 +1,84 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ef"},
+    "idClienteRef": {"$oid": "6aa4e439f3ca72f1bf2515dc"},
+    "idClienteSqlOriginal": 1,
+    "items": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "precio": 78,
+        "cantidad": 1
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "precio": 800,
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f0"},
+    "idClienteRef": {"$oid": "6aa4e439f3ca72f1bf2515e1"},
+    "idClienteSqlOriginal": 1005,
+    "items": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "precio": 78,
+        "cantidad": 2
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+        "nombreProducto": "RAM DDR4",
+        "precio": 700,
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f1"},
+    "idClienteRef": {"$oid": "6aa4e439f3ca72f1bf2515e3"},
+    "idClienteSqlOriginal": 1007,
+    "items": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "precio": 78,
+        "cantidad": 1
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "precio": 800,
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f2"},
+    "idClienteRef": {"$oid": "6aa4e439f3ca72f1bf2515ea"},
+    "idClienteSqlOriginal": 1014,
+    "items": [
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+        "nombreProducto": "DISCO DURO SAMSUNG",
+        "precio": 800,
+        "cantidad": 6
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+        "nombreProducto": "Laptop HP",
+        "precio": 78,
+        "cantidad": 1
+      },
+      {
+        "idProductoRef": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+        "nombreProducto": "RAM DDR4",
+        "precio": 700,
+        "cantidad": 1
+      }
+    ]
+  }
+]

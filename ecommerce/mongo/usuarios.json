@@ -1,0 +1,46 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515eb"},
+    "activo": true,
+    "apellidos": "Chavez Monroy",
+    "clave": "3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2",
+    "correo": "irc2930@gmail.com",
+    "fechaRegistro": {"$date": "2025-05-05T22:20:15.107Z"},
+    "idSqlOriginal": 7,
+    "nombres": "Irving",
+    "restablecer": false
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ec"},
+    "activo": true,
+    "apellidos": "Prueba Hola",
+    "clave": "517e594e056e35ec3c29e4d2f3abbd06d4d64c9dc8e3c7cbc21d124da1f4cd8a",
+    "correo": "nejakop699@calorpg.com",
+    "fechaRegistro": {"$date": "2025-06-13T21:58:07.640Z"},
+    "idSqlOriginal": 11,
+    "nombres": "Prueba",
+    "restablecer": true
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ed"},
+    "activo": true,
+    "apellidos": "Paulino",
+    "clave": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "correo": "admin@tienda.com",
+    "fechaRegistro": {"$date": "2026-06-04T00:22:36.517Z"},
+    "idSqlOriginal": 12,
+    "nombres": "Erick",
+    "restablecer": false
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ee"},
+    "activo": true,
+    "apellidos": "Paulino Flores",
+    "clave": "90d59e7895507b665e06e5154d60e8d0672e0b090b9d758be75bbc30f531f58f",
+    "correo": "erikcitopaulino@gmail.com",
+    "fechaRegistro": {"$date": "2026-06-05T21:07:58.410Z"},
+    "idSqlOriginal": 13,
+    "nombres": "Royer cruz",
+    "restablecer": true
+  }
+]

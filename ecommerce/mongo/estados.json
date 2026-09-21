@@ -1,0 +1,4714 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f8"},
+    "descripcion": "Aguascalientes",
+    "idEstado": "01",
+    "municipios": [
+      {
+        "idMunicipio": "0101",
+        "descripcion": "Aguascalientes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0102",
+        "descripcion": "Asientos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0103",
+        "descripcion": "Calvillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0104",
+        "descripcion": "Cosío",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0105",
+        "descripcion": "El Llano",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0106",
+        "descripcion": "Jesús María",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0107",
+        "descripcion": "Pabellón de Arteaga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0108",
+        "descripcion": "Rincón de Romos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0109",
+        "descripcion": "San Francisco de los Romo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0110",
+        "descripcion": "San José de Gracia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0111",
+        "descripcion": "Tepezalá",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515f9"},
+    "descripcion": "Baja California",
+    "idEstado": "02",
+    "municipios": [
+      {
+        "idMunicipio": "0201",
+        "descripcion": "Ensenada",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0202",
+        "descripcion": "Mexicali",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0203",
+        "descripcion": "Playas del Rosarito",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0204",
+        "descripcion": "Tecate",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0205",
+        "descripcion": "Tijuana",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515fa"},
+    "descripcion": "Baja California Sur",
+    "idEstado": "03",
+    "municipios": [
+      {
+        "idMunicipio": "0301",
+        "descripcion": "Comondú",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0302",
+        "descripcion": "La Paz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0303",
+        "descripcion": "Loreto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0304",
+        "descripcion": "Los Cabos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0305",
+        "descripcion": "Mulegé",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515fb"},
+    "descripcion": "Campeche",
+    "idEstado": "04",
+    "municipios": [
+      {
+        "idMunicipio": "0401",
+        "descripcion": "Calakmul",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0402",
+        "descripcion": "Calkiní",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0403",
+        "descripcion": "Campeche",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0404",
+        "descripcion": "Carmen",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0405",
+        "descripcion": "Candelaria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0406",
+        "descripcion": "Champotón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0407",
+        "descripcion": "Escárcega",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0408",
+        "descripcion": "Hecelchakán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0409",
+        "descripcion": "Hopelchén",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0410",
+        "descripcion": "Palizada",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0411",
+        "descripcion": "Tenabo",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515fc"},
+    "descripcion": "Coahuila de Zaragoza",
+    "idEstado": "05",
+    "municipios": [
+      {
+        "idMunicipio": "0501",
+        "descripcion": "Abasolo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0502",
+        "descripcion": "Acuña",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0503",
+        "descripcion": "Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0504",
+        "descripcion": "Arteaga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0505",
+        "descripcion": "Candela",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0506",
+        "descripcion": "Castaños",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0507",
+        "descripcion": "Cuatro Ciénegas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0508",
+        "descripcion": "Escobedo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0509",
+        "descripcion": "Francisco I. Madero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0510",
+        "descripcion": "Frontera",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0511",
+        "descripcion": "General Cepeda",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0512",
+        "descripcion": "Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0513",
+        "descripcion": "Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0514",
+        "descripcion": "Jiménez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0515",
+        "descripcion": "Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0516",
+        "descripcion": "Lamadrid",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0517",
+        "descripcion": "Matamoros",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0518",
+        "descripcion": "Monclova",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0519",
+        "descripcion": "Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0520",
+        "descripcion": "Múzquiz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0521",
+        "descripcion": "Nadadores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0522",
+        "descripcion": "Nava",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0523",
+        "descripcion": "Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0524",
+        "descripcion": "Parras",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0525",
+        "descripcion": "Piedras Negras",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0526",
+        "descripcion": "Progreso",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0527",
+        "descripcion": "Ramos Arizpe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0528",
+        "descripcion": "Sabinas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0529",
+        "descripcion": "Sacramento",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0530",
+        "descripcion": "Saltillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0531",
+        "descripcion": "San Buenaventura",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0532",
+        "descripcion": "San Juan de Sabinas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0533",
+        "descripcion": "San Pedro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0534",
+        "descripcion": "Sierra Mojada",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0535",
+        "descripcion": "Torreon",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0536",
+        "descripcion": "Viesca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0537",
+        "descripcion": "Villa Unión",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0538",
+        "descripcion": "Zaragoza",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515fd"},
+    "descripcion": "Colima",
+    "idEstado": "06",
+    "municipios": [
+      {
+        "idMunicipio": "0601",
+        "descripcion": "Armería",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0602",
+        "descripcion": "Colima",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0603",
+        "descripcion": "Comala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0604",
+        "descripcion": "Coquimatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0605",
+        "descripcion": "Cuauhtémoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0606",
+        "descripcion": "Ixtlahuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0607",
+        "descripcion": "Manzanillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0608",
+        "descripcion": "Manatitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0609",
+        "descripcion": "Tecomán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "0610",
+        "descripcion": "Villa de Álvarez",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515fe"},
+    "descripcion": "Chiapas",
+    "idEstado": "07",
+    "municipios": [
+      {
+        "idMunicipio": "07001",
+        "descripcion": "Acacoyagua",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07002",
+        "descripcion": "Acala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07003",
+        "descripcion": "Acapetahua",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07004",
+        "descripcion": "Aldama",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07005",
+        "descripcion": "Altamirano",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07006",
+        "descripcion": "Amatán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07007",
+        "descripcion": "Amatenango de la Frontera",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07008",
+        "descripcion": "Amatenango del Valle",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07009",
+        "descripcion": "Ángel Albino Corzo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07010",
+        "descripcion": "Arriaga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07011",
+        "descripcion": "Bejucal de Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07012",
+        "descripcion": "Bella Vista",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07013",
+        "descripcion": "Benemérito de las Américas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07014",
+        "descripcion": "Berriozábal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07015",
+        "descripcion": "Bochil",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07016",
+        "descripcion": "El Bosque",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07017",
+        "descripcion": "Cacahoatán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07018",
+        "descripcion": "Catazajá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07019",
+        "descripcion": "Chalchihuitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07020",
+        "descripcion": "Chamula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07021",
+        "descripcion": "Chanal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07022",
+        "descripcion": "Chapultenango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07023",
+        "descripcion": "Chenalhó",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07024",
+        "descripcion": "Chiapa de Corzo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07025",
+        "descripcion": "Chiapilla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07026",
+        "descripcion": "Chicoasén",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07027",
+        "descripcion": "Chicomuselo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07028",
+        "descripcion": "Chilón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07029",
+        "descripcion": "Cintalapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07030",
+        "descripcion": "Coapilla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07031",
+        "descripcion": "Comitán de Domínguez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07032",
+        "descripcion": "La Concordia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07033",
+        "descripcion": "Copainalá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07034",
+        "descripcion": "El Porvenir",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07035",
+        "descripcion": "Escuintla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07036",
+        "descripcion": "Francisco León",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07037",
+        "descripcion": "Frontera Comalapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07038",
+        "descripcion": "Frontera Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07039",
+        "descripcion": "La Grandeza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07040",
+        "descripcion": "Huehuetán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07041",
+        "descripcion": "Huixtán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07042",
+        "descripcion": "Huixtla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07043",
+        "descripcion": "Huitiupán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07044",
+        "descripcion": "Ixhuatán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07045",
+        "descripcion": "Ixtacomitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07046",
+        "descripcion": "Ixtapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07047",
+        "descripcion": "Ixtapangajoya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07048",
+        "descripcion": "Jiquipilas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07049",
+        "descripcion": "Jitotol",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07050",
+        "descripcion": "Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07051",
+        "descripcion": "Larráinzar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07052",
+        "descripcion": "La Libertad",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07053",
+        "descripcion": "Mapastepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07054",
+        "descripcion": "Las Margaritas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07055",
+        "descripcion": "Maravilla Tenejapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07056",
+        "descripcion": "Marqués de Comillas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07057",
+        "descripcion": "Mazapa de Madero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07058",
+        "descripcion": "Mazatán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07059",
+        "descripcion": "Metapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07060",
+        "descripcion": "Mitontic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07061",
+        "descripcion": "Montecristo de Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07062",
+        "descripcion": "Motozintla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07063",
+        "descripcion": "Nicolás Ruíz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07064",
+        "descripcion": "Ocosingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07065",
+        "descripcion": "Ocotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07066",
+        "descripcion": "Ocozocoautla de Espinosa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07067",
+        "descripcion": "Ostuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07068",
+        "descripcion": "Osumacinta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07069",
+        "descripcion": "Oxchuc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07070",
+        "descripcion": "Palenque",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07071",
+        "descripcion": "Pantelhó",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07072",
+        "descripcion": "Pantepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07073",
+        "descripcion": "Pichucalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07074",
+        "descripcion": "Pijijiapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07075",
+        "descripcion": "Pueblo Nuevo Solistahuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07076",
+        "descripcion": "Rayón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07077",
+        "descripcion": "Reforma",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07078",
+        "descripcion": "Las Rosas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07079",
+        "descripcion": "Sabanilla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07080",
+        "descripcion": "Salto de Agua",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07081",
+        "descripcion": "San Andrés Duraznal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07082",
+        "descripcion": "San Cristóbal de las Casas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07083",
+        "descripcion": "San Fernando",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07084",
+        "descripcion": "San Juan Cancuc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07085",
+        "descripcion": "San Lucas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07086",
+        "descripcion": "Santiago el Pinar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07087",
+        "descripcion": "Siltepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07088",
+        "descripcion": "Simojovel",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07089",
+        "descripcion": "Sitalá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07090",
+        "descripcion": "Socoltenango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07091",
+        "descripcion": "Solosuchiapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07092",
+        "descripcion": "Soyaló",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07093",
+        "descripcion": "Suchiapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07094",
+        "descripcion": "Suchiate",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07095",
+        "descripcion": "Sunuapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07096",
+        "descripcion": "Tapachula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07097",
+        "descripcion": "Tapalapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07098",
+        "descripcion": "Tapilula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07099",
+        "descripcion": "Tecpatán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07100",
+        "descripcion": "Tenejapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07101",
+        "descripcion": "Teopisca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07102",
+        "descripcion": "Tila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07103",
+        "descripcion": "Tonalá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07104",
+        "descripcion": "Totolapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07105",
+        "descripcion": "La Trinitaria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07106",
+        "descripcion": "Tumbalá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07107",
+        "descripcion": "Tuxtla Chico",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07108",
+        "descripcion": "Tuxtla Gutiérrez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07109",
+        "descripcion": "Tuzantán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07110",
+        "descripcion": "Tzimol",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07111",
+        "descripcion": "Unión Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07112",
+        "descripcion": "Venustiano Carranza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07113",
+        "descripcion": "Villa Comaltitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07114",
+        "descripcion": "Villa Corzo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07115",
+        "descripcion": "Villaflores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07116",
+        "descripcion": "Yajalón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07117",
+        "descripcion": "Zinacantán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "07118",
+        "descripcion": "Santiago el Pinar",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515ff"},
+    "descripcion": "Chihuahua",
+    "idEstado": "08",
+    "municipios": [
+      {
+        "idMunicipio": "08001",
+        "descripcion": "Ahumada",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08002",
+        "descripcion": "Aldama",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08003",
+        "descripcion": "Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08004",
+        "descripcion": "Aquiles Serdán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08005",
+        "descripcion": "Ascensión",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08006",
+        "descripcion": "Bachíniva",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08007",
+        "descripcion": "Balleza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08008",
+        "descripcion": "Batopilas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08009",
+        "descripcion": "Bocoyna",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08010",
+        "descripcion": "Buenaventura",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08011",
+        "descripcion": "Camargo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08012",
+        "descripcion": "Carichí",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08013",
+        "descripcion": "Casas Grandes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08014",
+        "descripcion": "Chihuahua",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08015",
+        "descripcion": "Chínipas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08016",
+        "descripcion": "Coronado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08017",
+        "descripcion": "Coyame del Sotol",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08018",
+        "descripcion": "Cuauhtémoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08019",
+        "descripcion": "Cusihuiriachi",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08020",
+        "descripcion": "Delicias",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08021",
+        "descripcion": "Dr. Belisario Domínguez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08022",
+        "descripcion": "El Tule",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08023",
+        "descripcion": "Galeana",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08024",
+        "descripcion": "Gómez Farías",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08025",
+        "descripcion": "Gran Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08026",
+        "descripcion": "Guachochi",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08027",
+        "descripcion": "Guadalupe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08028",
+        "descripcion": "Guadalupe y Calvo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08029",
+        "descripcion": "Guazapares",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08030",
+        "descripcion": "Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08031",
+        "descripcion": "Hidalgo del Parral",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08032",
+        "descripcion": "Huejotitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08033",
+        "descripcion": "Ignacio Zaragoza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08034",
+        "descripcion": "Janos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08035",
+        "descripcion": "Jiménez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08036",
+        "descripcion": "Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08037",
+        "descripcion": "Julimes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08038",
+        "descripcion": "La Cruz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08039",
+        "descripcion": "López",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08040",
+        "descripcion": "Madera",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08041",
+        "descripcion": "Maguarichi",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08042",
+        "descripcion": "Manuel Benavides",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08043",
+        "descripcion": "Matamoros",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08044",
+        "descripcion": "Matachí",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08045",
+        "descripcion": "Meoqui",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08046",
+        "descripcion": "Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08047",
+        "descripcion": "Moris",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08048",
+        "descripcion": "Namiquipa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08049",
+        "descripcion": "Nonoava",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08050",
+        "descripcion": "Nuevo Casas Grandes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08051",
+        "descripcion": "Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08052",
+        "descripcion": "Ojinaga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08053",
+        "descripcion": "Praxedis G. Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08054",
+        "descripcion": "Riva Palacio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08055",
+        "descripcion": "Rosales",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08056",
+        "descripcion": "Rosario",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08057",
+        "descripcion": "San Francisco de Borja",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08058",
+        "descripcion": "San Francisco de Conchos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08059",
+        "descripcion": "San Francisco del Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08060",
+        "descripcion": "Santa Bárbara",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08061",
+        "descripcion": "Santa Isabel",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08062",
+        "descripcion": "Satevó",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08063",
+        "descripcion": "Saucillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08064",
+        "descripcion": "Temósachi",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08065",
+        "descripcion": "Urique",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08066",
+        "descripcion": "Uruachi",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "08067",
+        "descripcion": "Valle de Zaragoza",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251600"},
+    "descripcion": "Ciudad de México",
+    "idEstado": "09",
+    "municipios": [
+      {
+        "idMunicipio": "09001",
+        "descripcion": "Álvaro Obregón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09002",
+        "descripcion": "Azcapotzalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09003",
+        "descripcion": "Benito Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09004",
+        "descripcion": "Coyoacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09005",
+        "descripcion": "Cuajimalpa de Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09006",
+        "descripcion": "Cuauhtémoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09007",
+        "descripcion": "Gustavo A. Madero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09008",
+        "descripcion": "Iztacalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09009",
+        "descripcion": "Iztapalapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09010",
+        "descripcion": "La Magdalena Contreras",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09011",
+        "descripcion": "Miguel Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09012",
+        "descripcion": "Milpa Alta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09013",
+        "descripcion": "Tláhuac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09014",
+        "descripcion": "Tlalpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09015",
+        "descripcion": "Venustiano Carranza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "09016",
+        "descripcion": "Xochimilco",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251601"},
+    "descripcion": "Durango",
+    "idEstado": "10",
+    "municipios": [
+      {
+        "idMunicipio": "10001",
+        "descripcion": "Canatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10002",
+        "descripcion": "Canelas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10003",
+        "descripcion": "Coneto de Comonfort",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10004",
+        "descripcion": "Cuencamé",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10005",
+        "descripcion": "Durango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10006",
+        "descripcion": "El Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10007",
+        "descripcion": "Gómez Palacio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10008",
+        "descripcion": "Guanaceví",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10009",
+        "descripcion": "Guadalupe Victoria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10010",
+        "descripcion": "Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10011",
+        "descripcion": "Indé",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10012",
+        "descripcion": "Lerdo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10013",
+        "descripcion": "Mapimí",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10014",
+        "descripcion": "Mezquital",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10015",
+        "descripcion": "Nazas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10016",
+        "descripcion": "Nombre de Dios",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10017",
+        "descripcion": "Nuevo Ideal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10018",
+        "descripcion": "Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10019",
+        "descripcion": "Otáez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10020",
+        "descripcion": "Pánuco de Coronado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10021",
+        "descripcion": "Peñón Blanco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10022",
+        "descripcion": "Poanas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10023",
+        "descripcion": "Pueblo Nuevo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10024",
+        "descripcion": "Rodeo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10025",
+        "descripcion": "San Bernardo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10026",
+        "descripcion": "San Dimas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10027",
+        "descripcion": "San Juan de Guadalupe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10028",
+        "descripcion": "San Juan del Río",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10029",
+        "descripcion": "San Luis del Cordero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10030",
+        "descripcion": "San Pedro del Gallo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10031",
+        "descripcion": "Santa Clara",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10032",
+        "descripcion": "Santiago Papasquiaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10033",
+        "descripcion": "Súchil",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10034",
+        "descripcion": "Tamazula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10035",
+        "descripcion": "Tlahualilo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10036",
+        "descripcion": "Topia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "10037",
+        "descripcion": "Vicente Guerrero",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251602"},
+    "descripcion": "Guanajuato",
+    "idEstado": "11",
+    "municipios": [
+      {
+        "idMunicipio": "11001",
+        "descripcion": "Abasolo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11002",
+        "descripcion": "Acámbaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11003",
+        "descripcion": "Apaseo el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11004",
+        "descripcion": "Apaseo el Grande",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11005",
+        "descripcion": "Atarjea",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11006",
+        "descripcion": "Celaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11007",
+        "descripcion": "Comonfort",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11008",
+        "descripcion": "Coroneo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11009",
+        "descripcion": "Cortazar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11010",
+        "descripcion": "Cuerámaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11011",
+        "descripcion": "Doctor Mora",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11012",
+        "descripcion": "Dolores Hidalgo Cuna de la Independencia Nacional",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11013",
+        "descripcion": "Guanajuato",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11014",
+        "descripcion": "Huanímaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11015",
+        "descripcion": "Irapuato",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11016",
+        "descripcion": "Jaral del Progreso",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11017",
+        "descripcion": "Jerécuaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11018",
+        "descripcion": "León",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11019",
+        "descripcion": "Manuel Doblado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11020",
+        "descripcion": "Moroleón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11021",
+        "descripcion": "Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11022",
+        "descripcion": "Pénjamo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11023",
+        "descripcion": "Pueblo Nuevo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11024",
+        "descripcion": "Purísima del Rincón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11025",
+        "descripcion": "Romita",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11026",
+        "descripcion": "Salamanca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11027",
+        "descripcion": "Salvatierra",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11028",
+        "descripcion": "San Diego de la Unión",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11029",
+        "descripcion": "San Felipe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11030",
+        "descripcion": "San Francisco del Rincón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11031",
+        "descripcion": "San José Iturbide",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11032",
+        "descripcion": "San Luis de la Paz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11033",
+        "descripcion": "Santa Catarina",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11034",
+        "descripcion": "Santa Cruz de Juventino Rosas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11035",
+        "descripcion": "Santiago Maravatío",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11036",
+        "descripcion": "Silao de la Victoria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11037",
+        "descripcion": "Tarandacuao",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11038",
+        "descripcion": "Tarimoro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11039",
+        "descripcion": "Tierra Blanca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11040",
+        "descripcion": "Uriangato",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11041",
+        "descripcion": "Valle de Santiago",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11042",
+        "descripcion": "Victoria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11043",
+        "descripcion": "Villagrán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11044",
+        "descripcion": "Xichú",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11045",
+        "descripcion": "Yuriria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "11046",
+        "descripcion": "San Miguel de Allende",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251603"},
+    "descripcion": "Guerrero",
+    "idEstado": "12",
+    "municipios": [
+      {
+        "idMunicipio": "12001",
+        "descripcion": "Acapulco de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12002",
+        "descripcion": "Ahuacuotzingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12003",
+        "descripcion": "Ajuchitlán del Progreso",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12004",
+        "descripcion": "Alcozauca de Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12005",
+        "descripcion": "Alpoyeca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12006",
+        "descripcion": "Apaxtla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12007",
+        "descripcion": "Arcelia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12008",
+        "descripcion": "Atlamajalcingo del Monte",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12009",
+        "descripcion": "Atlixtac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12010",
+        "descripcion": "Atoyac de Álvarez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12011",
+        "descripcion": "Azoyú",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12012",
+        "descripcion": "Benito Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12013",
+        "descripcion": "Buenavista de Cuéllar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12014",
+        "descripcion": "Chilapa de Álvarez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12015",
+        "descripcion": "Chilpancingo de los Bravo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12016",
+        "descripcion": "Coahuayutla de José María Izazaga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12017",
+        "descripcion": "Cocula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12018",
+        "descripcion": "Copala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12019",
+        "descripcion": "Copalillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12020",
+        "descripcion": "Coyuca de Benítez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12021",
+        "descripcion": "Coyuca de Catalán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12022",
+        "descripcion": "Cuajinicuilapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12023",
+        "descripcion": "Cualác",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12024",
+        "descripcion": "Cutzamala de Pinzón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12025",
+        "descripcion": "Eduardo Neri",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12026",
+        "descripcion": "Florencio Villarreal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12027",
+        "descripcion": "General Canuto A. Neri",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12028",
+        "descripcion": "General Heliodoro Castillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12029",
+        "descripcion": "Huamuxtitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12030",
+        "descripcion": "Huitzuco de los Figueroa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12031",
+        "descripcion": "Iguala de la Independencia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12032",
+        "descripcion": "Igualapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12033",
+        "descripcion": "Ixcateopan de Cuauhtémoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12034",
+        "descripcion": "Zihuatanejo de Azueta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12035",
+        "descripcion": "José Azueta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12036",
+        "descripcion": "Juan R. Escudero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12037",
+        "descripcion": "Leonardo Bravo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12038",
+        "descripcion": "Malinaltepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12039",
+        "descripcion": "Mártir de Cuilapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12040",
+        "descripcion": "Metlatónoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12041",
+        "descripcion": "Mochitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12042",
+        "descripcion": "Olinalá",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12043",
+        "descripcion": "Ometepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12044",
+        "descripcion": "Pedro Ascencio Alquisiras",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12045",
+        "descripcion": "Petatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12046",
+        "descripcion": "Pilcaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12047",
+        "descripcion": "Pungarabato",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12048",
+        "descripcion": "Quechultenango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12049",
+        "descripcion": "San Luis Acatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12050",
+        "descripcion": "San Marcos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12051",
+        "descripcion": "San Miguel Totolapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12052",
+        "descripcion": "Taxco de Alarcón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12053",
+        "descripcion": "Técpan de Galeana",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12054",
+        "descripcion": "Teloloapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12055",
+        "descripcion": "Tepecoacuilco de Trujano",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12056",
+        "descripcion": "Tetipac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12057",
+        "descripcion": "Tixtla de Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12058",
+        "descripcion": "Tlacoachistlahuaca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12059",
+        "descripcion": "Tlacoapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12060",
+        "descripcion": "Tlalchapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12061",
+        "descripcion": "Tlalixtaquilla de Maldonado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12062",
+        "descripcion": "Tlapa de Comonfort",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12063",
+        "descripcion": "Tlaquiltenango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12064",
+        "descripcion": "La Unión de Isidoro Montes de Oca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12065",
+        "descripcion": "Xalpatláhuac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12066",
+        "descripcion": "Xochihuehuetlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12067",
+        "descripcion": "Xochistlahuaca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12068",
+        "descripcion": "Zapotitlán Tablas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12069",
+        "descripcion": "Zirándaro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12070",
+        "descripcion": "Zitlala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12071",
+        "descripcion": "Eduardo Neri",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12072",
+        "descripcion": "General Heliodoro Castillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12073",
+        "descripcion": "José Azueta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12074",
+        "descripcion": "Leonardo Bravo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12075",
+        "descripcion": "Mártir de Cuilapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12076",
+        "descripcion": "Ometepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12077",
+        "descripcion": "Petatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12078",
+        "descripcion": "San Luis Acatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12079",
+        "descripcion": "San Marcos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12080",
+        "descripcion": "Tlacoapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "12081",
+        "descripcion": "Xalpatláhuac",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251604"},
+    "descripcion": "Hidalgo",
+    "idEstado": "13",
+    "municipios": [
+      {
+        "idMunicipio": "13001",
+        "descripcion": "Actopan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13002",
+        "descripcion": "Agua Blanca de Iturbide",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13003",
+        "descripcion": "Ajacuba",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13004",
+        "descripcion": "Alfajayucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13005",
+        "descripcion": "Almoloya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13006",
+        "descripcion": "Apan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13007",
+        "descripcion": "El Arenal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13008",
+        "descripcion": "Atitalaquia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13009",
+        "descripcion": "Atlapexco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13010",
+        "descripcion": "Atotonilco de Tula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13011",
+        "descripcion": "Atotonilco el Grande",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13012",
+        "descripcion": "Calnali",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13013",
+        "descripcion": "Cardonal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13014",
+        "descripcion": "Cuautepec de Hinojosa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13015",
+        "descripcion": "Chapantongo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13016",
+        "descripcion": "Chapulhuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13017",
+        "descripcion": "Chilcuautla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13018",
+        "descripcion": "Eloxochitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13019",
+        "descripcion": "Emiliano Zapata",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13020",
+        "descripcion": "Epazoyucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13021",
+        "descripcion": "Francisco I. Madero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13022",
+        "descripcion": "Huasca de Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13023",
+        "descripcion": "Huautla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13024",
+        "descripcion": "Huazalingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13025",
+        "descripcion": "Huehuetla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13026",
+        "descripcion": "Huejutla de Reyes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13027",
+        "descripcion": "Humánde",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13028",
+        "descripcion": "Independencia",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13029",
+        "descripcion": "Ixmiquilpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13030",
+        "descripcion": "Jacala de Ledezma",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13031",
+        "descripcion": "Jaltocán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13032",
+        "descripcion": "Juárez Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13033",
+        "descripcion": "Lolotla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13034",
+        "descripcion": "Metepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13035",
+        "descripcion": "San Agustín Metzquititlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13036",
+        "descripcion": "Metztitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13037",
+        "descripcion": "Mineral de la Reforma",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13038",
+        "descripcion": "Mineral del Chico",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13039",
+        "descripcion": "Mineral del Monte",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13040",
+        "descripcion": "La Misión",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13041",
+        "descripcion": "Mixquiahuala de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13042",
+        "descripcion": "Molango de Escamilla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13043",
+        "descripcion": "Nicolás Flores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13044",
+        "descripcion": "Nopala de Villagrán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13045",
+        "descripcion": "Omitlán de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13046",
+        "descripcion": "San Felipe Orizatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13047",
+        "descripcion": "Pacula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13048",
+        "descripcion": "Pisaflores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13049",
+        "descripcion": "Progreso de Obregón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13050",
+        "descripcion": "San Agustín Tlaxiaca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13051",
+        "descripcion": "San Bartolo Tutotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13052",
+        "descripcion": "San Salvador",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13053",
+        "descripcion": "Santiago de Anaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13054",
+        "descripcion": "Santiago Tulantepec de Lugo Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13055",
+        "descripcion": "Singuilucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13056",
+        "descripcion": "Tasquillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13057",
+        "descripcion": "Tetepango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13058",
+        "descripcion": "Tepeapulco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13059",
+        "descripcion": "Tepehuacán de Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13060",
+        "descripcion": "Tepeji del Río de Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13061",
+        "descripcion": "Tepetitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13062",
+        "descripcion": "Tetlahcapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13063",
+        "descripcion": "Tetlatlahuca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13064",
+        "descripcion": "Tlahuelilpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13065",
+        "descripcion": "Tlanchinol",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13066",
+        "descripcion": "Tlaxcoapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13067",
+        "descripcion": "Tolcayuca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13068",
+        "descripcion": "Tula de Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13069",
+        "descripcion": "Tulancingo de Bravo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13070",
+        "descripcion": "Xochiatipan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13071",
+        "descripcion": "Xochicoatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13072",
+        "descripcion": "Yahualica",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13073",
+        "descripcion": "Zacualtipán de Ángeles",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13074",
+        "descripcion": "Zapotlán de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13075",
+        "descripcion": "Zempoala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13076",
+        "descripcion": "Zimapán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13077",
+        "descripcion": "Tlaxcoapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13078",
+        "descripcion": "Chapulhuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13079",
+        "descripcion": "Huasca de Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13080",
+        "descripcion": "San Agustín Metzquititlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13081",
+        "descripcion": "Singuilucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13082",
+        "descripcion": "Tlanchinol",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13083",
+        "descripcion": "Tlaxcoapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "13084",
+        "descripcion": "Tulancingo de Bravo",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251605"},
+    "descripcion": "Jalisco",
+    "idEstado": "14",
+    "municipios": [
+      {
+        "idMunicipio": "14001",
+        "descripcion": "Acatic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14002",
+        "descripcion": "Acatlán de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14003",
+        "descripcion": "Ahualulco de Mercado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14004",
+        "descripcion": "Amacueca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14005",
+        "descripcion": "Amatitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14006",
+        "descripcion": "Ameca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14007",
+        "descripcion": "San Juanito de Escobedo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14008",
+        "descripcion": "Arandas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14009",
+        "descripcion": "El Arenal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14010",
+        "descripcion": "Atemajac de Brizuela",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14011",
+        "descripcion": "Atengo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14012",
+        "descripcion": "Atenguillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14013",
+        "descripcion": "Atotonilco el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14014",
+        "descripcion": "Atoyac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14015",
+        "descripcion": "Autlán de Navarro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14016",
+        "descripcion": "Ayotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14017",
+        "descripcion": "Ayutla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14018",
+        "descripcion": "La Barca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14019",
+        "descripcion": "Bolaños",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14020",
+        "descripcion": "Cabo Corrientes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14021",
+        "descripcion": "Casimiro Castillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14022",
+        "descripcion": "Chapala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14023",
+        "descripcion": "Chimaltitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14024",
+        "descripcion": "Chiquilistlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14025",
+        "descripcion": "Degollado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14026",
+        "descripcion": "El Grullo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14027",
+        "descripcion": "Guachinango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14028",
+        "descripcion": "Guadalajara",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14029",
+        "descripcion": "Hostotipaquillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14030",
+        "descripcion": "Huejúcar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14031",
+        "descripcion": "La Huerta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14032",
+        "descripcion": "Ixtlahuacán de los Membrillos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14033",
+        "descripcion": "Ixtlahuacán del Río",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14034",
+        "descripcion": "Jalostotitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14035",
+        "descripcion": "Jamay",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14036",
+        "descripcion": "Jesús María",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14037",
+        "descripcion": "Jilotlán de los Dolores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14038",
+        "descripcion": "Jocotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14039",
+        "descripcion": "Juanacatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14040",
+        "descripcion": "Juchitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14041",
+        "descripcion": "Lagos de Moreno",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14042",
+        "descripcion": "El Limón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14043",
+        "descripcion": "Magdalena",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14044",
+        "descripcion": "Santa María del Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14045",
+        "descripcion": "La Manzanilla de la Paz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14046",
+        "descripcion": "Mascota",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14047",
+        "descripcion": "Mazamitla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14048",
+        "descripcion": "Mexticacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14049",
+        "descripcion": "Mezquitic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14050",
+        "descripcion": "Mixtlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14051",
+        "descripcion": "Ocotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14052",
+        "descripcion": "Ojuelos de Jalisco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14053",
+        "descripcion": "Pihuamo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14054",
+        "descripcion": "Poncitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14055",
+        "descripcion": "Puerto Vallarta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14056",
+        "descripcion": "Villa Purificación",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14057",
+        "descripcion": "Quitupan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14058",
+        "descripcion": "El Salto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14059",
+        "descripcion": "San Cristóbal de la Barranca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14060",
+        "descripcion": "San Diego de Alejandría",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14061",
+        "descripcion": "San Juan de los Lagos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14062",
+        "descripcion": "San Julián",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14063",
+        "descripcion": "San Marcos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14064",
+        "descripcion": "San Martín de Bolaños",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14065",
+        "descripcion": "San Martín Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14066",
+        "descripcion": "San Miguel el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14067",
+        "descripcion": "Gómez Farías",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14068",
+        "descripcion": "Santa María de los Ángeles",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14069",
+        "descripcion": "Sayula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14070",
+        "descripcion": "Tala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14071",
+        "descripcion": "Talpa de Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14072",
+        "descripcion": "Tamazula de Gordiano",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14073",
+        "descripcion": "Tapalpa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14074",
+        "descripcion": "Tecalitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14075",
+        "descripcion": "Tecolotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14076",
+        "descripcion": "Techaluta de Montenegro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14077",
+        "descripcion": "Tenamaxtlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14078",
+        "descripcion": "Teocaltiche",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14079",
+        "descripcion": "Teocuitatlán de Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14080",
+        "descripcion": "Tepatitlán de Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14081",
+        "descripcion": "Tequila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14082",
+        "descripcion": "Teuchitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14083",
+        "descripcion": "Tizapán el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14084",
+        "descripcion": "Tlajomulco de Zúñiga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14085",
+        "descripcion": "Tlaquepaque",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14086",
+        "descripcion": "Tolimán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14087",
+        "descripcion": "Tomatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14088",
+        "descripcion": "Tonaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14089",
+        "descripcion": "Tonila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14090",
+        "descripcion": "Tuxcacuesco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14091",
+        "descripcion": "Tuxcueca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14092",
+        "descripcion": "Tuxpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14093",
+        "descripcion": "Unión de San Antonio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14094",
+        "descripcion": "Unión de Tula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14095",
+        "descripcion": "Valle de Guadalupe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14096",
+        "descripcion": "Valle de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14097",
+        "descripcion": "San Gabriel",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14098",
+        "descripcion": "Villa Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14099",
+        "descripcion": "Villa Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14100",
+        "descripcion": "Yahualica de González Gallo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14101",
+        "descripcion": "Zacoalco de Torres",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14102",
+        "descripcion": "Zapopan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14103",
+        "descripcion": "Zapotiltic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14104",
+        "descripcion": "Zapotitlán de Vadillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14105",
+        "descripcion": "Zapotlán del Rey",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14106",
+        "descripcion": "Zapotlanejo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14107",
+        "descripcion": "San Ignacio Cerro Gordo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14108",
+        "descripcion": "Santa María de los Ángeles",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14109",
+        "descripcion": "Sayula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14110",
+        "descripcion": "Techaluta de Montenegro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14111",
+        "descripcion": "Teocuitatlán de Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14112",
+        "descripcion": "Tizapán el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14113",
+        "descripcion": "Tonaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14114",
+        "descripcion": "Tonila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14115",
+        "descripcion": "Tuxpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14116",
+        "descripcion": "Unión de San Antonio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14117",
+        "descripcion": "Villa Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14118",
+        "descripcion": "Villa Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14119",
+        "descripcion": "Villa Purificación",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14120",
+        "descripcion": "Yahualica de González Gallo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14121",
+        "descripcion": "Zacoalco de Torres",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14122",
+        "descripcion": "Zapopan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14123",
+        "descripcion": "Zapotiltic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14124",
+        "descripcion": "Zapotitlán de Vadillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14125",
+        "descripcion": "Zapotlán del Rey",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14001",
+        "descripcion": "Acatic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14002",
+        "descripcion": "Acatlán de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14003",
+        "descripcion": "Ahualulco de Mercado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14004",
+        "descripcion": "Amacueca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14005",
+        "descripcion": "Amatitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14006",
+        "descripcion": "Ameca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14007",
+        "descripcion": "San Juanito de Escobedo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14008",
+        "descripcion": "Arandas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14009",
+        "descripcion": "El Arenal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14010",
+        "descripcion": "Atemajac de Brizuela",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14011",
+        "descripcion": "Atengo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14012",
+        "descripcion": "Atenguillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14013",
+        "descripcion": "Atotonilco el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14014",
+        "descripcion": "Atoyac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14015",
+        "descripcion": "Autlán de Navarro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14016",
+        "descripcion": "Ayotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14017",
+        "descripcion": "Ayutla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14018",
+        "descripcion": "La Barca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14019",
+        "descripcion": "Bolaños",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14020",
+        "descripcion": "Cabo Corrientes",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14021",
+        "descripcion": "Casimiro Castillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14022",
+        "descripcion": "Chapala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14023",
+        "descripcion": "Chimaltitán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14024",
+        "descripcion": "Chiquilistlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14025",
+        "descripcion": "Degollado",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14026",
+        "descripcion": "El Grullo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14027",
+        "descripcion": "Guachinango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14028",
+        "descripcion": "Guadalajara",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14029",
+        "descripcion": "Hostotipaquillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14030",
+        "descripcion": "Huejúcar",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14031",
+        "descripcion": "La Huerta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14032",
+        "descripcion": "Ixtlahuacán de los Membrillos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14033",
+        "descripcion": "Ixtlahuacán del Río",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14034",
+        "descripcion": "Jalostotitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14035",
+        "descripcion": "Jamay",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14036",
+        "descripcion": "Jesús María",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14037",
+        "descripcion": "Jilotlán de los Dolores",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14038",
+        "descripcion": "Jocotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14039",
+        "descripcion": "Juanacatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14040",
+        "descripcion": "Juchitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14041",
+        "descripcion": "Lagos de Moreno",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14042",
+        "descripcion": "El Limón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14043",
+        "descripcion": "Magdalena",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14044",
+        "descripcion": "Santa María del Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14045",
+        "descripcion": "La Manzanilla de la Paz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14046",
+        "descripcion": "Mascota",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14047",
+        "descripcion": "Mazamitla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14048",
+        "descripcion": "Mexticacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14049",
+        "descripcion": "Mezquitic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14050",
+        "descripcion": "Mixtlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14051",
+        "descripcion": "Ocotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14052",
+        "descripcion": "Ojuelos de Jalisco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14053",
+        "descripcion": "Pihuamo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14054",
+        "descripcion": "Poncitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14055",
+        "descripcion": "Puerto Vallarta",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14056",
+        "descripcion": "Villa Purificación",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14057",
+        "descripcion": "Quitupan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14058",
+        "descripcion": "El Salto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14059",
+        "descripcion": "San Cristóbal de la Barranca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14060",
+        "descripcion": "San Diego de Alejandría",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14061",
+        "descripcion": "San Juan de los Lagos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14062",
+        "descripcion": "San Julián",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14063",
+        "descripcion": "San Marcos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14064",
+        "descripcion": "San Martín de Bolaños",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14065",
+        "descripcion": "San Martín Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14066",
+        "descripcion": "San Miguel el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14067",
+        "descripcion": "Gómez Farías",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14068",
+        "descripcion": "Santa María de los Ángeles",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14069",
+        "descripcion": "Sayula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14070",
+        "descripcion": "Tala",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14071",
+        "descripcion": "Talpa de Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14072",
+        "descripcion": "Tamazula de Gordiano",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14073",
+        "descripcion": "Tapalpa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14074",
+        "descripcion": "Tecalitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14075",
+        "descripcion": "Tecolotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14076",
+        "descripcion": "Techaluta de Montenegro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14077",
+        "descripcion": "Tenamaxtlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14078",
+        "descripcion": "Teocaltiche",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14079",
+        "descripcion": "Teocuitatlán de Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14080",
+        "descripcion": "Tepatitlán de Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14081",
+        "descripcion": "Tequila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14082",
+        "descripcion": "Teuchitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14083",
+        "descripcion": "Tizapán el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14084",
+        "descripcion": "Tlajomulco de Zúñiga",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14085",
+        "descripcion": "Tlaquepaque",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14086",
+        "descripcion": "Tolimán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14087",
+        "descripcion": "Tomatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14088",
+        "descripcion": "Tonaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14089",
+        "descripcion": "Tonila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14090",
+        "descripcion": "Tuxcacuesco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14091",
+        "descripcion": "Tuxcueca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14092",
+        "descripcion": "Tuxpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14093",
+        "descripcion": "Unión de San Antonio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14094",
+        "descripcion": "Unión de Tula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14095",
+        "descripcion": "Valle de Guadalupe",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14096",
+        "descripcion": "Valle de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14097",
+        "descripcion": "San Gabriel",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14098",
+        "descripcion": "Villa Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14099",
+        "descripcion": "Villa Hidalgo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14100",
+        "descripcion": "Yahualica de González Gallo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14101",
+        "descripcion": "Zacoalco de Torres",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14102",
+        "descripcion": "Zapopan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14103",
+        "descripcion": "Zapotiltic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14104",
+        "descripcion": "Zapotitlán de Vadillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14105",
+        "descripcion": "Zapotlán del Rey",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14106",
+        "descripcion": "Zapotlanejo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14107",
+        "descripcion": "San Ignacio Cerro Gordo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14108",
+        "descripcion": "Santa María de los Ángeles",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14109",
+        "descripcion": "Sayula",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14110",
+        "descripcion": "Techaluta de Montenegro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14111",
+        "descripcion": "Teocuitatlán de Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14112",
+        "descripcion": "Tizapán el Alto",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14113",
+        "descripcion": "Tonaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14114",
+        "descripcion": "Tonila",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14115",
+        "descripcion": "Tuxpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14116",
+        "descripcion": "Unión de San Antonio",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14117",
+        "descripcion": "Villa Corona",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14118",
+        "descripcion": "Villa Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14119",
+        "descripcion": "Villa Purificación",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14120",
+        "descripcion": "Yahualica de González Gallo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14121",
+        "descripcion": "Zacoalco de Torres",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14122",
+        "descripcion": "Zapopan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14123",
+        "descripcion": "Zapotiltic",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14124",
+        "descripcion": "Zapotitlán de Vadillo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "14125",
+        "descripcion": "Zapotlán del Rey",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251606"},
+    "descripcion": "Estado de Mexico",
+    "idEstado": "15",
+    "municipios": [
+      {
+        "idMunicipio": "15001",
+        "descripcion": "Acambay de Ruiz Castañeda",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15002",
+        "descripcion": "Acolman",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15003",
+        "descripcion": "Aculco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15004",
+        "descripcion": "Almoloya de Alquisiras",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15005",
+        "descripcion": "Almoloya de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15006",
+        "descripcion": "Almoloya del Río",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15007",
+        "descripcion": "Amanalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15008",
+        "descripcion": "Amatepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15009",
+        "descripcion": "Amecameca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15010",
+        "descripcion": "Apaxco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15011",
+        "descripcion": "Atenco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15012",
+        "descripcion": "Atizapán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15013",
+        "descripcion": "Atizapán de Zaragoza",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15014",
+        "descripcion": "Atlacomulco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15015",
+        "descripcion": "Atlautla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15016",
+        "descripcion": "Axapusco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15017",
+        "descripcion": "Ayapango",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15018",
+        "descripcion": "Calimaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15019",
+        "descripcion": "Capulhuac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15020",
+        "descripcion": "Chalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15021",
+        "descripcion": "Chapa de Mota",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15022",
+        "descripcion": "Chapultepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15023",
+        "descripcion": "Chiautla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15024",
+        "descripcion": "Chicoloapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15025",
+        "descripcion": "Chiconcuac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15026",
+        "descripcion": "Chimalhuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15027",
+        "descripcion": "Coacalco de Berriozábal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15028",
+        "descripcion": "Coatepec Harinas",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15029",
+        "descripcion": "Cocotitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15030",
+        "descripcion": "Coyotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15031",
+        "descripcion": "Cuautitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15032",
+        "descripcion": "Cuautitlán Izcalli",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15033",
+        "descripcion": "Donato Guerra",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15034",
+        "descripcion": "Ecatepec de Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15035",
+        "descripcion": "Ecatzingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15036",
+        "descripcion": "El Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15037",
+        "descripcion": "Huehuetoca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15038",
+        "descripcion": "Hueypoxtla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15039",
+        "descripcion": "Huixquilucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15040",
+        "descripcion": "Isidro Fabela",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15041",
+        "descripcion": "Ixtapaluca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15042",
+        "descripcion": "Ixtapan de la Sal",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15043",
+        "descripcion": "Ixtapan del Oro",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15044",
+        "descripcion": "Ixtlahuaca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15045",
+        "descripcion": "Jaltenco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15046",
+        "descripcion": "Jilotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15047",
+        "descripcion": "Jilotzingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15048",
+        "descripcion": "Jiquipilco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15049",
+        "descripcion": "Joquicingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15050",
+        "descripcion": "Juchitepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15051",
+        "descripcion": "La Paz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15052",
+        "descripcion": "Lerma",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15053",
+        "descripcion": "Malinalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15054",
+        "descripcion": "Melchor Ocampo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15055",
+        "descripcion": "Metepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15056",
+        "descripcion": "Mexicaltzingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15057",
+        "descripcion": "Morelos",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15058",
+        "descripcion": "Naucalpan de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15059",
+        "descripcion": "Nezahualcóyotl",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15060",
+        "descripcion": "Nextlalpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15061",
+        "descripcion": "Nicolás Romero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15062",
+        "descripcion": "Nopaltepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15063",
+        "descripcion": "Ocoyoacac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15064",
+        "descripcion": "Ocuilan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15065",
+        "descripcion": "Otumba",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15066",
+        "descripcion": "Otzoloapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15067",
+        "descripcion": "Otzolotepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15068",
+        "descripcion": "Ozumba",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15069",
+        "descripcion": "Papalotla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15070",
+        "descripcion": "Polotitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15071",
+        "descripcion": "Rayón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15072",
+        "descripcion": "San Antonio la Isla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15073",
+        "descripcion": "San Felipe del Progreso",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15074",
+        "descripcion": "San José del Rincón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15075",
+        "descripcion": "San Martín de las Pirámides",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15076",
+        "descripcion": "San Mateo Atenco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15077",
+        "descripcion": "San Simón de Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15078",
+        "descripcion": "Santo Tomás",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15079",
+        "descripcion": "Soyaniquilpan de Juárez",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15080",
+        "descripcion": "Sultepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15081",
+        "descripcion": "Tecámac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15082",
+        "descripcion": "Tejupilco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15083",
+        "descripcion": "Temamatla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15084",
+        "descripcion": "Temascalapa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15085",
+        "descripcion": "Temascalcingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15086",
+        "descripcion": "Temascaltepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15087",
+        "descripcion": "Temoaya",
+        "localidades": [
+          {
+            "idLocalidad": "150201",
+            "descripcion": "San Diego Alcala"
+          }
+        ]
+      },
+      {
+        "idMunicipio": "15088",
+        "descripcion": "Tenancingo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15089",
+        "descripcion": "Tenango del Aire",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15090",
+        "descripcion": "Tenango del Valle",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15091",
+        "descripcion": "Teoloyucan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15092",
+        "descripcion": "Tepetlaoxtoc",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15093",
+        "descripcion": "Tepetlixpa",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15094",
+        "descripcion": "Tepotzotlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15095",
+        "descripcion": "Tequixquiac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15096",
+        "descripcion": "Texcaltitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15097",
+        "descripcion": "Texcalyacac",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15098",
+        "descripcion": "Texcoco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15099",
+        "descripcion": "Tezoyuca",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15100",
+        "descripcion": "Tianguistenco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15101",
+        "descripcion": "Timilpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15102",
+        "descripcion": "Tlalmanalco",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15103",
+        "descripcion": "Tlalnepantla de Baz",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15104",
+        "descripcion": "Tlatlaya",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15105",
+        "descripcion": "Toluca",
+        "localidades": [
+          {
+            "idLocalidad": "150101",
+            "descripcion": "Calixtlahuaca"
+          }
+        ]
+      },
+      {
+        "idMunicipio": "15106",
+        "descripcion": "Tonanitla",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15107",
+        "descripcion": "Tonatico",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15108",
+        "descripcion": "Tultepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15109",
+        "descripcion": "Tultitlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15110",
+        "descripcion": "Valle de Bravo",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15111",
+        "descripcion": "Villa de Allende",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15112",
+        "descripcion": "Villa del Carbón",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15113",
+        "descripcion": "Villa Guerrero",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15114",
+        "descripcion": "Villa Victoria",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15115",
+        "descripcion": "Xonacatlán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15116",
+        "descripcion": "Zacazonapan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15117",
+        "descripcion": "Zacualpan",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15118",
+        "descripcion": "Zinacantepec",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15119",
+        "descripcion": "Zumpahuacán",
+        "localidades": []
+      },
+      {
+        "idMunicipio": "15120",
+        "descripcion": "Zumpango",
+        "localidades": []
+      }
+    ]
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251607"},
+    "descripcion": "Michoacán de Ocampo",
+    "idEstado": "16",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251608"},
+    "descripcion": "Morelos",
+    "idEstado": "17",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251609"},
+    "descripcion": "Nayarit",
+    "idEstado": "18",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160a"},
+    "descripcion": "Nuevo León",
+    "idEstado": "19",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160b"},
+    "descripcion": "Oaxaca",
+    "idEstado": "20",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160c"},
+    "descripcion": "Puebla",
+    "idEstado": "21",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160d"},
+    "descripcion": "Querétaro",
+    "idEstado": "22",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160e"},
+    "descripcion": "Quintana Roo",
+    "idEstado": "23",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf25160f"},
+    "descripcion": "San Luis Potosí",
+    "idEstado": "24",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251610"},
+    "descripcion": "Sinaloa",
+    "idEstado": "25",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251611"},
+    "descripcion": "Sonora",
+    "idEstado": "26",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251612"},
+    "descripcion": "Tabasco",
+    "idEstado": "27",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251613"},
+    "descripcion": "Tamaulipas",
+    "idEstado": "28",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251614"},
+    "descripcion": "Tlaxcala",
+    "idEstado": "29",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251615"},
+    "descripcion": "Veracruz de Ignacio de la Llave",
+    "idEstado": "30",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251616"},
+    "descripcion": "Yucatán",
+    "idEstado": "31",
+    "municipios": []
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf251617"},
+    "descripcion": "Zacatecas",
+    "idEstado": "32",
+    "municipios": []
+  }
+]

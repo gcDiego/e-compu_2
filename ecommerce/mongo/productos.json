@@ -1,0 +1,82 @@
+[
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d8"},
+    "activo": true,
+    "categoria": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d4"},
+      "descripcion": "Laptops"
+    },
+    "descripcion": "Una buena laptop",
+    "fechaRegistro": {"$date": "2025-05-04T20:06:06.153Z"},
+    "idSqlOriginal": 6,
+    "marca": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515cc"},
+      "descripcion": "DELL"
+    },
+    "nombre": "Laptop HP",
+    "nombreImagen": "6.jpg",
+    "precio": 78,
+    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
+    "stock": 27
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515d9"},
+    "activo": true,
+    "categoria": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d6"},
+      "descripcion": "Memorias RAM"
+    },
+    "descripcion": "8 GB ",
+    "fechaRegistro": {"$date": "2025-05-06T17:44:47.733Z"},
+    "idSqlOriginal": 7,
+    "marca": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d0"},
+      "descripcion": "Nvidia"
+    },
+    "nombre": "RAM DDR4",
+    "nombreImagen": "7.jpeg",
+    "precio": 700,
+    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
+    "stock": 24
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515da"},
+    "activo": true,
+    "categoria": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d7"},
+      "descripcion": "Discos Duros"
+    },
+    "descripcion": "SATA 1TB",
+    "fechaRegistro": {"$date": "2025-05-17T09:55:46.437Z"},
+    "idSqlOriginal": 8,
+    "marca": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d1"},
+      "descripcion": "Samsung"
+    },
+    "nombre": "DISCO DURO SAMSUNG",
+    "nombreImagen": "8.jpg",
+    "precio": 800,
+    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
+    "stock": 18
+  },
+  {
+    "_id": {"$oid": "6aa4e439f3ca72f1bf2515db"},
+    "activo": true,
+    "categoria": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515d3"},
+      "descripcion": "PCs"
+    },
+    "descripcion": "Tapete antideslizante de 90x40cm con bordes reforzados y superficie optimizada para sensores ópticos",
+    "fechaRegistro": {"$date": "2026-06-05T21:39:29.717Z"},
+    "idSqlOriginal": 9,
+    "marca": {
+      "idRef": {"$oid": "6aa4e439f3ca72f1bf2515cc"},
+      "descripcion": "DELL"
+    },
+    "nombre": "Mousepad Gamer Extended",
+    "nombreImagen": "9.jpeg",
+    "precio": 500,
+    "rutaImagen": "imagenes",
+    "stock": 7
+  }
+]
