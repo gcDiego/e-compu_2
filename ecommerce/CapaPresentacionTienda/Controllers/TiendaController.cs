@@ -1,4 +1,4 @@
-using CapaEntidad;
+﻿using CapaEntidad;
 using CapaEntidad.Paypal;
 using CapaNegocio;
 using System;
@@ -24,13 +24,13 @@ namespace CapaPresentacionTienda.Controllers
             return View();
         }
 
-        public ActionResult DetalleProducto(int idproducto = 0)
+        public async Task<ActionResult> DetalleProducto(int idproducto = 0)
         {
             Producto oProducto;
 
             if (UseCatalogApi())
             {
-                oProducto = new CatalogApiClient().ObtenerProductoAsync(idproducto).GetAwaiter().GetResult();
+                oProducto = await new CatalogApiClient().ObtenerProductoAsync(idproducto);
                 if (oProducto != null)
                 {
                     var imagenLegada = new CN_Producto().Listar().FirstOrDefault(p => p.IdProducto == idproducto);
@@ -448,13 +448,10 @@ namespace CapaPresentacionTienda.Controllers
             if (producto == null || imagenLegada == null)
                 return;
 
-            if (string.IsNullOrWhiteSpace(imagenLegada.RutaImagen) || string.IsNullOrWhiteSpace(imagenLegada.NombreImagen))
-                return;
-
             bool conversion;
             producto.Base64 = CN_Recursos.ConvertirBase64(
                 Path.Combine(imagenLegada.RutaImagen, imagenLegada.NombreImagen), out conversion);
-            producto.Extension = Path.GetExtension(imagenLegada.NombreImagen)?.TrimStart('.');
+            producto.Extension = Path.GetExtension(imagenLegada.NombreImagen);
         }
     }
 }

@@ -1,31 +1,10 @@
-# Build output
 **/bin/
 **/obj/
-**/TestResults/
-
-# IDE and operating system
-**/.vs/
-**/.idea/
-**/.vscode/
-**/.DS_Store
+.vs/
+.idea/
 *.user
 *.suo
-
-# Local configuration and secrets
-**/.env
-**/.env.*
-**/appsettings.Local.json
-**/appsettings.*.local.json
-*.log
-
-# Legacy build output
+.env
+appsettings.Local.json
+TestResults/
 /CapaPresentacionTienda/bin/
-
-# Front prototypes and accidental browser downloads
-/src/Services/Front/*.html
-/src/Services/Front/images/
-**/Interfaz principal video_files/
-**/Interfaz principal video.html
-
-# Unused ASP.NET template client libraries
-/src/Services/Front/Front.Web/wwwroot/lib/
