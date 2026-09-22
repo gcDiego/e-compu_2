@@ -18,6 +18,7 @@
         }
         else
         {
+            <a class="button outline" asp-controller="Order" asp-action="Index">Mis compras</a>
             <a class="button outline" asp-controller="Cart" asp-action="Index">Carrito</a>
             <span class="user">@Context.Session.GetString("CustomerName")</span>
             <form asp-controller="Account" asp-action="Logout" method="post"><button class="link-button" type="submit">Salir</button></form>

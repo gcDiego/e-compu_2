@@ -1,3 +1,60 @@
 @model CartSnapshotDto?
 @{ ViewData["Title"] = "Carrito"; }
-<main class="cart-layout"><section class="cart-panel"><div class="cart-header"><h1>Detalle del carrito</h1><a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a></div><div class="cart-items">@foreach (var item in Model?.Items ?? []){<article class="cart-item"><div class="cart-image"><img src="~/images/computadora.png" alt="@item.ProductName" /></div><div><span class="brand">@item.BrandName</span><h3>@item.ProductName</h3><strong>$@item.UnitPrice.ToString("N2") MXN</strong></div><div class="quantity"><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="false" /><button type="submit">−</button></form><b>@item.Quantity</b><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="true" /><button type="submit">+</button></form></div><form asp-action="Remove" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><button class="button danger" type="submit">Eliminar</button></form></article>}</div><div class="total">Total: <strong>$@((Model?.Total ?? 0).ToString("N2"))</strong></div></section><aside class="shipping"><h2>Detalle de envío</h2><form asp-controller="Checkout" asp-action="Create" method="post"><label>Contacto<input type="text" name="contacto" required /></label><label>Teléfono<input type="tel" name="telefono" required /></label><label>Dirección<input type="text" name="direccion" required /></label><label>Id Localidad<input type="text" name="idLocalidad" required /></label><button class="button primary full" type="submit">Procesar pago</button></form></aside></main>
+<main class="cart-layout"><section class="cart-panel"><div class="cart-header"><h1>Detalle del carrito</h1><a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a></div><div class="cart-items">@foreach (var item in Model?.Items ?? []){<article class="cart-item"><div class="cart-image"><img src="~/images/computadora.png" alt="@item.ProductName" /></div><div><span class="brand">@item.BrandName</span><h3>@item.ProductName</h3><strong>$@item.UnitPrice.ToString("N2") MXN</strong></div><div class="quantity"><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="false" /><button type="submit">−</button></form><b>@item.Quantity</b><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="true" /><button type="submit">+</button></form></div><form asp-action="Remove" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><button class="button danger" type="submit">Eliminar</button></form></article>}</div><div class="total">Total: <strong>$@((Model?.Total ?? 0).ToString("N2"))</strong></div></section><aside class="shipping" id="shipping"><h2>Detalle de envío</h2><form asp-controller="Checkout" asp-action="Create" method="post"><label>Contacto<input type="text" name="contacto" required /></label><label>Teléfono<input type="tel" name="telefono" required /></label><label>Dirección<input type="text" name="direccion" required /></label><label>Estado<select id="stateId" name="stateId" required><option value="">Selecciona un estado</option></select></label><label>Municipio<select id="municipalityId" name="municipalityId" required disabled><option value="">Selecciona un municipio</option></select></label><label>Localidad<select id="localityId" name="localityId" disabled><option value="">Selecciona una localidad</option></select></label><input type="hidden" name="idLocalidad" id="idLocalidad" value="" required /><button class="button primary full" type="submit">Procesar pago</button></form></aside>
+@section Scripts {
+<script>
+    const stateSelect = document.getElementById('stateId');
+    const municipalitySelect = document.getElementById('municipalityId');
+    const localitySelect = document.getElementById('localityId');
+    const idLocalidad = document.getElementById('idLocalidad');
+
+    async function loadSelect(url, select, placeholder) {
+        select.innerHTML = `<option value="">${placeholder}</option>`;
+        select.disabled = true;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) return;
+            const items = await response.json();
+            for (const item of items) {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.description;
+                select.appendChild(option);
+            }
+            select.disabled = items.length === 0;
+        } catch { }
+    }
+
+    loadSelect('/api/location/states', stateSelect, 'Selecciona un estado').then(() => { stateSelect.disabled = false; });
+
+    stateSelect.addEventListener('change', () => {
+        municipalitySelect.innerHTML = '<option value="">Selecciona un municipio</option>';
+        localitySelect.innerHTML = '<option value="">Selecciona una localidad</option>';
+        localitySelect.disabled = true;
+        idLocalidad.value = '';
+        if (stateSelect.value) {
+            loadSelect(`/api/location/municipalities/${stateSelect.value}`, municipalitySelect, 'Selecciona un municipio');
+            municipalitySelect.disabled = false;
+        } else {
+            municipalitySelect.disabled = true;
+        }
+    });
+
+    municipalitySelect.addEventListener('change', () => {
+        localitySelect.innerHTML = '<option value="">Selecciona una localidad</option>';
+        idLocalidad.value = municipalitySelect.value;
+        if (municipalitySelect.value) {
+            loadSelect(`/api/location/localities/${municipalitySelect.value}`, localitySelect, 'Selecciona una localidad');
+            localitySelect.disabled = false;
+        } else {
+            localitySelect.disabled = true;
+            idLocalidad.value = '';
+        }
+    });
+
+    localitySelect.addEventListener('change', () => {
+        idLocalidad.value = localitySelect.value || municipalitySelect.value;
+    });
+</script>
+}
+</main>

@@ -23,24 +23,38 @@ public sealed class MongoOrderService(IMongoDatabase database)
         var totalProductos = 0;
         decimal montoTotal = 0;
 
+        var reservedStock = new List<(BsonDocument Product, int Cantidad)>();
         foreach (var item in cart["items"].AsBsonArray.Cast<BsonDocument>())
         {
-            var product = await _productos.Find(Builders<BsonDocument>.Filter.Eq("_id", item["idProductoRef"].AsObjectId)).FirstOrDefaultAsync(ct);
-            if (product is null || !product["activo"].AsBoolean) return null;
-
+            var productRef = item["idProductoRef"].AsObjectId;
             var cantidad = item["cantidad"].AsInt32;
-            if (product["stock"].AsInt32 < cantidad) return null;
-
             var precio = ToDecimal(item["precio"]);
+
+            var product = await _productos.FindOneAndUpdateAsync(
+                Builders<BsonDocument>.Filter.Eq("_id", productRef) &
+                Builders<BsonDocument>.Filter.Eq("activo", true) &
+                Builders<BsonDocument>.Filter.Gte("stock", cantidad),
+                Builders<BsonDocument>.Update.Inc("stock", -cantidad),
+                new FindOneAndUpdateOptions<BsonDocument> { ReturnDocument = ReturnDocument.After },
+                ct);
+
+            if (product is null)
+            {
+                foreach (var (p, c) in reservedStock)
+                    await _productos.UpdateOneAsync(Builders<BsonDocument>.Filter.Eq("_id", p["_id"].AsObjectId), Builders<BsonDocument>.Update.Inc("stock", c), cancellationToken: ct);
+                return null;
+            }
+
             var total = precio * cantidad;
             detalle.Add(new BsonDocument
             {
-                ["idProductoRef"] = item["idProductoRef"].AsObjectId,
+                ["idProductoRef"] = productRef,
                 ["nombreProducto"] = item["nombreProducto"].AsString,
                 ["cantidad"] = cantidad,
                 ["total"] = total
             });
 
+            reservedStock.Add((product, cantidad));
             totalProductos += cantidad;
             montoTotal += total;
         }
