@@ -116,5 +116,8 @@ public sealed class MongoCartService(IMongoDatabase database)
         value.BsonType == BsonType.Int32 ? value.AsInt32 : value.BsonType == BsonType.Int64 ? (int)value.AsInt64 : (int)value.AsDouble;
 
     private static decimal ToDecimal(BsonValue value) =>
-        value.BsonType == BsonType.Int32 ? value.AsInt32 : value.BsonType == BsonType.Int64 ? (decimal)value.AsInt64 : (decimal)value.AsDouble;
+        value.BsonType == BsonType.Int32 ? value.AsInt32 :
+        value.BsonType == BsonType.Int64 ? (decimal)value.AsInt64 :
+        value.BsonType == BsonType.Decimal128 ? value.AsDecimal :
+        (decimal)value.AsDouble;
 }
