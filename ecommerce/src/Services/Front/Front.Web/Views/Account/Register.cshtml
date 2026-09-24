@@ -1,3 +1,122 @@
 @model RegisterViewModel
-@{ Layout = null; ViewData["Title"] = "Crear cuenta"; }
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><title>Crear cuenta - ECOMPU</title><link rel="stylesheet" href="~/css/site.css" /><link rel="stylesheet" href="~/css/ecompu.css" /></head><body class="auth-body"><main class="auth-card"><a asp-controller="Store" asp-action="Index"><img src="~/images/logo1.png" alt="ECOMPU" /></a><h1>Crear cuenta</h1><form method="post"><input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" /><label>Nombre<input type="text" name="firstName" value="@Model.FirstName" required autocomplete="given-name" /></label><label>Apellidos<input type="text" name="lastName" value="@Model.LastName" required autocomplete="family-name" /></label><label>Correo electrónico<input type="email" name="email" value="@Model.Email" required autocomplete="email" /></label><label>Contraseña<input type="password" name="password" required autocomplete="new-password" /></label>@if (Model.Error is not null){<div class="alert">@Model.Error</div>}<button class="button primary full" type="submit">Registrarse</button></form><a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">¿Ya tienes cuenta? Inicia sesión</a></main></body></html>
+@{
+    Layout = null;
+    ViewData["Title"] = "Crear cuenta";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crear cuenta - ECOMPU</title>
+    <link rel="stylesheet" href="~/css/register-reference.css" asp-append-version="true" />
+</head>
+<body>
+<div class="wrap">
+    <div class="visual-side">
+        <div class="grid-lines"></div>
+        <div class="deco-circle deco-circle-1"></div>
+        <div class="deco-circle deco-circle-2"></div>
+        <div class="steps">
+            <span class="brand-icon"></span>
+            <h2><span></span></h2>
+            <p class="sub-text">Únete a la mejor tienda de tecnología y descubre ofertas exclusivas.</p>
+            <div class="step-item">
+                <div class="step-dot">1</div>
+                <div class="step-text"><strong>Completa tus datos</strong><span>Nombre, correo y contraseña segura</span></div>
+            </div>
+            <div class="step-item">
+                <div class="step-dot">2</div>
+                <div class="step-text"><strong>Confirma tu correo</strong><span>Te enviamos un enlace de verificación</span></div>
+            </div>
+            <div class="step-item">
+                <div class="step-dot">3</div>
+                <div class="step-text"><strong>Empieza a comprar</strong><span>Accede a precios y envíos exclusivos</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-side">
+        <div class="offer-badge">⚡ Oferta especial</div>
+        <a class="logo" asp-controller="Store" asp-action="Index">
+            <img src="~/images/logo1.png" alt="E-Compu" class="brand-logo" />
+            <span></span>
+        </a>
+        <h1>Crear cuenta</h1>
+        <p class="sub">Es gratis y toma menos de un minuto. <span class="emoji"></span></p>
+        <form method="post">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div class="field-row">
+                <div class="field">
+                    <label for="nombre">Nombre</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <input id="nombre" name="firstName" type="text" value="@Model.FirstName" placeholder="Tu nombre" autocomplete="given-name" required />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="apellidos">Apellidos</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <input id="apellidos" name="lastName" type="text" value="@Model.LastName" placeholder="Tus apellidos" autocomplete="family-name" required />
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label for="correo">Usuario o correo</label>
+                <div class="input-wrap">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                    <input id="correo" name="email" type="email" value="@Model.Email" placeholder="tucorreo@ejemplo.com" autocomplete="email" required />
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="pass1">Contraseña</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                        <input id="pass1" name="password" type="password" placeholder="••••••••" autocomplete="new-password" minlength="12" maxlength="128" required />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="pass2">Confirmar</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                        <input id="pass2" name="confirmPassword" type="password" placeholder="••••••••" autocomplete="new-password" minlength="12" maxlength="128" required />
+                    </div>
+                </div>
+            </div>
+            @if (Model.Error is not null)
+            {
+                <div class="form-alert" role="alert">@Model.Error</div>
+            }
+            <button type="submit" class="btn-primary">Crear cuenta →</button>
+            <div class="divider">o continúa con</div>
+            <div class="social-row">
+                <button type="button" class="social-btn google" aria-label="Google">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    <span class="btn-label">Google</span>
+                </button>
+                <button type="button" class="social-btn" aria-label="Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span class="btn-label">Facebook</span>
+                </button>
+                <button type="button" class="social-btn github" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.15 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.62.24 2.85.12 3.15.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span class="btn-label">GitHub</span>
+                </button>
+            </div>
+            <p class="switch-text">¿Ya tienes cuenta? <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">Inicia sesión</a></p>
+        </form>
+    </div>
+</div>
+<script>
+    const form = document.querySelector('form');
+    const password = document.getElementById('pass1');
+    const confirmation = document.getElementById('pass2');
+    form.addEventListener('submit', event => {
+        confirmation.setCustomValidity(password.value === confirmation.value ? '' : 'Las contraseñas no coinciden.');
+        if (!form.checkValidity()) event.preventDefault();
+    });
+    confirmation.addEventListener('input', () => confirmation.setCustomValidity(''));
+</script>
+</body>
+</html>

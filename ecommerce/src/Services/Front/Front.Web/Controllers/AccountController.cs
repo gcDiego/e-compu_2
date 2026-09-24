@@ -1,57 +1,50 @@
 using Front.Web.Models;
 using Front.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Front.Web.Controllers;
 
-public sealed class AccountController(IdentityApiClient identityApi, MongoCustomerService customerService, JwtTokenIssuer jwtTokenIssuer) : Controller
+public sealed class AccountController(CustomerApiClient customerApi) : Controller
 {
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+        ViewData["Success"] = TempData["Success"] as string;
         return View(new LoginViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(string email, string password, string? returnUrl, CancellationToken cancellationToken)
+    [EnableRateLimiting("authentication")]
+    public async Task<IActionResult> Login(LoginInputModel input, string? returnUrl, CancellationToken cancellationToken)
     {
-        var customer = await customerService.GetCustomerByEmailAsync(email, cancellationToken);
-        if (customer is not null && await customerService.VerifyCustomerPasswordAsync(email, password, cancellationToken))
-        {
-            var token = jwtTokenIssuer.Issue(customer);
-            SetSession(customer, token.Token);
-            return LocalRedirect(string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl) ? Url.Action("Index", "Store")! : returnUrl);
-        }
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+        if (!ModelState.IsValid)
+            return View(new LoginViewModel(input.Email, "Correo o contraseña incorrectos."));
 
-        LoginResponseDto? login = null;
         try
         {
-            login = await identityApi.LoginAsync(email, password, cancellationToken);
+            var apiLogin = await customerApi.LoginAsync(input.Email, input.Password, cancellationToken);
+            if (apiLogin is not null)
+            {
+                var apiCustomer = new CustomerDto(apiLogin.Id, apiLogin.FirstName, apiLogin.LastName, apiLogin.Email, apiLogin.MustResetPassword);
+                SetSession(apiCustomer, apiLogin.AccessToken);
+                return LocalRedirect(SafeReturnUrl(returnUrl));
+            }
+
+            return View(new LoginViewModel(input.Email, "Correo o contraseña incorrectos."));
         }
         catch (HttpRequestException)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginViewModel(email, "El servicio de identidad no está disponible. Usa una cuenta registrada en Mongo o inicia Identity."));
+            return View(new LoginViewModel(input.Email, "No fue posible contactar al servicio de identidad. Intenta más tarde."));
         }
-
-        if (login is null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginViewModel(email, "Correo o contraseña incorrectos."));
-        }
-
-        HttpContext.Session.SetString("AccessToken", login.AccessToken);
-        HttpContext.Session.SetString("CustomerName", $"{login.FirstName} {login.LastName}".Trim());
-        HttpContext.Session.SetString("CustomerEmail", login.Email);
-        HttpContext.Session.SetInt32("CustomerId", login.Id);
-        return LocalRedirect(string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl) ? Url.Action("Index", "Store")! : returnUrl);
     }
 
     private void SetSession(CustomerDto customer, string token)
     {
+        HttpContext.Session.Clear();
         HttpContext.Session.SetString("AccessToken", token);
         HttpContext.Session.SetString("CustomerName", $"{customer.FirstName} {customer.LastName}".Trim());
         HttpContext.Session.SetString("CustomerEmail", customer.Email);
@@ -61,25 +54,96 @@ public sealed class AccountController(IdentityApiClient identityApi, MongoCustom
     [HttpGet]
     public IActionResult Register(string? returnUrl = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
         return View(new RegisterViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl, CancellationToken cancellationToken)
+    [EnableRateLimiting("authentication")]
+    public async Task<IActionResult> Register(RegisterViewModel model, [FromForm] string confirmPassword, string? returnUrl, CancellationToken cancellationToken)
     {
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
         if (!ModelState.IsValid)
-            return View(model);
+            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "Revisa los datos. La contraseña debe tener entre 12 y 128 caracteres."));
 
-        var created = await customerService.CreateCustomerAsync(model.FirstName, model.LastName, model.Email, model.Password, cancellationToken);
-        if (created is null)
+        if (!string.Equals(model.Password, confirmPassword, StringComparison.Ordinal))
+            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "Las contraseñas no coinciden."));
+
+        try
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(model with { Error = "El correo ya está registrado." });
-        }
+            var created = await customerApi.RegisterAsync(model.FirstName, model.LastName, model.Email, model.Password, cancellationToken);
+            if (created is not null)
+                return RedirectToAction("Login", new { returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null });
 
-        return RedirectToAction("Login", new { returnUrl });
+            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "No fue posible crear la cuenta con esos datos."));
+        }
+        catch (HttpRequestException)
+        {
+            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "No fue posible contactar al servicio de identidad. Intenta más tarde."));
+        }
+    }
+
+    [HttpGet]
+    public IActionResult Recover(string? returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+        return View(new LoginViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("authentication")]
+    public async Task<IActionResult> Recover(string email, string? returnUrl, CancellationToken cancellationToken)
+    {
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+
+        try
+        {
+            var token = await customerApi.RecoverPasswordAsync(email, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(token))
+                return RedirectToAction("Reset", new { email, token, returnUrl });
+
+            return RedirectToAction("Reset", new { email, returnUrl });
+        }
+        catch (HttpRequestException)
+        {
+            return View("Login", new LoginViewModel(email, "No fue posible contactar al servicio de identidad. Intenta más tarde."));
+        }
+    }
+
+    [HttpGet]
+    public IActionResult Reset(string? email, string? token, string? returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+        return View(new ResetViewModel(email ?? string.Empty, token ?? string.Empty, string.Empty, string.Empty));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("authentication")]
+    public async Task<IActionResult> Reset(string email, string token, string newPassword, string confirmPassword, string? returnUrl, CancellationToken cancellationToken)
+    {
+        ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+
+        if (!string.Equals(newPassword, confirmPassword, StringComparison.Ordinal))
+            return View(new ResetViewModel(email, token, newPassword, confirmPassword, "Las contraseñas no coinciden."));
+
+        try
+        {
+            var (success, error) = await customerApi.ResetPasswordAsync(email, token, newPassword, cancellationToken);
+            if (success)
+            {
+                TempData["Success"] = "Contraseña actualizada. Inicia sesión.";
+                return RedirectToAction("Login", new { returnUrl });
+            }
+
+            return View(new ResetViewModel(email, token, newPassword, confirmPassword, error ?? "No fue posible restablecer la contraseña."));
+        }
+        catch (HttpRequestException)
+        {
+            return View(new ResetViewModel(email, token, newPassword, confirmPassword, "No fue posible contactar al servicio de identidad. Intenta más tarde."));
+        }
     }
 
     [HttpPost]
@@ -89,4 +153,9 @@ public sealed class AccountController(IdentityApiClient identityApi, MongoCustom
         HttpContext.Session.Clear();
         return RedirectToAction("Index", "Store");
     }
+
+    private string SafeReturnUrl(string? returnUrl) =>
+        !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            ? returnUrl
+            : Url.Action("Index", "Store")!;
 }

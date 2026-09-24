@@ -10,6 +10,8 @@ public sealed class CartController(MongoCartService cartService) : Controller
     {
         var customerId = CustomerId();
         if (customerId is null) return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Index", "Cart") });
+
+        ViewData["Error"] = TempData["Error"] as string;
         return View(await cartService.GetAsync(customerId.Value, cancellationToken));
     }
 
@@ -29,8 +31,8 @@ public sealed class CartController(MongoCartService cartService) : Controller
     {
         var customerId = CustomerId();
         if (customerId is null) return Unauthorized();
-        await cartService.ChangeAsync(customerId.Value, productId, increase, cancellationToken);
-        return RedirectToAction("Index");
+        var result = await cartService.ChangeAsync(customerId.Value, productId, increase, cancellationToken);
+        return result is null ? BadRequest() : RedirectToAction("Index");
     }
 
     [HttpPost]

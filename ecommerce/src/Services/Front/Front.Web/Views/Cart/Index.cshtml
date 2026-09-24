@@ -1,7 +1,135 @@
 @model CartSnapshotDto?
-@{ ViewData["Title"] = "Carrito"; }
-<main class="cart-layout"><section class="cart-panel"><div class="cart-header"><h1>Detalle del carrito</h1><a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a></div><div class="cart-items">@foreach (var item in Model?.Items ?? []){<article class="cart-item"><div class="cart-image"><img src="~/images/computadora.png" alt="@item.ProductName" /></div><div><span class="brand">@item.BrandName</span><h3>@item.ProductName</h3><strong>$@item.UnitPrice.ToString("N2") MXN</strong></div><div class="quantity"><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="false" /><button type="submit">−</button></form><b>@item.Quantity</b><form asp-action="Change" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="increase" value="true" /><button type="submit">+</button></form></div><form asp-action="Remove" method="post"><input type="hidden" name="productId" value="@item.ProductId" /><button class="button danger" type="submit">Eliminar</button></form></article>}</div><div class="total">Total: <strong>$@((Model?.Total ?? 0).ToString("N2"))</strong></div></section><aside class="shipping" id="shipping"><h2>Detalle de envío</h2><form asp-controller="Checkout" asp-action="Create" method="post"><label>Contacto<input type="text" name="contacto" required /></label><label>Teléfono<input type="tel" name="telefono" required /></label><label>Dirección<input type="text" name="direccion" required /></label><label>Estado<select id="stateId" name="stateId" required><option value="">Selecciona un estado</option></select></label><label>Municipio<select id="municipalityId" name="municipalityId" required disabled><option value="">Selecciona un municipio</option></select></label><label>Localidad<select id="localityId" name="localityId" disabled><option value="">Selecciona una localidad</option></select></label><input type="hidden" name="idLocalidad" id="idLocalidad" value="" required /><button class="button primary full" type="submit">Procesar pago</button></form></aside>
-@section Scripts {
+@{
+    Layout = null;
+    ViewData["Title"] = "Carrito";
+    var items = Model?.Items ?? [];
+    var itemCount = items.Sum(item => item.Quantity);
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carrito - ECOMPU</title>
+    <link rel="stylesheet" href="~/css/cart-reference.css" asp-append-version="true" />
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-left">
+        <a asp-controller="Store" asp-action="Index" class="nav-logo">
+            <img src="~/images/logo1.png" alt="E-Compu" />
+            <span><em></em></span>
+        </a>
+        <a asp-controller="Store" asp-action="Index" class="nav-link">Inicio</a>
+    </div>
+    <div class="nav-right">
+        <a asp-controller="Cart" asp-action="Index" class="cart-btn">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Carrito
+            <span class="cart-count">@itemCount</span>
+        </a>
+        <div class="user-avatar">@((Context.Session.GetString("CustomerName") ?? "U").Trim()[0].ToString().ToUpperInvariant())</div>
+    </div>
+</nav>
+<div class="container">
+    <div class="cart-section">
+        <div class="cart-header">
+            <h2>Detalle Carrito</h2>
+            <a asp-controller="Store" asp-action="Index" class="btn-continue">
+                <svg viewBox="0 0 24 24"><path d="M3 3h18v13H3z"/><path d="M8 21h8"/><path d="M12 16v5"/></svg>
+                Seguir Comprando
+            </a>
+        </div>
+        @if (items.Count == 0)
+        {
+            <div class="cart-item">
+                <div class="item-image"><img src="~/images/computadora.png" alt="Carrito vacío" /></div>
+                <div class="item-info">
+                    <div class="item-brand">ECOMPU</div>
+                    <div class="item-name">Tu carrito está vacío</div>
+                    <div class="item-price">Agrega productos desde el catálogo</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in items)
+            {
+                <div class="cart-item">
+                    <div class="item-image"><img src="~/images/computadora.png" alt="@item.ProductName" /></div>
+                    <div class="item-info">
+                        <div class="item-brand">@item.BrandName</div>
+                        <div class="item-name">@item.ProductName</div>
+                        <div class="item-price">$@item.UnitPrice.ToString("N2") MXN</div>
+                    </div>
+                    <div class="qty-control">
+                        <form asp-action="Change" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="increase" value="false" />
+                            <button class="qty-btn" type="submit" aria-label="Disminuir cantidad">−</button>
+                        </form>
+                        <div class="qty-value">@item.Quantity</div>
+                        <form asp-action="Change" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="increase" value="true" />
+                            <button class="qty-btn" type="submit" aria-label="Aumentar cantidad">+</button>
+                        </form>
+                    </div>
+                    <form asp-action="Remove" method="post">
+                        <input type="hidden" name="productId" value="@item.ProductId" />
+                        <button class="btn-delete" type="submit">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M8 6V4h8v2"/></svg>
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            }
+        }
+        <div class="cart-total">
+            <span class="cart-total-label">Total:</span>
+            <span class="cart-total-value">$@((Model?.Total ?? 0).ToString("N2"))</span>
+        </div>
+    </div>
+    <aside class="shipping-section">
+        <h2>Detalle Envío</h2>
+        @if (ViewData["Error"] is not null)
+        {
+            <div class="alert" style="color:#b91c1c;background:#fee2e2;border:1px solid #f87171;padding:10px;border-radius:6px;margin-bottom:12px;">@ViewData["Error"]</div>
+        }
+        <form asp-controller="Checkout" asp-action="Create" method="post">
+            <div class="form-group">
+                <label for="stateId">Estado:</label>
+                <select id="stateId" name="stateId" required><option value="">Seleccionar</option></select>
+            </div>
+            <div class="form-group">
+                <label for="municipalityId">Municipio:</label>
+                <select id="municipalityId" name="municipalityId" required disabled><option value="">Seleccionar</option></select>
+            </div>
+            <div class="form-group">
+                <label for="localityId">Localidad:</label>
+                <select id="localityId" name="localityId" disabled><option value="">Seleccionar</option></select>
+            </div>
+            <div class="form-group">
+                <label for="contacto">Nombre Contacto:</label>
+                <input type="text" id="contacto" name="contacto" required />
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" required />
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" required />
+            </div>
+            <input type="hidden" id="idLocalidad" name="idLocalidad" />
+            <button class="btn-checkout" type="submit" @(items.Count == 0 ? "disabled" : null)>
+                <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Terminar y Procesar Pago
+            </button>
+        </form>
+    </aside>
+</div>
+<footer></footer>
 <script>
     const stateSelect = document.getElementById('stateId');
     const municipalitySelect = document.getElementById('municipalityId');
@@ -25,36 +153,27 @@
         } catch { }
     }
 
-    loadSelect('/api/location/states', stateSelect, 'Selecciona un estado').then(() => { stateSelect.disabled = false; });
-
+    loadSelect('/api/location/states', stateSelect, 'Seleccionar');
     stateSelect.addEventListener('change', () => {
-        municipalitySelect.innerHTML = '<option value="">Selecciona un municipio</option>';
-        localitySelect.innerHTML = '<option value="">Selecciona una localidad</option>';
+        municipalitySelect.innerHTML = '<option value="">Seleccionar</option>';
+        localitySelect.innerHTML = '<option value="">Seleccionar</option>';
         localitySelect.disabled = true;
         idLocalidad.value = '';
-        if (stateSelect.value) {
-            loadSelect(`/api/location/municipalities/${stateSelect.value}`, municipalitySelect, 'Selecciona un municipio');
-            municipalitySelect.disabled = false;
-        } else {
-            municipalitySelect.disabled = true;
-        }
+        if (stateSelect.value) loadSelect(`/api/location/municipalities/${stateSelect.value}`, municipalitySelect, 'Seleccionar');
+        else municipalitySelect.disabled = true;
     });
-
     municipalitySelect.addEventListener('change', () => {
-        localitySelect.innerHTML = '<option value="">Selecciona una localidad</option>';
+        localitySelect.innerHTML = '<option value="">Seleccionar</option>';
         idLocalidad.value = municipalitySelect.value;
-        if (municipalitySelect.value) {
-            loadSelect(`/api/location/localities/${municipalitySelect.value}`, localitySelect, 'Selecciona una localidad');
-            localitySelect.disabled = false;
-        } else {
+        if (municipalitySelect.value) loadSelect(`/api/location/localities/${municipalitySelect.value}`, localitySelect, 'Seleccionar');
+        else {
             localitySelect.disabled = true;
             idLocalidad.value = '';
         }
     });
-
     localitySelect.addEventListener('change', () => {
         idLocalidad.value = localitySelect.value || municipalitySelect.value;
     });
 </script>
-}
-</main>
+</body>
+</html>
