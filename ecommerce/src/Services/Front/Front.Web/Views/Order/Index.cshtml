@@ -1,0 +1,3 @@
+@model IReadOnlyList<Front.Web.Models.OrderDto>
+@{ ViewData["Title"] = "Mis compras"; }
+<main class="cart-layout"><section class="cart-panel"><div class="cart-header"><h1>Mis compras</h1><a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a></div>@if (Model.Count == 0){<p>No tienes compras registradas.</p>}else{<div class="cart-items">@foreach (var order in Model){<article class="cart-item"><div><h3>Orden #@order.Id</h3><span class="brand">@order.Status</span><strong>$@order.Total.ToString("N2") MXN</strong><small>@order.Date.ToString("g")</small></div><span>@order.ProductCount productos</span></article>}</div>}</section></main>
