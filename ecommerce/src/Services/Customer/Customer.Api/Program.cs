@@ -113,7 +113,7 @@ app.MapPost("/api/customers/recover", async (
 
         var body = $"Tu token de recuperación es: {token}{Environment.NewLine}Válido por 1 hora.";
         if (!string.IsNullOrWhiteSpace(resetLink))
-            body += $"{Environment.NewLine}Restablece tu contraseña aquí: {resetLink}";
+            //body += $"{Environment.NewLine}Restablece tu contraseña aquí: {resetLink}";
 
         try
         {
