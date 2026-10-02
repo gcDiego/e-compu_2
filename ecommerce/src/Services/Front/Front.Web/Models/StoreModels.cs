@@ -18,7 +18,7 @@ public sealed class RegisterViewModel
     [Required, StringLength(80, MinimumLength = 1)] public string FirstName { get; set; } = "";
     [Required, StringLength(100, MinimumLength = 1)] public string LastName { get; set; } = "";
     [Required, EmailAddress, StringLength(254)] public string Email { get; set; } = "";
-    [Required, StringLength(128, MinimumLength = 12)] public string Password { get; set; } = "";
+    [Required, StringLength(15, MinimumLength = 5)] public string Password { get; set; } = "";
     public string? Error { get; set; }
 
     public RegisterViewModel() { }

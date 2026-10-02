@@ -15,10 +15,12 @@ public sealed class SecurityInputValidationTests
         Assert.False(IsValid(model));
     }
 
-    [Fact]
-    public void Registration_rejects_short_password()
+    [Theory]
+    [InlineData("four")]
+    [InlineData("sixteen-chars-long")]
+    public void Registration_rejects_password_outside_length_limits(string password)
     {
-        var model = new RegisterViewModel("Name", "Last", "user@example.com", "short");
+        var model = new RegisterViewModel("Name", "Last", "user@example.com", password);
 
         Assert.False(IsValid(model));
     }

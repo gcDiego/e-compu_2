@@ -65,7 +65,7 @@ public sealed class AccountController(CustomerApiClient customerApi) : Controlle
     {
         ViewData["ReturnUrl"] = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
         if (!ModelState.IsValid)
-            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "Revisa los datos. La contraseña debe tener entre 12 y 128 caracteres."));
+            return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "Revisa los datos. La contraseña debe tener entre 5 y 15 caracteres."));
 
         if (!string.Equals(model.Password, confirmPassword, StringComparison.Ordinal))
             return View(new RegisterViewModel(model.FirstName, model.LastName, model.Email, string.Empty, "Las contraseñas no coinciden."));
