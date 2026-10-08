@@ -121,6 +121,9 @@ public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHashe
         return true;
     }
 
+    public Task<long> CountAsync(CancellationToken ct) =>
+        _clientes.CountDocumentsAsync(FilterDefinition<BsonDocument>.Empty, cancellationToken: ct);
+
     private static CustomerProfile MapCustomer(BsonDocument d) =>
         new(
             ToInt32(d["idSqlOriginal"]),

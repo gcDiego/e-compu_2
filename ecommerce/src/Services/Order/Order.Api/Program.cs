@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey))
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options => options.AddPolicy("admin", policy => policy.RequireRole("admin")));
 
 var app = builder.Build();
 
@@ -90,6 +90,15 @@ app.MapGet("/api/orders/me", async (OrderStore store, ClaimsPrincipal user, Canc
     var orders = await store.GetOrdersByCustomerAsync(customerId.Value, ct);
     return Results.Ok(orders);
 }).RequireAuthorization();
+
+app.MapGet("/api/admin/orders", async (DateTime? from, DateTime? to, string? transactionId, string? status, int page, int pageSize, OrderStore store, CancellationToken ct) =>
+    Results.Ok(await store.GetAdminOrdersAsync(from, to, transactionId, status, page, pageSize, ct))).RequireAuthorization("admin");
+app.MapGet("/api/admin/orders/{id:int}", async (int id, OrderStore store, CancellationToken ct) =>
+    await store.GetAdminOrderAsync(id, ct) is { } order ? Results.Ok(order) : Results.NotFound()).RequireAuthorization("admin");
+app.MapGet("/api/admin/orders/dashboard", async (OrderStore store, CancellationToken ct) =>
+    Results.Ok(await store.GetDashboardAsync(ct))).RequireAuthorization("admin");
+app.MapGet("/api/admin/orders/report", async (DateTime from, DateTime to, string? transactionId, OrderStore store, CancellationToken ct) =>
+    Results.Ok(await store.GetReportAsync(from, to, transactionId, ct))).RequireAuthorization("admin");
 
 app.MapGet("/health", () => Results.Ok("ok"));
 

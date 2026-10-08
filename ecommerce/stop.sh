@@ -3,7 +3,7 @@
 
 cd "$(dirname "$0")"
 
-for service in customer-api order-api front-web; do
+for service in customer-api order-api administration-api catalog-api front-web admin-web; do
     pidfile=".logs/${service}.pid"
     if [ -f "$pidfile" ]; then
         pid=$(cat "$pidfile")

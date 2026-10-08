@@ -1,9 +1,12 @@
 using Customer.Api.Models;
 using Customer.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
@@ -42,6 +45,19 @@ if (string.IsNullOrWhiteSpace(jwtSigningKey) || jwtSigningKey.Length < 32)
     throw new InvalidOperationException("Jwt:SigningKey must be at least 32 characters.");
 
 builder.Services.AddSingleton(new JwtTokenIssuer(jwtIssuer, jwtAudience, jwtSigningKey, TimeSpan.FromMinutes(jwtLifetimeMinutes)));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)),
+        ClockSkew = TimeSpan.FromMinutes(1)
+    });
+builder.Services.AddAuthorization(options => options.AddPolicy("admin", policy => policy.RequireRole("admin")));
 
 var app = builder.Build();
 var isDevelopment = app.Environment.IsDevelopment();
@@ -50,6 +66,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapPost("/api/customers/register", async (
     [FromBody] RegisterRequest request,
@@ -145,6 +163,9 @@ app.MapPost("/api/customers/reset", async (
 
     return Results.Ok("Contraseña actualizada.");
 });
+
+app.MapGet("/api/admin/customers/count", async (CustomerStore store, CancellationToken ct) =>
+    Results.Ok(new { count = await store.CountAsync(ct) })).RequireAuthorization("admin");
 
 app.MapGet("/health", () => Results.Ok("ok"));
 

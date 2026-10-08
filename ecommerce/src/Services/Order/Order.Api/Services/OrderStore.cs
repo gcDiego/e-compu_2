@@ -190,6 +190,55 @@ public sealed class OrderStore(IMongoDatabase database, IMongoClient mongoClient
         return docs.Select(MapOrder).ToList();
     }
 
+    public async Task<PagedOrders> GetAdminOrdersAsync(DateTime? from, DateTime? to, string? transactionId, string? status, int page, int pageSize, CancellationToken ct)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+        var filter = FilterDefinition<BsonDocument>.Empty;
+        if (from.HasValue) filter &= Builders<BsonDocument>.Filter.Gte("fechaVenta", from.Value.ToUniversalTime());
+        if (to.HasValue) filter &= Builders<BsonDocument>.Filter.Lt("fechaVenta", to.Value.ToUniversalTime().AddDays(1));
+        if (!string.IsNullOrWhiteSpace(transactionId)) filter &= Builders<BsonDocument>.Filter.Eq("idTransaccion", transactionId.Trim());
+        if (!string.IsNullOrWhiteSpace(status)) filter &= Builders<BsonDocument>.Filter.Eq("seguimiento.estadoActual", status.Trim().ToLowerInvariant());
+        var total = await _ventas.CountDocumentsAsync(filter, cancellationToken: ct);
+        var docs = await _ventas.Find(filter).SortByDescending(x => x["fechaVenta"]).Skip((page - 1) * pageSize).Limit(pageSize).ToListAsync(ct);
+        return new PagedOrders(docs.Select(MapOrder).ToList(), total, page, pageSize);
+    }
+
+    public async Task<AdminOrderDetail?> GetAdminOrderAsync(int id, CancellationToken ct)
+    {
+        var d = await _ventas.Find(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id)).FirstOrDefaultAsync(ct);
+        if (d is null) return null;
+        var customer = d["cliente"].AsBsonDocument;
+        var items = d["detalle"].AsBsonArray.Cast<BsonDocument>().Select(x => new AdminOrderItem(
+            x.TryGetValue("idSqlOriginal", out var sqlId) && sqlId.IsNumeric ? ToInt32(sqlId) : 0,
+            x["nombreProducto"].AsString,
+            x.TryGetValue("precioUnitario", out var price) && price.IsNumeric ? ToDecimal(price) : ToDecimal(x["total"]) / Math.Max(1, ToInt32(x["cantidad"])),
+            ToInt32(x["cantidad"]), ToDecimal(x["total"]))).ToList();
+        return new AdminOrderDetail(ToInt32(d["idSqlOriginal"]), d.GetValue("idTransaccion", "").AsString,
+            $"{customer.GetValue("nombres", "")} {customer.GetValue("apellidos", "")}".Trim(), customer.GetValue("correo", "").AsString,
+            d.GetValue("contacto", "").AsString, d.GetValue("telefono", "").AsString, d.GetValue("direccion", "").AsString,
+            ToDecimal(d["montoTotal"]), ToInt32(d["totalProducto"]), new DateTimeOffset(d["fechaVenta"].ToUniversalTime()), d["seguimiento"]["estadoActual"].AsString, items);
+    }
+
+    public async Task<DashboardResponse> GetDashboardAsync(CancellationToken ct)
+    {
+        var docs = await _ventas.Find(FilterDefinition<BsonDocument>.Empty).Project(Builders<BsonDocument>.Projection.Include("montoTotal")).ToListAsync(ct);
+        return new DashboardResponse(docs.Count, docs.Sum(x => x.TryGetValue("montoTotal", out var value) && value.IsNumeric ? ToDecimal(value) : 0));
+    }
+
+    public async Task<IReadOnlyList<ReportRow>> GetReportAsync(DateTime from, DateTime to, string? transactionId, CancellationToken ct)
+    {
+        if (to.Date < from.Date || to.Date - from.Date > TimeSpan.FromDays(366)) return [];
+        var filter = Builders<BsonDocument>.Filter.Gte("fechaVenta", from.Date.ToUniversalTime()) & Builders<BsonDocument>.Filter.Lt("fechaVenta", to.Date.AddDays(1).ToUniversalTime());
+        if (!string.IsNullOrWhiteSpace(transactionId)) filter &= Builders<BsonDocument>.Filter.Eq("idTransaccion", transactionId.Trim());
+        var docs = await _ventas.Find(filter).SortByDescending(x => x["fechaVenta"]).Limit(5000).ToListAsync(ct);
+        return docs.SelectMany(d => d["detalle"].AsBsonArray.Cast<BsonDocument>().Select(item =>
+        {
+            var quantity = ToInt32(item["cantidad"]); var total = ToDecimal(item["total"]);
+            return new ReportRow(new DateTimeOffset(d["fechaVenta"].ToUniversalTime()), d["cliente"].AsBsonDocument.GetValue("correo", "").AsString, item["nombreProducto"].AsString, item.TryGetValue("precioUnitario", out var price) && price.IsNumeric ? ToDecimal(price) : total / Math.Max(1, quantity), quantity, total, d.GetValue("idTransaccion", "").AsString);
+        })).ToList();
+    }
+
     private static OrderResponse MapOrder(BsonDocument document) =>
         new(
             ToInt32(document["idSqlOriginal"]),

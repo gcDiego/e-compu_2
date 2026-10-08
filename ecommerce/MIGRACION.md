@@ -586,3 +586,33 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: ejecución exitosa del limpiador; el índice debe crearse al reiniciar `Front.Web`.
 - Rollback o recuperación: no hay rollback directo; los documentos eliminados no se recuperan.
 - Pendientes: añadir `MongoDbInitializer` a `Order.Api` para que también garantice el índice; verificar que el warning desaparezca en el próximo arranque.
+
+### 2026-10-06 — Migración del panel administrativo sobre MongoDB
+
+- Estado: implementado en código; validación integrada con servicios externos pendiente.
+- Alcance: `Admin.Web`, `Administration.Api`, `Catalog.Api`, `Customer.Api`, `Order.Api` y catálogo de `Front.Web`.
+- Cambios: se creó el panel administrativo separado con login, recuperación, dashboard, administradores, productos, categorías, marcas, pedidos de sólo lectura, reportes y exportación XLSX; la tienda ahora consulta catálogo mediante HTTP.
+- Contratos: nuevos endpoints `/api/admin/auth/*`, `/api/admin/users`, `/api/catalog/*`, `/api/admin/catalog/*`, `/api/admin/orders/*` y `/api/admin/customers/count`.
+- Datos: se reutilizan exclusivamente las colecciones MongoDB existentes; se agregan campos opcionales de bloqueo, recuperación, versión, `imageUrl` y `imagePublicId`, además de auditoría.
+- Seguridad: JWT con rol `admin`, rate limiting, bloqueo temporal, PBKDF2 y migración SHA-256, DTOs y filtros Mongo tipados, antiforgery, cookies HttpOnly/SameSite, CSP, límites de carga y validación de firma de imágenes.
+- Pruebas: se agregaron pruebas unitarias de hashing, validación de credenciales y contratos de catálogo; la validación final se registra al ejecutar la solución completa.
+- Rollback o recuperación: detener `Admin.Web`, `Administration.Api` y `Catalog.Api`; restaurar temporalmente el lector Mongo anterior de la tienda sin introducir SQL; los campos nuevos son aditivos.
+- Pendientes: configurar secretos locales de Cloudinary/SMTP/JWT/MongoDB y ejecutar E2E contra infraestructura autorizada.
+
+### 2026-10-08 — Validación integrada del panel administrativo y corrección de rol JWT
+
+- Estado: completado.
+- Alcance: `Admin.Web`, `Administration.Api`, `Catalog.Api`, `Customer.Api`, `Order.Api`, scripts de arranque y dependencias.
+- Cambios:
+  - Se cerró la actualización de paquetes interrumpida: `Snappier 1.3.0` → `1.3.1`, `MailKit` → `4.16.0`, referencias directas a `System.Net.Http 4.3.4` y `System.Text.RegularExpressions 4.3.1` en los proyectos de prueba que arrastraban transitivos vulnerables.
+  - Se crearon `appsettings.Local.json` (no versionados) para `Administration.Api` y `Catalog.Api` con MongoDB y el JWT compartido; `Administration.Api` además recibió SMTP y `Email:ResetBaseUrl` apuntando a `Admin.Web`.
+  - `start.sh`/`stop.sh` ahora levantan y detienen los 6 servicios (5160–5165).
+  - Se corrigió un defecto de autorización: `Administration.Api`, `Catalog.Api` y `Customer.Api` configuraban `RoleClaimType = "role"`, pero `JsonWebTokenHandler` (manejador por defecto en .NET 8) mapea el claim entrante `role` a `ClaimTypes.Role`; la política `admin` nunca encontraba el rol y devolvía `403` a todos. Se retiró el override para usar el `RoleClaimType` por defecto.
+  - Se agregó la pantalla `Orders/Details` en `Admin.Web` (`OrderDetailModel`, `AdminApiClient.OrderDetail`, acción `Details`, vista y enlace desde el listado), cubriendo el pendiente 8 del documento de continuación.
+  - La carga de imagen sin Cloudinary configurado ahora responde `503` controlado en lugar de `500`.
+- Contratos: sin cambios de contrato; el claim JWT sigue siendo `role`.
+- Datos: el inicializador de `Catalog.Api`/`Administration.Api` registra código 85 (`IndexOptionsConflict`) porque los índices únicos ya existen con otro nombre; la protección de unicidad sigue vigente.
+- Seguridad: validado en vivo: endpoints administrativos devuelven `401` sin token, `403` con token `role=customer` y `200` con `role=admin`; bloqueo temporal tras 5 intentos fallidos de login; concurrencia optimista devuelve `409` con `version` obsoleta.
+- Pruebas: `dotnet restore`, `dotnet build --configuration Release` (0 advertencias, 0 errores), `dotnet test --no-build` (27 aprobadas) y `dotnet list package --vulnerable --include-transitive` sin vulnerabilidades. E2E real contra MongoDB Atlas: login admin, dashboard (sales/revenue), pedidos paginados, detalle de pedido `GET /api/admin/orders/13`, reporte por rango y exportación XLSX (archivo Excel válido). Regresión de tienda: `Front.Web` sirve el catálogo vía `Catalog.Api`.
+- Rollback o recuperación: detener los servicios con `stop.sh`; los cambios de código son revertibles por commit.
+- Pendientes: credenciales de Cloudinary para habilitar imágenes; prueba de envío SMTP real al crear administrador; pantalla de detalle de pedido ya entregada; retirar `MongoDB.Driver` de `Front.Web` (pendiente de `Cart.Api`/`Location.Api`); E2E de checkout con concurrencia.

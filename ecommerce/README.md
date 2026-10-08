@@ -12,14 +12,14 @@ Este acceso directo es temporal. El objetivo es que `Front.Web` consuma APIs HTT
 
 ## Componentes
 
-- `src/Services/Front/Front.Web`: frontend ASP.NET Core 8 vigente.
-- `src/Services/Catalog`: primera implementación de Catalog Service sobre SQL Server.
-- `src/Services/Identity`: primera implementación de Identity Service sobre SQL Server.
-- `src/Services/Cart`: primera implementación de Cart Service sobre SQL Server.
-- `CapaPresentacionAdmin` y `CapaPresentacionTienda`: aplicaciones heredadas.
-- `CapaNegocio`, `CapaDatos` y `CapaEntidad`: capas del sistema original.
+- `src/Services/Front/Front.Web`: tienda ASP.NET Core 8.
+- `src/Services/Front/Admin.Web`: panel administrativo ASP.NET Core 8.
+- `src/Services/Administration/Administration.Api`: identidad y usuarios administrativos sobre MongoDB.
+- `src/Services/Catalog/Catalog.Api`: catálogo público y administrativo sobre MongoDB, con imágenes en Cloudinary.
+- `src/Services/Customer/Customer.Api`: identidad de clientes sobre MongoDB.
+- `src/Services/Order/Order.Api`: checkout, historial, pedidos y reportes sobre MongoDB.
 
-Los servicios SQL y las aplicaciones heredadas se conservan como referencia e historial durante la transición.
+El código activo no depende de SQL Server. Los identificadores `idSqlOriginal` se conservan sólo por compatibilidad con los datos migrados.
 
 ## Requisitos para Front.Web
 
@@ -52,10 +52,15 @@ Crear `src/Services/Front/Front.Web/appsettings.Local.json` únicamente en el en
 
 ```bash
 dotnet build Front.Web.sln
+dotnet run --project src/Services/Customer/Customer.Api/Customer.Api.csproj --urls "http://localhost:5161"
+dotnet run --project src/Services/Order/Order.Api/Order.Api.csproj --urls "http://localhost:5162"
+dotnet run --project src/Services/Administration/Administration.Api/Administration.Api.csproj --urls "http://localhost:5164"
+dotnet run --project src/Services/Catalog/Catalog.Api/Catalog.Api.csproj --urls "http://localhost:5165"
 dotnet run --project src/Services/Front/Front.Web/Front.Web.csproj --urls "http://localhost:5160"
+dotnet run --project src/Services/Front/Admin.Web/Admin.Web.csproj --urls "http://localhost:5163"
 ```
 
-Abrir `http://localhost:5160`. Antes de iniciar otra instancia, comprobar que el puerto no esté ocupado.
+Abrir `http://localhost:5160` para la tienda y `http://localhost:5163` para administración. MongoDB, JWT, SMTP y Cloudinary se configuran fuera de Git mediante `appsettings.Local.json`, user-secrets o variables de entorno.
 
 ## Validación mínima
 

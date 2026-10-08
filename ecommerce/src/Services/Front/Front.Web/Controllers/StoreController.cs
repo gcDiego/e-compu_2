@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Front.Web.Controllers;
 
-public sealed class StoreController(MongoCatalogService catalog) : Controller
+public sealed class StoreController(CatalogApiClient catalog) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId, int? brandId, CancellationToken cancellationToken)

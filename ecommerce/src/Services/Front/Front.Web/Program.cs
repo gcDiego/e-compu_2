@@ -49,12 +49,13 @@ if (!string.IsNullOrWhiteSpace(mongoConnectionString) && !string.IsNullOrWhiteSp
     var mongoClient = new MongoClient(mongoConnectionString);
     builder.Services.AddSingleton<IMongoClient>(mongoClient);
     builder.Services.AddSingleton(_ => mongoClient.GetDatabase(mongoDatabaseName));
-    builder.Services.AddScoped<MongoCatalogService>();
     builder.Services.AddScoped<MongoLocationService>();
     builder.Services.AddScoped<MongoCartService>();
     builder.Services.AddHostedService<MongoDbInitializer>();
 }
 
+builder.Services.AddHttpClient<CatalogApiClient>(client =>
+    client.BaseAddress = new Uri(builder.Configuration["Services:Catalog"] ?? "http://localhost:5165"));
 builder.Services.AddHttpClient<CustomerApiClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Services:Customer"] ?? "http://localhost:5161"));
 builder.Services.AddHttpClient<OrderApiClient>(client =>
