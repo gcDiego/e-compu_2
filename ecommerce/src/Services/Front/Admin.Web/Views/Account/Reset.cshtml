@@ -1,0 +1,2 @@
+@model ResetModel
+@{Layout=null;}<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"/><link rel="stylesheet" href="~/css/admin.css"/></head><body class="auth"><form class="auth-card" method="post"><h1>Nueva contraseña</h1><div asp-validation-summary="All" class="error"></div><input asp-for="Email" type="hidden"/><input asp-for="Token" type="hidden"/><label asp-for="NewPassword">Contraseña (12 caracteres mínimo)</label><input asp-for="NewPassword" type="password" autocomplete="new-password"/><button class="primary">Guardar</button></form></body></html>
