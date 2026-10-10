@@ -1,0 +1,40 @@
+using Catalog.Api.Models;
+using Catalog.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.Local.json", true, true).AddEnvironmentVariables();
+var connection = builder.Configuration["MongoDb:ConnectionString"]; if (string.IsNullOrWhiteSpace(connection)) throw new InvalidOperationException("MongoDb:ConnectionString is required.");
+var key = builder.Configuration["Jwt:SigningKey"] ?? ""; if (key.Length < 32) throw new InvalidOperationException("Jwt:SigningKey must be at least 32 characters.");
+var issuer = builder.Configuration["Jwt:Issuer"] ?? "Ecommerce.Identity"; var audience = builder.Configuration["Jwt:Audience"] ?? "Ecommerce.Services";
+var mongo = new MongoClient(connection); builder.Services.AddSingleton<IMongoClient>(mongo); builder.Services.AddSingleton(_ => mongo.GetDatabase(builder.Configuration["MongoDb:DatabaseName"] ?? "ecommerce"));
+builder.Services.AddScoped<CatalogStore>(); builder.Services.AddScoped<MongoSequenceService>(); builder.Services.AddSingleton<CloudinaryImageStore>(); builder.Services.AddHostedService<CatalogDbInitializer>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o => o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuer=true, ValidateAudience=true, ValidateLifetime=true, ValidateIssuerSigningKey=true, ValidIssuer=issuer, ValidAudience=audience, IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), ClockSkew=TimeSpan.FromMinutes(1) });
+builder.Services.AddAuthorization(o => o.AddPolicy("admin", p => p.RequireRole("admin"))); builder.Services.AddProblemDetails();
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o => o.MultipartBodyLengthLimit = 5_242_880);
+var app = builder.Build(); app.UseExceptionHandler(); app.UseHttpsRedirection(); app.UseAuthentication(); app.UseAuthorization();
+app.MapGet("/api/catalog/categories", (CatalogStore s, CancellationToken ct) => s.CategoriesAsync(false,ct));
+app.MapGet("/api/catalog/brands", (CatalogStore s, CancellationToken ct) => s.BrandsAsync(false,ct));
+app.MapGet("/api/catalog/products", (int? categoryId,int? brandId,CatalogStore s,CancellationToken ct)=>s.ProductsAsync(categoryId,brandId,false,ct));
+app.MapGet("/api/catalog/products/{id:int}", async (int id,CatalogStore s,CancellationToken ct)=>await s.ProductAsync(id,false,ct) is { } p?Results.Ok(p):Results.NotFound());
+app.MapGet("/api/admin/catalog/categories",(CatalogStore s,CancellationToken ct)=>s.CategoriesAsync(true,ct)).RequireAuthorization("admin");
+app.MapGet("/api/admin/catalog/brands",(CatalogStore s,CancellationToken ct)=>s.BrandsAsync(true,ct)).RequireAuthorization("admin");
+app.MapGet("/api/admin/catalog/products",(CatalogStore s,CancellationToken ct)=>s.ProductsAsync(null,null,true,ct)).RequireAuthorization("admin");
+app.MapPost("/api/admin/catalog/categories",async([FromBody]SaveLookupRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):Results.Ok(await s.SaveCategoryAsync(null,r,Actor(u),ct))).RequireAuthorization("admin");
+app.MapPut("/api/admin/catalog/categories/{id:int}",async(int id,[FromBody]SaveLookupRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):await s.SaveCategoryAsync(id,r,Actor(u),ct) is { } x?Results.Ok(x):Results.NotFound()).RequireAuthorization("admin");
+app.MapPost("/api/admin/catalog/brands",async([FromBody]SaveLookupRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):Results.Ok(await s.SaveBrandAsync(null,r,Actor(u),ct))).RequireAuthorization("admin");
+app.MapPut("/api/admin/catalog/brands/{id:int}",async(int id,[FromBody]SaveLookupRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):await s.SaveBrandAsync(id,r,Actor(u),ct) is { } x?Results.Ok(x):Results.NotFound()).RequireAuthorization("admin");
+app.MapPost("/api/admin/catalog/products",async([FromBody]SaveProductRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):await s.SaveProductAsync(null,r,Actor(u),ct) is { } x?Results.Ok(x):Results.BadRequest()).RequireAuthorization("admin");
+app.MapPut("/api/admin/catalog/products/{id:int}",async(int id,[FromBody]SaveProductRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):await s.SaveProductAsync(id,r,Actor(u),ct) is { } x?Results.Ok(x):Results.Conflict()).RequireAuthorization("admin");
+app.MapPatch("/api/admin/catalog/products/{id:int}/stock",async(int id,[FromBody]StockRequest r,CatalogStore s,ClaimsPrincipal u,CancellationToken ct)=>!Valid(r,out var e)?Results.ValidationProblem(e):await s.SetStockAsync(id,r,Actor(u),ct)?Results.NoContent():Results.Conflict()).RequireAuthorization("admin");
+app.MapPost("/api/admin/catalog/products/{id:int}/image",async(int id,IFormFile image,CatalogStore s,CloudinaryImageStore images,ClaimsPrincipal u,CancellationToken ct)=>{ StoredImage uploaded; try{uploaded=await images.UploadAsync(image,ct);}catch(InvalidDataException ex){return Results.BadRequest(ex.Message);}catch(InvalidOperationException ex){return Results.Problem(ex.Message,statusCode:503);} var saved=await s.SetImageAsync(id,uploaded,Actor(u),ct); if(!saved.Success){await images.DeleteAsync(uploaded.PublicId,ct);return Results.NotFound();} await images.DeleteAsync(saved.OldPublicId,ct);return Results.NoContent();}).DisableAntiforgery().RequireAuthorization("admin");
+app.MapGet("/health",()=>Results.Ok(new{status="ok"})); app.Run();
+static int Actor(ClaimsPrincipal u)=>int.TryParse(u.FindFirstValue(ClaimTypes.NameIdentifier)??u.FindFirstValue("sub"),out var id)?id:0;
+static bool Valid(object m,out Dictionary<string,string[]> e){var r=new List<ValidationResult>();var v=Validator.TryValidateObject(m,new ValidationContext(m),r,true);e=r.GroupBy(x=>x.MemberNames.FirstOrDefault()??"request").ToDictionary(g=>g.Key,g=>g.Select(x=>x.ErrorMessage??"Valor inválido").ToArray());return v;}
+public partial class Program { }
