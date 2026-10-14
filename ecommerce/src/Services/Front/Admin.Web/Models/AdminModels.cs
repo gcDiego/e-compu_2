@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Admin.Web.Models;
 
 public sealed class LoginModel { [Required,EmailAddress,StringLength(254)] public string Email { get; set; }=""; [Required,StringLength(128)] public string Password { get; set; }=""; public string? Error { get; set; } }
-public sealed class ResetModel { [Required,EmailAddress] public string Email { get; set; }=""; [Required] public string Token { get; set; }=""; [Required,StringLength(128,MinimumLength=12)] public string NewPassword { get; set; }=""; }
+public sealed class ResetModel { [Required,EmailAddress] public string Email { get; set; }=""; [Required] public string Token { get; set; }=""; [Required,StringLength(128,MinimumLength=5)] public string NewPassword { get; set; }=""; }
 public sealed record LoginResponse(int Id,string FirstName,string LastName,string Email,string AccessToken,DateTimeOffset ExpiresAt);
 public sealed record AdminProfile(int Id,string FirstName,string LastName,string Email,bool IsActive);
 public sealed class SaveAdminModel { public int? Id { get;set; } [Required,StringLength(80)] public string FirstName {get;set;}=""; [Required,StringLength(100)] public string LastName {get;set;}=""; [Required,EmailAddress] public string Email {get;set;}=""; public bool IsActive {get;set;}=true; }

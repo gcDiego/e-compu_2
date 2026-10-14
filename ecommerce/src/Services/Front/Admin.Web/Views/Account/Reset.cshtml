@@ -1,2 +1,33 @@
 @model ResetModel
-@{Layout=null;}<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"/><link rel="stylesheet" href="~/css/admin.css"/></head><body class="auth"><form class="auth-card" method="post"><h1>Nueva contraseña</h1><div asp-validation-summary="All" class="error"></div><input asp-for="Email" type="hidden"/><input asp-for="Token" type="hidden"/><label asp-for="NewPassword">Contraseña (12 caracteres mínimo)</label><input asp-for="NewPassword" type="password" autocomplete="new-password"/><button class="primary">Guardar</button></form></body></html>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body class="auth">
+    <form class="auth-card" method="post">
+        <h1>Nueva contraseña</h1>
+        @if (ViewBag.EmailSent == true)
+        {
+            <div class="notice success">
+                Si la cuenta existe, recibirás un correo. Introduce aquí el token incluido en el mensaje.
+            </div>
+        }
+        <div asp-validation-summary="All" class="error"></div>
+        <label asp-for="Email">Correo</label>
+        <input asp-for="Email" type="email" autocomplete="email" readonly />
+        <span asp-validation-for="Email"></span>
+        <label asp-for="Token">Token recibido por correo</label>
+        <input asp-for="Token" autocomplete="one-time-code" />
+        <span asp-validation-for="Token"></span>
+        <label asp-for="NewPassword">Contraseña (5 caracteres mínimo)</label>
+        <input asp-for="NewPassword" type="password" autocomplete="new-password" />
+        <span asp-validation-for="NewPassword"></span>
+        <button class="primary">Guardar</button>
+    </form>
+</body>
+</html>

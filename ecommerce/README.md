@@ -52,15 +52,22 @@ Crear `src/Services/Front/Front.Web/appsettings.Local.json` únicamente en el en
 
 ```bash
 dotnet build Front.Web.sln
-dotnet run --project src/Services/Customer/Customer.Api/Customer.Api.csproj --urls "http://localhost:5161"
-dotnet run --project src/Services/Order/Order.Api/Order.Api.csproj --urls "http://localhost:5162"
-dotnet run --project src/Services/Administration/Administration.Api/Administration.Api.csproj --urls "http://localhost:5164"
-dotnet run --project src/Services/Catalog/Catalog.Api/Catalog.Api.csproj --urls "http://localhost:5165"
-dotnet run --project src/Services/Front/Front.Web/Front.Web.csproj --urls "http://localhost:5160"
-dotnet run --project src/Services/Front/Admin.Web/Admin.Web.csproj --urls "http://localhost:5163"
+./start.sh
 ```
 
-Abrir `http://localhost:5160` para la tienda y `http://localhost:5163` para administración. MongoDB, JWT, SMTP y Cloudinary se configuran fuera de Git mediante `appsettings.Local.json`, user-secrets o variables de entorno.
+`start.sh` levanta los seis servicios en los puertos `5160`–`5165`, comprueba previamente que estén libres, espera a que cada servicio responda y guarda PID y logs en `.logs/`. Si un servicio falla, revisar su archivo `.logs/<servicio>.log`. Para observar el correo administrativo en vivo:
+
+```bash
+tail -f .logs/administration-api.log
+```
+
+Detener sólo los procesos registrados por el script:
+
+```bash
+./stop.sh
+```
+
+También pueden ejecutarse los proyectos manualmente en terminales separadas usando los mismos puertos documentados. Abrir `http://localhost:5160` para la tienda y `http://localhost:5163` para administración. MongoDB, JWT y SMTP se configuran fuera de Git mediante `appsettings.Local.json`, user-secrets o variables de entorno. Cloudinary permanece opcional: sin credenciales, la carga de imágenes responde `503` de forma controlada.
 
 ## Validación mínima
 

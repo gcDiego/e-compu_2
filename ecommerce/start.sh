@@ -1,6 +1,6 @@
 #!/bin/bash
 # Levanta los servicios del e-commerce.
-# MongoDB debe estar corriendo previamente.
+# MongoDB debe estar accesible previamente.
 
 set -e
 
@@ -17,37 +17,80 @@ mkdir -p .logs
 
 log() { echo "[$(date +%H:%M:%S)] $1"; }
 
-log "Iniciando Customer.Api..."
-dotnet run --project src/Services/Customer/Customer.Api/Customer.Api.csproj --urls "http://localhost:5161" > .logs/customer-api.log 2>&1 &
-echo $! > .logs/customer-api.pid
+services=(customer-api order-api admin-web administration-api catalog-api front-web)
+ports=(5161 5162 5163 5164 5165 5160)
+projects=(
+    src/Services/Customer/Customer.Api/Customer.Api.csproj
+    src/Services/Order/Order.Api/Order.Api.csproj
+    src/Services/Front/Admin.Web/Admin.Web.csproj
+    src/Services/Administration/Administration.Api/Administration.Api.csproj
+    src/Services/Catalog/Catalog.Api/Catalog.Api.csproj
+    src/Services/Front/Front.Web/Front.Web.csproj
+)
+names=(Customer.Api Order.Api Admin.Web Administration.Api Catalog.Api Front.Web)
+health_paths=(health health Account/Login health health Store)
 
-log "Iniciando Order.Api..."
-dotnet run --project src/Services/Order/Order.Api/Order.Api.csproj --urls "http://localhost:5162" > .logs/order-api.log 2>&1 &
-echo $! > .logs/order-api.pid
+for i in "${!services[@]}"; do
+    port="${ports[$i]}"
+    if pid=$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null); then
+        echo "No se puede iniciar ${names[$i]}: el puerto $port ya está ocupado por PID $pid."
+        echo "Detén el proceso existente y vuelve a ejecutar ./start.sh."
+        exit 1
+    fi
 
-log "Iniciando Administration.Api..."
-dotnet run --project src/Services/Administration/Administration.Api/Administration.Api.csproj --urls "http://localhost:5164" > .logs/administration-api.log 2>&1 &
-echo $! > .logs/administration-api.pid
+    pidfile=".logs/${services[$i]}.pid"
+    if [ -f "$pidfile" ] && ! kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+        rm "$pidfile"
+    fi
+done
 
-log "Iniciando Catalog.Api..."
-dotnet run --project src/Services/Catalog/Catalog.Api/Catalog.Api.csproj --urls "http://localhost:5165" > .logs/catalog-api.log 2>&1 &
-echo $! > .logs/catalog-api.pid
+for i in "${!services[@]}"; do
+    service="${services[$i]}"
+    port="${ports[$i]}"
+    log "Iniciando ${names[$i]} en http://localhost:$port..."
+    dotnet run --project "${projects[$i]}" --urls "http://localhost:$port" > ".logs/$service.log" 2>&1 &
+    echo $! > ".logs/$service.pid"
+done
 
-log "Iniciando Front.Web..."
-dotnet run --project src/Services/Front/Front.Web/Front.Web.csproj > .logs/front-web.log 2>&1 &
-echo $! > .logs/front-web.pid
+failed=0
+for i in "${!services[@]}"; do
+    service="${services[$i]}"
+    port="${ports[$i]}"
+    pid=$(cat ".logs/$service.pid")
+    url="http://localhost:$port/${health_paths[$i]}"
+    ready=0
 
-log "Iniciando Admin.Web..."
-dotnet run --project src/Services/Front/Admin.Web/Admin.Web.csproj --urls "http://localhost:5163" > .logs/admin-web.log 2>&1 &
-echo $! > .logs/admin-web.pid
+    for _ in {1..30}; do
+        if ! kill -0 "$pid" 2>/dev/null; then
+            break
+        fi
+        if curl -s -o /dev/null --max-time 2 "$url"; then
+            ready=1
+            break
+        fi
+        sleep 1
+    done
 
-log "Servicios arrancando en segundo plano."
-echo "  Customer.Api      -> http://localhost:5161"
-echo "  Order.Api         -> http://localhost:5162"
-echo "  Administration.Api-> http://localhost:5164"
-echo "  Catalog.Api       -> http://localhost:5165"
-echo "  Admin.Web         -> http://localhost:5163"
-echo "  Front.Web         -> ver .logs/front-web.log para el puerto"
+    if [ "$ready" -eq 1 ]; then
+        log "${names[$i]} listo."
+    else
+        log "ERROR: ${names[$i]} no inició. Revisa .logs/$service.log"
+        failed=1
+    fi
+done
+
+if [ "$failed" -ne 0 ]; then
+    echo "Uno o más servicios fallaron. Ejecuta ./stop.sh después de revisar los logs."
+    exit 1
+fi
+
+log "Todos los servicios están listos."
+echo "  Front.Web          -> http://localhost:5160"
+echo "  Customer.Api       -> http://localhost:5161"
+echo "  Order.Api          -> http://localhost:5162"
+echo "  Admin.Web          -> http://localhost:5163"
+echo "  Administration.Api -> http://localhost:5164"
+echo "  Catalog.Api        -> http://localhost:5165"
 echo ""
-echo "Logs en .logs/"
+echo "Logs en .logs/ (por ejemplo: tail -f .logs/administration-api.log)"
 echo "Usa ./stop.sh para detenerlos."

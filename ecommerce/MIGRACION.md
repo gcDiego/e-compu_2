@@ -616,3 +616,27 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: `dotnet restore`, `dotnet build --configuration Release` (0 advertencias, 0 errores), `dotnet test --no-build` (27 aprobadas) y `dotnet list package --vulnerable --include-transitive` sin vulnerabilidades. E2E real contra MongoDB Atlas: login admin, dashboard (sales/revenue), pedidos paginados, detalle de pedido `GET /api/admin/orders/13`, reporte por rango y exportación XLSX (archivo Excel válido). Regresión de tienda: `Front.Web` sirve el catálogo vía `Catalog.Api`.
 - Rollback o recuperación: detener los servicios con `stop.sh`; los cambios de código son revertibles por commit.
 - Pendientes: credenciales de Cloudinary para habilitar imágenes; prueba de envío SMTP real al crear administrador; pantalla de detalle de pedido ya entregada; retirar `MongoDB.Driver` de `Front.Web` (pendiente de `Cart.Api`/`Location.Api`); E2E de checkout con concurrencia.
+
+### 2026-10-13 — Revalidación E2E y proyectos de pruebas faltantes
+
+- Estado: completado.
+- Alcance: `tests/Order.Api.UnitTests`, `tests/Admin.Web.UnitTests`, solución y validación integrada.
+- Cambios: se crearon los dos proyectos de pruebas pendientes del plan y se añadieron a `Front.Web.sln`; cobertura de validación de `CheckoutRequest` (rechazo de teléfono no numérico, dirección corta, campos vacíos), resolución de `customerId` desde claims `nameidentifier`/`sub` y validación de modelos de `Admin.Web` (`ProductInput`, `ResetModel`, `LoginModel`).
+- Contratos: no aplica.
+- Datos: `Integration.Seed` volvió a ejecutarse completo contra MongoDB real (registro → login → checkout → historial → limpieza); se eliminó además un cliente temporal usado para probar autorización.
+- Seguridad: verificado en vivo que endpoints administrativos de `Order.Api`, `Catalog.Api` y `Customer.Api` devuelven `401` sin token, `401` con token falso y `403` con JWT de cliente (`role=Customer`).
+- Pruebas: `dotnet build --configuration Release` (0 advertencias, 0 errores), `dotnet test --no-build` (42 aprobadas: 17 Front.Web + 6 Administration + 4 Catalog + 8 Order + 7 Admin.Web), auditoría de paquetes vulnerables limpia; health checks OK en los cuatro APIs; `Front.Web` sirve tienda y autenticación (`/Store` 200).
+- Rollback o recuperación: revertir los dos proyectos de pruebas y su registro en la solución.
+- Pendientes: credenciales de Cloudinary y prueba SMTP real; pruebas automatizadas de antiforgery, carga de archivos, paginación y compensación Cloudinary; E2E de checkout con concurrencia; `Cart.Api`/`Location.Api` para retirar `MongoDB.Driver` de `Front.Web`.
+
+### 2026-10-13 — SMTP administrativo, recuperación y scripts de ejecución
+
+- Estado: completado salvo Cloudinary y pendientes indicados abajo.
+- Alcance: `Administration.Api`, `Admin.Web`, `start.sh`, `stop.sh` y documentación.
+- Cambios: se validó Gmail SMTP con STARTTLS en puerto 587; la recuperación redirige a la pantalla de nueva contraseña con correo precargado y token manual; el correo contiene enlace y token; el mínimo administrativo se ajustó a 5 caracteres; se formatearon las vistas de Account y `AccountController`. `start.sh` ahora usa puertos explícitos 5160–5165, detecta puertos ocupados, elimina PID obsoletos, espera readiness y muestra el log de cualquier fallo. `stop.sh` detiene y espera únicamente procesos registrados por el script.
+- Contratos: se mantienen `/api/admin/auth/recover` y `/api/admin/auth/reset`; el token sigue siendo opaco, expira en una hora y es de un solo uso.
+- Datos: al completar el reset se actualiza el hash PBKDF2 y se eliminan el hash y expiración del token de recuperación.
+- Seguridad: la respuesta de recuperación permanece uniforme; no se entrega el token por la respuesta HTTP. Para ngrok, `Email:ResetBaseUrl` debe apuntar a la URL HTTPS pública de Admin.Web, no a Administration.Api.
+- Pruebas: envío real recibido; reset devolvió `204`; contraseña anterior devolvió `401`; contraseña nueva devolvió `200`; dashboard y APIs administrativas devolvieron `200`; build Release completado con 0 errores y 0 advertencias.
+- Rollback o recuperación: restaurar el flujo anterior de `AccountController`, las vistas y la longitud mínima; los scripts previos pueden recuperarse desde control de versiones.
+- Pendientes: probar correo al crear un administrador; corregir warning MongoDB 85; pruebas automatizadas de antiforgery/paginación/autorización; Cloudinary cuando haya credenciales; checkout concurrente y rollback; extraer `Cart.Api`/`Location.Api`; formatear vistas administrativas restantes.
