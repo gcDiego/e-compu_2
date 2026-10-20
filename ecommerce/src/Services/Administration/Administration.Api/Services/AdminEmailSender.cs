@@ -1,5 +1,6 @@
-using System.Net;
-using System.Net.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 
 namespace Administration.Api.Services;
 
@@ -11,14 +12,17 @@ public sealed class AdminEmailSender(IConfiguration configuration)
         if (string.IsNullOrWhiteSpace(host)) return;
         var baseUrl = configuration["Email:ResetBaseUrl"] ?? "";
         var link = $"{baseUrl.TrimEnd('/')}/Account/Reset?email={Uri.EscapeDataString(address)}&token={Uri.EscapeDataString(token)}";
-        using var message = new MailMessage(
-            configuration["Email:From"] ?? "noreply@example.invalid",
-            address,
-            "Restablecer acceso administrativo",
-            $"Utiliza este enlace durante la próxima hora: {link}{Environment.NewLine}{Environment.NewLine}Token: {token}");
-        using var client = new SmtpClient(host, configuration.GetValue("Email:SmtpPort", 587)) { EnableSsl = configuration.GetValue("Email:SmtpUseSsl", true) };
+        var message = new MimeMessage();
+        message.From.Add(MailboxAddress.Parse(configuration["Email:From"] ?? "noreply@example.invalid"));
+        message.To.Add(MailboxAddress.Parse(address));
+        message.Subject = "Restablecer acceso administrativo";
+        message.Body = new TextPart("plain") { Text = $"Utiliza este enlace durante la próxima hora: {link}{Environment.NewLine}{Environment.NewLine}Token: {token}" };
+        using var client = new SmtpClient { CheckCertificateRevocation = configuration.GetValue("Email:CheckCertificateRevocation", true) };
+        var useSsl = configuration.GetValue("Email:SmtpUseSsl", true);
+        await client.ConnectAsync(host, configuration.GetValue("Email:SmtpPort", 587), useSsl ? SecureSocketOptions.Auto : SecureSocketOptions.None, ct);
         var username = configuration["Email:SmtpUsername"];
-        if (!string.IsNullOrWhiteSpace(username)) client.Credentials = new NetworkCredential(username, configuration["Email:SmtpPassword"]);
-        await client.SendMailAsync(message, ct);
+        if (!string.IsNullOrWhiteSpace(username)) await client.AuthenticateAsync(username, configuration["Email:SmtpPassword"] ?? "", ct);
+        await client.SendAsync(message, ct);
+        await client.DisconnectAsync(true, ct);
     }
 }

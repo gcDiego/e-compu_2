@@ -24,6 +24,20 @@ public sealed class OrderStore(IMongoDatabase database, IMongoClient mongoClient
             || string.IsNullOrWhiteSpace(request.Direccion) || string.IsNullOrWhiteSpace(request.IdLocalidad))
             return null;
 
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                return await CreateOrderAttemptAsync(customerId, request, ct);
+            }
+            catch (MongoException ex) when (ex.HasErrorLabel("TransientTransactionError") && attempt < 2)
+            {
+            }
+        }
+    }
+
+    private async Task<OrderResponse?> CreateOrderAttemptAsync(int customerId, CheckoutRequest request, CancellationToken ct)
+    {
         using var session = await mongoClient.StartSessionAsync(cancellationToken: ct);
         session.StartTransaction(new TransactionOptions(
             readConcern: ReadConcern.Snapshot,

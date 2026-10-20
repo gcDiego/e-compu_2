@@ -55,11 +55,13 @@ app.MapPost("/api/admin/auth/reset", async ([FromBody] ResetRequest request, Adm
     return await store.ResetPasswordAsync(request.Email, request.Token, request.NewPassword, ct) ? Results.NoContent() : Results.BadRequest();
 }).RequireRateLimiting("login");
 app.MapGet("/api/admin/users", (AdminStore store, CancellationToken ct) => store.ListAsync(ct)).RequireAuthorization("admin");
-app.MapPost("/api/admin/users", async ([FromBody] SaveAdminRequest request, AdminStore store, ClaimsPrincipal user, CancellationToken ct) =>
+app.MapPost("/api/admin/users", async ([FromBody] SaveAdminRequest request, AdminStore store, AdminEmailSender email, ClaimsPrincipal user, CancellationToken ct) =>
 {
     if (!Valid(request, out var errors)) return Results.ValidationProblem(errors);
     var created = await store.CreateAsync(request, Actor(user), ct);
-    return created is null ? Results.Conflict() : Results.Created($"/api/admin/users/{created.Id}", created);
+    if (created is null) return Results.Conflict();
+    await email.SendResetAsync(created.Profile.Email, created.ResetToken, ct);
+    return Results.Created($"/api/admin/users/{created.Profile.Id}", created.Profile);
 }).RequireAuthorization("admin");
 app.MapPut("/api/admin/users/{id:int}", async (int id, [FromBody] SaveAdminRequest request, AdminStore store, ClaimsPrincipal user, CancellationToken ct) =>
 {

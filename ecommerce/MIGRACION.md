@@ -113,12 +113,14 @@ Reglas:
 
 ## Validaciones realizadas
 
-- `dotnet test Front.Web.sln --configuration Release` completó con 72 pruebas aprobadas el 2026-10-14; el comando también restauró y compiló la solución sin errores.
+- `dotnet test Front.Web.sln --configuration Release` completó con 75 pruebas aprobadas el 2026-10-20; el comando también restauró y compiló la solución sin errores.
 - La validación integrada más reciente comprobó health checks, registro, login, carrito mediante `Cart.Api`, ubicaciones mediante `Location.Api`, checkout, historial, autorización administrativa, recuperación SMTP, dashboard, catálogo, pedidos y reportes.
-- Las configuraciones sensibles de MongoDB, JWT, SMTP y Cloudinary permanecen en configuración local no versionada.
+- Las configuraciones sensibles de MongoDB, JWT y SMTP permanecen en configuración local no versionada; Cloudinary todavía no tiene credenciales locales.
 - Los inicializadores de Administration y Catalog detectan índices únicos equivalentes por clave y opciones, sin depender de su nombre; se validaron en vivo contra MongoDB sin código 85.
 - La auditoría de paquetes detectó y corrigió transitivos vulnerables en Customer.Api, Order.Api.UnitTests y Admin.Web.UnitTests; la repetición quedó limpia.
-- Continúan pendientes Cloudinary real, correo de establecimiento al crear administrador, checkout concurrente y rollback de fallo parcial.
+- El checkout concurrente se validó en vivo el 2026-10-20: dos requests paralelos producen una sola orden, un solo descuento de stock y ningún error 5xx.
+- El rollback de fallo parcial y el correo de establecimiento al crear administrador se validaron en vivo el 2026-10-20.
+- Continúan pendientes Cloudinary real y antiforgery de extremo a extremo.
 
 ## Riesgos prioritarios
 
@@ -132,7 +134,7 @@ El checkout ya reconstruye nombre y precio desde el producto vigente. Falta vali
 
 ### Consistencia de checkout
 
-La creación de orden, el descuento de stock y la eliminación del carrito usan una transacción con `checkoutKey` como clave de idempotencia única. Si dos operaciones concurrentes intentan crear una orden para el mismo carrito, el índice único en `ventas.checkoutKey` hace fallar la segunda y `MongoOrderService` devuelve la orden ya existente. Aún se debe validar contra el servidor privado y bajo concurrencia real.
+La creación de orden, el descuento de stock y la eliminación del carrito usan una transacción con `checkoutKey` como clave de idempotencia única. Si dos operaciones concurrentes intentan crear una orden para el mismo carrito, el índice único en `ventas.checkoutKey` hace fallar la segunda y `OrderStore` devuelve la orden ya existente. Desde el 2026-10-20 la operación reintenta hasta 3 veces ante `TransientTransactionError` (conflicto de escritura entre transacciones), por lo que un request perdedor devuelve `400` controlado en lugar de `500`; validado en vivo con dos requests paralelos contra MongoDB con replica set. También se validó el rollback con un carrito multiartículo cuyo segundo producto no tenía stock: no se creó orden, el stock reservado por el primer artículo se restauró y el carrito permaneció disponible.
 
 ### Concurrencia de identificadores
 
@@ -178,7 +180,8 @@ Estado: implementada en código y pruebas unitarias; validación integrada de Mo
 - [x] Eliminar IDs calculados únicamente con máximo más uno mediante contadores atómicos.
 - [x] Revisar duplicados y agregar índices únicos mediante `MongoDbInitializer`.
 - [x] Ejecutar checkout dentro de una transacción MongoDB.
-- [ ] Probar fallos parciales y concurrencia contra un MongoDB de pruebas compatible (código de idempotencia implementado).
+- [x] Probar concurrencia de checkout contra MongoDB real (2026-10-20: una sola orden y un solo descuento de stock; reintento `TransientTransactionError` agregado).
+- [x] Probar rollback ante fallo parcial (2026-10-20: carrito multiartículo con segundo producto sin stock, sin orden ni descuento residual).
 
 Criterio de terminado:
 
@@ -663,3 +666,26 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: suite completa con 56 aprobadas; se agregaron 4 pruebas de seguridad en Admin.Web (cobertura de todos los controladores seguros, exclusión de públicos, redirección sin token y acceso con token) y 6 de paginación en Order.Api (límites inferior y superior).
 - Rollback o recuperación: revertir `SecureController` a la validación imperativa anterior y eliminar `AdminSessionRequirementAttribute`, `OrderPagination` y sus pruebas.
 - Pendientes: correo de establecimiento de administrador; catálogo manual y Cloudinary; pruebas de antiforgery de extremo a extremo con `WebApplicationFactory`; checkout concurrente y rollback; `Cart.Api`/`Location.Api`.
+
+### 2026-10-20 — Reintento de checkout y E2E de concurrencia
+
+- Estado: completado y validado en vivo.
+- Alcance: `Order.Api` y `Integration.Seed`.
+- Cambios: `OrderStore.CreateOrderAsync` extrajo el intento transaccional a `CreateOrderAttemptAsync` y reintenta hasta 3 veces cuando MongoDB devuelve una excepción con etiqueta `TransientTransactionError` (conflicto de escritura entre transacciones concurrentes); antes el conflicto propagaba un error `500`. `Integration.Seed` agregó la sección 9, que crea un segundo carrito, dispara dos `POST /api/orders` paralelos con el mismo JWT y verifica en MongoDB el resultado.
+- Contratos: sin cambios; el request perdedor de la carrera devuelve `400` (carrito ya procesado) en lugar de `500`.
+- Datos: no aplica.
+- Seguridad: sin cambios; el `customerId` sigue derivándose del JWT.
+- Pruebas: E2E ejecutado con `=== OK ===`: dos checkouts paralelos produjeron exactamente una orden (`checkoutKey` único), el stock pasó de 98 a 96 (un solo descuento) y el carrito quedó eliminado; las respuestas fueron `200` y `400`, sin errores de servidor. La sección 10 comprobó rollback de un carrito multiartículo con segundo producto sin stock: respuesta `400`, cero órdenes, stock sin cambios y carrito conservado. Suite completa: 75 pruebas aprobadas.
+- Rollback o recuperación: revertir el bucle de reintento y las secciones 9-10 de `Integration.Seed`.
+- Pendientes: catálogo manual y Cloudinary; antiforgery E2E con `WebApplicationFactory`; pagos y madurez operativa.
+
+### 2026-10-20 — Correo de establecimiento administrativo y validaciones de imagen
+
+- Estado: SMTP completado y validado en vivo; Cloudinary real pendiente por ausencia de cuenta y credenciales.
+- Alcance: `Administration.Api`, `Catalog.Api`, `Integration.Seed` y `Catalog.Api.UnitTests`.
+- Cambios: la creación de administradores conserva el token inicial generado por `AdminStore`, lo envía mediante `AdminEmailSender` y sólo expone `AdminProfile` en la respuesta. El cliente SMTP migró de `System.Net.Mail` a MailKit 4.16.0 para negociar STARTTLS/TLS implícito automáticamente; la consulta de revocación permanece activa por defecto y puede deshabilitarse explícitamente en configuración local cuando macOS no puede completarla. `Integration.Seed` admite el opt-in `RUN_EMAIL_E2E=true`, crea administradores temporales y limpia sus documentos. La validación de tamaño y magic bytes de imagen ahora ocurre antes de comprobar la configuración de Cloudinary.
+- Contratos: `POST /api/admin/users` conserva su respuesta pública `AdminProfile`; el token de establecimiento no se expone.
+- Seguridad: las credenciales y destinatario no se imprimen; el destinatario E2E usa un alias temporal; los usuarios de prueba se eliminan; no se desactiva la validación de cadena ni hostname TLS.
+- Pruebas: `POST /api/admin/users` devolvió `201` y el servidor SMTP aceptó el mensaje. Se agregaron 3 pruebas de imagen: SVG rechazado, archivo mayor de 5 MB rechazado y PNG válido que exige configuración Cloudinary. Suite completa: 75 aprobadas.
+- Rollback o recuperación: volver a `System.Net.Mail`, retirar `AdminCreation` y las secciones opcionales del seed; no hay migración de datos.
+- Pendientes: confirmar visualmente la recepción del mensaje; crear una cuenta Cloudinary si el proyecto decide mantener ese proveedor y validar carga/reemplazo/compensación reales.

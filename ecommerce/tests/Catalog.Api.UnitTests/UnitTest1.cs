@@ -1,5 +1,7 @@
 using Catalog.Api.Models;
 using Catalog.Api.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using System.ComponentModel.DataAnnotations;
 
@@ -34,5 +36,34 @@ public sealed class InputValidationTests
     {
         var indexes=new[]{BsonDocument.Parse("{ key: { idSqlOriginal: -1 }, name: 'idSqlOriginal_desc', unique: true }")};
         Assert.False(CatalogDbInitializer.HasEquivalentUniqueIndex(indexes,"idSqlOriginal"));
+    }
+
+    [Fact]
+    public async Task Svg_is_rejected_before_cloudinary_is_called()
+    {
+        var store = new CloudinaryImageStore(new ConfigurationBuilder().Build());
+        var bytes = "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"u8.ToArray();
+        var file = new FormFile(new MemoryStream(bytes), 0, bytes.Length, "image", "image.svg");
+        var error = await Assert.ThrowsAsync<InvalidDataException>(() => store.UploadAsync(file, CancellationToken.None));
+        Assert.Equal("Formato de imagen no permitido.", error.Message);
+    }
+
+    [Fact]
+    public async Task File_over_five_megabytes_is_rejected_before_cloudinary_is_called()
+    {
+        var store = new CloudinaryImageStore(new ConfigurationBuilder().Build());
+        var file = new FormFile(Stream.Null, 0, 5_242_881, "image", "large.png");
+        var error = await Assert.ThrowsAsync<InvalidDataException>(() => store.UploadAsync(file, CancellationToken.None));
+        Assert.Equal("La imagen debe medir menos de 5 MB.", error.Message);
+    }
+
+    [Fact]
+    public async Task Valid_png_requires_cloudinary_configuration()
+    {
+        var store = new CloudinaryImageStore(new ConfigurationBuilder().Build());
+        byte[] bytes = [137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0];
+        var file = new FormFile(new MemoryStream(bytes), 0, bytes.Length, "image", "image.png");
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => store.UploadAsync(file, CancellationToken.None));
+        Assert.Equal("Cloudinary is not configured.", error.Message);
     }
 }

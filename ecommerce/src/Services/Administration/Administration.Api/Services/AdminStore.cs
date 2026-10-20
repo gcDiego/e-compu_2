@@ -36,7 +36,7 @@ public sealed class AdminStore(IMongoDatabase database, AdminPasswordHasher hash
     public async Task<IReadOnlyList<AdminProfile>> ListAsync(CancellationToken ct) =>
         (await _users.Find(FilterDefinition<BsonDocument>.Empty).SortBy(x => x["nombres"]).ToListAsync(ct)).Select(Map).ToList();
 
-    public async Task<AdminProfile?> CreateAsync(SaveAdminRequest request, int actorId, CancellationToken ct)
+    public async Task<AdminCreation?> CreateAsync(SaveAdminRequest request, int actorId, CancellationToken ct)
     {
         var email = NormalizeEmail(request.Email);
         if (await _users.Find(Builders<BsonDocument>.Filter.Eq("correo", email)).AnyAsync(ct)) return null;
@@ -47,7 +47,7 @@ public sealed class AdminStore(IMongoDatabase database, AdminPasswordHasher hash
         try { await _users.InsertOneAsync(doc, cancellationToken: ct); }
         catch (MongoWriteException ex) when (ex.WriteError?.Code == 11000) { return null; }
         await AuditAsync(actorId, "create", "usuario", id, ct);
-        return Map(doc);
+        return new AdminCreation(Map(doc), token);
     }
 
     public async Task<AdminProfile?> UpdateAsync(int id, SaveAdminRequest request, int actorId, CancellationToken ct)

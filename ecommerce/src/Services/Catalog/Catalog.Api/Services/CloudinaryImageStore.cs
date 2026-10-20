@@ -14,7 +14,6 @@ public sealed class CloudinaryImageStore
     }
     public async Task<StoredImage> UploadAsync(IFormFile file, CancellationToken ct)
     {
-        if (_cloudinary is null) throw new InvalidOperationException("Cloudinary is not configured.");
         if (file.Length is <= 0 or > 5_242_880) throw new InvalidDataException("La imagen debe medir menos de 5 MB.");
         await using var stream = file.OpenReadStream();
         var header = new byte[12]; var read = await stream.ReadAsync(header, ct); stream.Position = 0;
@@ -22,6 +21,7 @@ public sealed class CloudinaryImageStore
         var png = read >= 8 && header[..8].SequenceEqual(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 });
         var webp = read >= 12 && System.Text.Encoding.ASCII.GetString(header, 0, 4) == "RIFF" && System.Text.Encoding.ASCII.GetString(header, 8, 4) == "WEBP";
         if (!(jpeg || png || webp)) throw new InvalidDataException("Formato de imagen no permitido.");
+        if (_cloudinary is null) throw new InvalidOperationException("Cloudinary is not configured.");
         var result = await _cloudinary.UploadAsync(new ImageUploadParams { File = new FileDescription("product", stream), PublicId = $"ecommerce/products/{Guid.NewGuid():N}", UniqueFilename = true, Overwrite = false }, ct);
         if (result.Error is not null) throw new InvalidOperationException("No se pudo almacenar la imagen.");
         return new StoredImage(result.SecureUrl.ToString(), result.PublicId);

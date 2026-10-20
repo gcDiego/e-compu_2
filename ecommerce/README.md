@@ -103,17 +103,17 @@ Con los servicios y la infraestructura local disponibles, validar también:
 - Health checks de los seis APIs.
 - Registro o login, catálogo, carrito, checkout e historial.
 - Autorización administrativa `401`, `403` y `200` según token y rol.
-- Creación de administrador y correo de establecimiento de contraseña.
+- ~~Creación de administrador y envío SMTP del correo de establecimiento~~ **Validado el 2026-10-20**; resta confirmar visualmente su recepción.
 - Alta y edición de categoría, marca y producto.
 - Carga y reemplazo de imagen en Cloudinary.
-- Checkout concurrente y rollback ante un fallo parcial.
+- ~~Checkout concurrente y rollback ante fallo parcial~~ **Validados el 2026-10-20**: dos requests paralelos generan una sola orden y un solo descuento; un carrito multiartículo con el segundo producto sin stock no crea orden, restaura el stock y conserva el carrito.
 
 ## Pendientes prioritarios
 
-1. Probar el correo de establecimiento al crear un administrador.
-2. Completar las pruebas manuales de catálogo administrativo y Cloudinary.
-3. Automatizar antiforgery de extremo a extremo y carga de archivos (autorización de sesión administrativa y paginación ya tienen cobertura unitaria).
-4. Ejecutar pruebas E2E de checkout concurrente y rollback.
+1. Confirmar visualmente la recepción del correo de establecimiento enviado y aceptado por SMTP.
+2. Completar las pruebas manuales de catálogo administrativo; Cloudinary real queda pendiente hasta crear una cuenta y configurar credenciales.
+3. Automatizar antiforgery de extremo a extremo y carga de archivos (autorización de sesión administrativa, paginación y validación local de imágenes ya tienen cobertura).
+4. Mantener el E2E de concurrencia y rollback de `Integration.Seed` como regresión.
 5. Implementar pagos, webhooks e idempotencia/conciliación de PayPal.
 6. Completar observabilidad, CI/CD, backups y preparación para despliegue horizontal.
 

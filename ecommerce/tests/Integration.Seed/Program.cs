@@ -2,16 +2,20 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("src/Services/Customer/Customer.Api/appsettings.Local.json", optional: true)
+    .AddEnvironmentVariables()
     .Build();
 
 var customerUrl = config["CustomerUrl"] ?? "http://localhost:5161";
 var orderUrl = config["OrderUrl"] ?? "http://localhost:5162";
+var administrationUrl = config["AdministrationUrl"] ?? "http://localhost:5164";
 var cartUrl = config["CartUrl"] ?? "http://localhost:5166";
 var mongoConnection = config["MongoDb:ConnectionString"];
 var mongoDatabaseName = config["MongoDb:DatabaseName"] ?? "ecommerce";
@@ -36,6 +40,7 @@ var clientes = db.GetCollection<BsonDocument>("clientes");
 var productos = db.GetCollection<BsonDocument>("productos");
 var carritos = db.GetCollection<BsonDocument>("carritos");
 var ventas = db.GetCollection<BsonDocument>("ventas");
+var usuarios = db.GetCollection<BsonDocument>("usuarios");
 
 // Limpieza previa
 var emailPattern = new Regex("^seed-.*@example\\.com$", RegexOptions.Compiled);
@@ -144,10 +149,15 @@ if (!cartChangeResponse.IsSuccessStatusCode) { Console.WriteLine(await cartChang
 
 Console.WriteLine("=== 6. Checkout via Order.Api ===");
 var checkoutPayload = new { Contacto = "Seed", Telefono = "1234567", Direccion = "Calle 123", IdLocalidad = "loc1" };
-using var checkoutRequest = new HttpRequestMessage(HttpMethod.Post, $"{orderUrl}/api/orders");
-checkoutRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-checkoutRequest.Content = JsonContent.Create(checkoutPayload);
+HttpRequestMessage OrderCheckoutRequest()
+{
+    var request = new HttpRequestMessage(HttpMethod.Post, $"{orderUrl}/api/orders");
+    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    request.Content = JsonContent.Create(checkoutPayload);
+    return request;
+}
 
+using var checkoutRequest = OrderCheckoutRequest();
 var checkoutResponse = await http.SendAsync(checkoutRequest);
 Console.WriteLine($"POST {orderUrl}/api/orders -> {(int)checkoutResponse.StatusCode}");
 if (!checkoutResponse.IsSuccessStatusCode)
@@ -187,12 +197,156 @@ var remaining = cartAfterDoc.RootElement.GetProperty("items").GetArrayLength();
 Console.WriteLine($"Items tras checkout: {remaining}");
 if (remaining != 0) return 1;
 
-Console.WriteLine("=== 9. Limpieza ===");
+Console.WriteLine("=== 9. Checkout concurrente ===");
+var concurrentCart = new BsonDocument
+{
+    ["_id"] = ObjectId.GenerateNewId(),
+    ["idClienteSqlOriginal"] = customerId,
+    ["items"] = new BsonArray
+    {
+        new BsonDocument
+        {
+            ["idProductoRef"] = productOid,
+            ["idSqlOriginal"] = productId,
+            ["cantidad"] = 2
+        }
+    }
+};
+await carritos.InsertOneAsync(concurrentCart);
+var concurrentKey = concurrentCart["_id"].AsObjectId.ToString();
+var stockBefore = ToInt32((await productos.Find(Builders<BsonDocument>.Filter.Eq("_id", productOid)).FirstAsync())["stock"]);
+
+var concurrentResponses = await Task.WhenAll(
+    http.SendAsync(OrderCheckoutRequest()),
+    http.SendAsync(OrderCheckoutRequest()));
+Console.WriteLine($"POST /api/orders x2 -> {string.Join(", ", concurrentResponses.Select(r => (int)r.StatusCode))}");
+
+if (concurrentResponses.Any(r => (int)r.StatusCode >= 500))
+{
+    foreach (var failed in concurrentResponses.Where(r => !r.IsSuccessStatusCode))
+        Console.WriteLine(await failed.Content.ReadAsStringAsync());
+    return 1;
+}
+
+var concurrentOrderIds = new List<int>();
+foreach (var response in concurrentResponses.Where(r => r.IsSuccessStatusCode))
+{
+    using var responseDoc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    concurrentOrderIds.Add(responseDoc.RootElement.GetProperty("id").GetInt32());
+}
+
+var concurrentOrderCount = await ventas.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("checkoutKey", concurrentKey));
+var stockAfter = ToInt32((await productos.Find(Builders<BsonDocument>.Filter.Eq("_id", productOid)).FirstAsync())["stock"]);
+var residualCart = await carritos.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("_id", concurrentCart["_id"].AsObjectId));
+Console.WriteLine($"Ordenes con checkoutKey: {concurrentOrderCount}, stock {stockBefore} -> {stockAfter}, carrito residual: {residualCart}");
+
+if (concurrentOrderCount != 1 || concurrentOrderIds.Distinct().Count() > 1 || stockAfter != stockBefore - 2 || residualCart != 0)
+{
+    Console.WriteLine("ERROR: la concurrencia genero ordenes duplicadas o doble descuento de stock.");
+    return 1;
+}
+
+Console.WriteLine("=== 10. Rollback ante fallo parcial ===");
+var unavailableProductOid = ObjectId.GenerateNewId();
+var unavailableProductId = productId + 1;
+await productos.InsertOneAsync(new BsonDocument
+{
+    ["_id"] = unavailableProductOid,
+    ["idSqlOriginal"] = unavailableProductId,
+    ["nombre"] = $"{productName} Unavailable",
+    ["precio"] = 25.0,
+    ["stock"] = 0,
+    ["activo"] = true,
+    ["marca"] = new BsonDocument { ["idRef"] = ObjectId.GenerateNewId(), ["descripcion"] = "SeedBrand" },
+    ["categoria"] = new BsonDocument { ["idRef"] = ObjectId.GenerateNewId(), ["descripcion"] = "SeedCategory" }
+});
+
+var rollbackCart = new BsonDocument
+{
+    ["_id"] = ObjectId.GenerateNewId(),
+    ["idClienteSqlOriginal"] = customerId,
+    ["items"] = new BsonArray
+    {
+        new BsonDocument { ["idProductoRef"] = productOid, ["idSqlOriginal"] = productId, ["cantidad"] = 1 },
+        new BsonDocument { ["idProductoRef"] = unavailableProductOid, ["idSqlOriginal"] = unavailableProductId, ["cantidad"] = 1 }
+    }
+};
+await carritos.InsertOneAsync(rollbackCart);
+var rollbackKey = rollbackCart["_id"].AsObjectId.ToString();
+var rollbackStockBefore = ToInt32((await productos.Find(Builders<BsonDocument>.Filter.Eq("_id", productOid)).FirstAsync())["stock"]);
+using var rollbackResponse = await http.SendAsync(OrderCheckoutRequest());
+var rollbackStockAfter = ToInt32((await productos.Find(Builders<BsonDocument>.Filter.Eq("_id", productOid)).FirstAsync())["stock"]);
+var rollbackOrderCount = await ventas.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("checkoutKey", rollbackKey));
+var rollbackCartCount = await carritos.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("_id", rollbackCart["_id"].AsObjectId));
+Console.WriteLine($"POST /api/orders -> {(int)rollbackResponse.StatusCode}; ordenes: {rollbackOrderCount}, stock {rollbackStockBefore} -> {rollbackStockAfter}, carrito: {rollbackCartCount}");
+
+if (rollbackResponse.IsSuccessStatusCode || rollbackOrderCount != 0 || rollbackStockAfter != rollbackStockBefore || rollbackCartCount != 1)
+{
+    Console.WriteLine("ERROR: el fallo parcial no revirtio por completo la reserva de stock.");
+    return 1;
+}
+
+Console.WriteLine("=== 11. Limpieza ===");
 await clientes.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", customerId));
-await productos.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("_id", productOid));
-await carritos.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("_id", cart["_id"].AsObjectId));
-await ventas.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", orderId));
+await productos.DeleteManyAsync(Builders<BsonDocument>.Filter.In("_id", new[] { productOid, unavailableProductOid }));
+await carritos.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId));
+await ventas.DeleteManyAsync(Builders<BsonDocument>.Filter.Eq("cliente.correo", email));
 Console.WriteLine("Datos de prueba eliminados.");
+
+if (string.Equals(config["RUN_EMAIL_E2E"], "true", StringComparison.OrdinalIgnoreCase))
+{
+    Console.WriteLine("=== 12. Correo de establecimiento de administrador ===");
+    var recipient = config["Email:From"];
+    if (string.IsNullOrWhiteSpace(recipient))
+    {
+        Console.WriteLine("ERROR: Email:From no está configurado.");
+        return 1;
+    }
+
+    var bootstrapEmail = $"seed-admin-{now}@example.com";
+    var bootstrapPassword = "SeedAdminPassword!";
+    var normalizedRecipient = recipient.Trim().ToLowerInvariant();
+    var at = normalizedRecipient.LastIndexOf('@');
+    if (at <= 0)
+    {
+        Console.WriteLine("ERROR: Email:From no contiene una dirección válida.");
+        return 1;
+    }
+    var targetEmail = $"{normalizedRecipient[..at]}+seed-{now}{normalizedRecipient[at..]}";
+    var maximumAdmin = await usuarios.Find(_ => true).SortByDescending(x => x["idSqlOriginal"]).Project(x => x["idSqlOriginal"]).FirstOrDefaultAsync();
+    var bootstrapId = (maximumAdmin.IsBsonNull ? 0 : ToInt32(maximumAdmin)) + 1;
+    var legacyHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(bootstrapPassword))).ToLowerInvariant();
+    await usuarios.InsertOneAsync(new BsonDocument
+    {
+        ["_id"] = ObjectId.GenerateNewId(), ["idSqlOriginal"] = bootstrapId,
+        ["nombres"] = "Seed", ["apellidos"] = "Administrator", ["correo"] = bootstrapEmail,
+        ["clave"] = legacyHash, ["activo"] = true, ["restablecer"] = false,
+        ["fechaRegistro"] = DateTime.UtcNow, ["failedLoginCount"] = 0
+    });
+
+    try
+    {
+        var adminLogin = await http.PostAsJsonAsync($"{administrationUrl}/api/admin/auth/login", new { Email = bootstrapEmail, Password = bootstrapPassword });
+        if (!adminLogin.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Login administrativo -> {(int)adminLogin.StatusCode}");
+            return 1;
+        }
+        using var adminLoginDoc = JsonDocument.Parse(await adminLogin.Content.ReadAsStringAsync());
+        var adminToken = adminLoginDoc.RootElement.GetProperty("accessToken").GetString();
+        using var createAdminRequest = new HttpRequestMessage(HttpMethod.Post, $"{administrationUrl}/api/admin/users");
+        createAdminRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", adminToken);
+        createAdminRequest.Content = JsonContent.Create(new { FirstName = "Seed", LastName = "Email Test", Email = targetEmail, IsActive = true });
+        using var createAdminResponse = await http.SendAsync(createAdminRequest);
+        Console.WriteLine($"POST /api/admin/users -> {(int)createAdminResponse.StatusCode}");
+        if (!createAdminResponse.IsSuccessStatusCode) return 1;
+        Console.WriteLine("SMTP aceptó el mensaje sin revelar el destinatario.");
+    }
+    finally
+    {
+        await usuarios.DeleteManyAsync(Builders<BsonDocument>.Filter.In("correo", new[] { bootstrapEmail, targetEmail }));
+    }
+}
 
 Console.WriteLine("=== OK ===");
 return 0;

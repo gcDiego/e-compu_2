@@ -317,7 +317,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 - `GET /api/cart` sin token: `401`; con token falso: `401`.
 - `/api/location/municipalities/$ne`: `400`.
 - `Front.Web` sin `MongoDB.Driver`: `/Store` `200`, `/api/location/states` proxied OK, `/Cart` `302` a login.
-- Suite: 72 pruebas aprobadas; auditoría de paquetes sin vulnerabilidades.
+- Suite: 75 pruebas aprobadas; auditoría de paquetes sin vulnerabilidades.
 
 **Resultados del 2026-10-13** (los seis servicios corriendo con `appsettings.Local.json`):
 
@@ -328,7 +328,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 - Token falso: `401`.
 - Front.Web: `/Store`, `/Store/Index`, `/Account/Login`, `/Account/Register` responden `200`.
 - Suite integrada del 2026-10-13: 42 pruebas unitarias aprobadas (17 Front.Web + 6 Administration + 4 Catalog + 8 Order + 7 Admin.Web).
-- Suite local del 2026-10-14: 72 pruebas aprobadas (17 Front.Web + 8 Administration + 6 Catalog + 14 Order + 11 Admin.Web + 7 Cart + 9 Location).
+- Suite local del 2026-10-20: 75 pruebas aprobadas (17 Front.Web + 8 Administration + 9 Catalog + 14 Order + 11 Admin.Web + 7 Cart + 9 Location).
 - Auditoría `dotnet list package --vulnerable --include-transitive`: sin paquetes vulnerables en la última ejecución documentada.
 
 **Validaciones manuales adicionales completadas el 2026-10-13:**
@@ -342,22 +342,22 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 
 **Pendiente de validación manual:**
 
-1. Crear un administrador desde el panel y confirmar que recibe el correo de establecimiento de contraseña.
+1. ~~Crear un administrador y comprobar que SMTP acepta el correo de establecimiento~~ **Completado el 2026-10-20** mediante `Integration.Seed`; resta confirmar visualmente la recepción en la bandeja.
 2. Crear categoría y marca.
 3. Crear y editar producto sin imagen; comprobar su aparición en la tienda a través de Catalog.Api.
-4. Cuando existan credenciales Cloudinary, probar alta/reemplazo de imagen, MIME falso, SVG y archivo mayor de 5 MB.
-5. Ejecutar dos checkouts simultáneos y confirmar una sola orden y un solo descuento de stock.
-6. Validar rollback ante un fallo parcial de checkout.
+4. Cuando exista una cuenta Cloudinary, probar alta/reemplazo real y compensación; SVG, formato inválido y archivo mayor de 5 MB ya tienen validación local automatizada.
+5. ~~Ejecutar dos checkouts simultáneos y confirmar una sola orden y un solo descuento de stock~~ **Completado el 2026-10-20** mediante la sección 9 de `Integration.Seed`: dos `POST /api/orders` paralelos devolvieron `200` y `400`, con una sola orden en `ventas` y un solo descuento de stock.
+6. ~~Validar rollback ante un fallo parcial de checkout~~ **Completado el 2026-10-20**: un carrito multiartículo cuyo segundo producto no tenía stock devolvió `400`, no creó orden, no descontó stock y conservó el carrito.
 7. ~~Ejecutar regresión completa de carrito, checkout e historial después de futuras extracciones~~ **Completado el 2026-10-14** mediante `Integration.Seed` extendido con Cart.Api.
 
 ## Problemas y limitaciones conocidas
 
 1. ~~**Dependencias pendientes de revalidación**~~ **Resuelto**
-   - Restore, build y auditoría de vulnerabilidades completados correctamente; la suite local más reciente ejecutó 56 pruebas.
+   - Restore, build y auditoría de vulnerabilidades completados correctamente; la suite local más reciente ejecutó 75 pruebas.
 
 2. **E2E parcialmente pendiente**
    - MongoDB, SMTP, recuperación, cambio de contraseña, login, dashboard, catálogo, pedidos, reportes y regresión básica están validados.
-   - Cloudinary, correo de establecimiento al crear administrador y checkout concurrente/rollback siguen pendientes.
+   - Checkout concurrente, rollback parcial y aceptación SMTP del correo de establecimiento se validaron el 2026-10-20. Cloudinary real sigue pendiente porque no existe cuenta ni credenciales.
 
 3. ~~**Conflicto de nombres de índices MongoDB**~~ **Resuelto y validado el 2026-10-14**
    - Los inicializadores de Administration y Catalog enumeran los índices y reutilizan cualquier índice único equivalente por clave y opciones, independientemente del nombre.
@@ -417,11 +417,11 @@ Revisar cuidadosamente `git status` y `git diff` antes de confirmar. No incluir 
 ## Siguiente incremento recomendado
 
 1. Leer `MIGRACION.md` como fuente autoritativa y este archivo como detalle administrativo; no repetir los E2E ya completados.
-2. Probar creación de un administrador y recepción del correo de establecimiento de contraseña.
+2. Confirmar visualmente la recepción del correo de establecimiento; la creación y aceptación SMTP ya se validaron.
 3. Crear categoría, marca y producto desde el panel y validar su aparición en la tienda.
 4. Añadir pruebas de antiforgery de extremo a extremo con `WebApplicationFactory` (autorización y paginación ya tienen cobertura unitaria).
 5. Cuando existan credenciales, completar las pruebas de Cloudinary y su compensación.
-6. Ejecutar E2E concurrente de checkout y rollback de fallo parcial.
-7. Extraer `Cart.Api` y `Location.Api` para retirar `MongoDB.Driver` de `Front.Web`.
+6. ~~Ejecutar E2E concurrente y rollback parcial de checkout~~ **Completado el 2026-10-20** (incluyó reintento ante `TransientTransactionError`, una sola orden/descuento bajo concurrencia y rollback total ante segundo producto sin stock).
+7. ~~Extraer `Cart.Api` y `Location.Api` para retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-10-14**.
 8. Formatear las vistas/controladores administrativos restantes que todavía contienen líneas excesivamente largas.
 9. No incluir `appsettings.Local.json`, secretos ni `DOCUMENTACION_TECNICA_ECOMMERCE_PADUKI.docx` en un commit.
