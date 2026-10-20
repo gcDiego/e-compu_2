@@ -17,18 +17,20 @@ mkdir -p .logs
 
 log() { echo "[$(date +%H:%M:%S)] $1"; }
 
-services=(customer-api order-api admin-web administration-api catalog-api front-web)
-ports=(5161 5162 5163 5164 5165 5160)
+services=(customer-api order-api admin-web administration-api catalog-api cart-api location-api front-web)
+ports=(5161 5162 5163 5164 5165 5166 5167 5160)
 projects=(
     src/Services/Customer/Customer.Api/Customer.Api.csproj
     src/Services/Order/Order.Api/Order.Api.csproj
     src/Services/Front/Admin.Web/Admin.Web.csproj
     src/Services/Administration/Administration.Api/Administration.Api.csproj
     src/Services/Catalog/Catalog.Api/Catalog.Api.csproj
+    src/Services/Cart/Cart.Api/Cart.Api.csproj
+    src/Services/Location/Location.Api/Location.Api.csproj
     src/Services/Front/Front.Web/Front.Web.csproj
 )
-names=(Customer.Api Order.Api Admin.Web Administration.Api Catalog.Api Front.Web)
-health_paths=(health health Account/Login health health Store)
+names=(Customer.Api Order.Api Admin.Web Administration.Api Catalog.Api Cart.Api Location.Api Front.Web)
+health_paths=(health health Account/Login health health health health Store)
 
 for i in "${!services[@]}"; do
     port="${ports[$i]}"
@@ -91,6 +93,8 @@ echo "  Order.Api          -> http://localhost:5162"
 echo "  Admin.Web          -> http://localhost:5163"
 echo "  Administration.Api -> http://localhost:5164"
 echo "  Catalog.Api        -> http://localhost:5165"
+echo "  Cart.Api           -> http://localhost:5166"
+echo "  Location.Api       -> http://localhost:5167"
 echo ""
 echo "Logs en .logs/ (por ejemplo: tail -f .logs/administration-api.log)"
 echo "Usa ./stop.sh para detenerlos."

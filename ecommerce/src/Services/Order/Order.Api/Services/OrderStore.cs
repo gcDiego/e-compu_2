@@ -192,8 +192,7 @@ public sealed class OrderStore(IMongoDatabase database, IMongoClient mongoClient
 
     public async Task<PagedOrders> GetAdminOrdersAsync(DateTime? from, DateTime? to, string? transactionId, string? status, int page, int pageSize, CancellationToken ct)
     {
-        page = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, 100);
+        (page, pageSize) = OrderPagination.Normalize(page, pageSize);
         var filter = FilterDefinition<BsonDocument>.Empty;
         if (from.HasValue) filter &= Builders<BsonDocument>.Filter.Gte("fechaVenta", from.Value.ToUniversalTime());
         if (to.HasValue) filter &= Builders<BsonDocument>.Filter.Lt("fechaVenta", to.Value.ToUniversalTime().AddDays(1));

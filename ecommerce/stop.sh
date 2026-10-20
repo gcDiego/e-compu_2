@@ -3,7 +3,7 @@
 
 cd "$(dirname "$0")"
 
-services=(customer-api order-api admin-web administration-api catalog-api front-web)
+services=(customer-api order-api admin-web administration-api catalog-api cart-api location-api front-web)
 
 for service in "${services[@]}"; do
     pidfile=".logs/${service}.pid"

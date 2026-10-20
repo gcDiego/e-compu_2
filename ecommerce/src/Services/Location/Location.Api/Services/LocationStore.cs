@@ -1,10 +1,10 @@
-using Front.Web.Models;
+using Location.Api.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Front.Web.Services;
+namespace Location.Api.Services;
 
-public sealed class MongoLocationService(IMongoDatabase database)
+public sealed class LocationStore(IMongoDatabase database)
 {
     private readonly IMongoCollection<BsonDocument> _estados = database.GetCollection<BsonDocument>("estados");
 
@@ -16,12 +16,10 @@ public sealed class MongoLocationService(IMongoDatabase database)
 
     public async Task<IReadOnlyList<MunicipalityDto>> GetMunicipalitiesByStateAsync(string stateId, CancellationToken ct)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq("idEstado", stateId);
-        var doc = await _estados.Find(filter).FirstOrDefaultAsync(ct);
+        var doc = await _estados.Find(Builders<BsonDocument>.Filter.Eq("idEstado", stateId)).FirstOrDefaultAsync(ct);
         if (doc is null) return [];
 
-        var municipios = doc["municipios"].AsBsonArray;
-        return municipios
+        return doc["municipios"].AsBsonArray
             .Cast<BsonDocument>()
             .Select(m => new MunicipalityDto(m["idMunicipio"].AsString, m["descripcion"].AsString))
             .ToList();
@@ -29,8 +27,7 @@ public sealed class MongoLocationService(IMongoDatabase database)
 
     public async Task<IReadOnlyList<LocalityDto>> GetLocalitiesByMunicipalityAsync(string municipalityId, CancellationToken ct)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq("municipios.idMunicipio", municipalityId);
-        var doc = await _estados.Find(filter).FirstOrDefaultAsync(ct);
+        var doc = await _estados.Find(Builders<BsonDocument>.Filter.Eq("municipios.idMunicipio", municipalityId)).FirstOrDefaultAsync(ct);
         if (doc is null) return [];
 
         var municipio = doc["municipios"].AsBsonArray
@@ -38,8 +35,7 @@ public sealed class MongoLocationService(IMongoDatabase database)
             .FirstOrDefault(m => m["idMunicipio"].AsString == municipalityId);
         if (municipio is null) return [];
 
-        var localidades = municipio["localidades"].AsBsonArray;
-        return localidades
+        return municipio["localidades"].AsBsonArray
             .Cast<BsonDocument>()
             .Select(l => new LocalityDto(l["idLocalidad"].AsString, l["descripcion"].AsString))
             .ToList();

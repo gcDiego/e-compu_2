@@ -62,3 +62,25 @@ public sealed class CustomerIdClaimTests
         Assert.Null(store.GetCustomerId(new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "abc") }))));
     }
 }
+
+public sealed class AdminPaginationTests
+{
+    [Theory]
+    [InlineData(0, 0, 1, 1)]
+    [InlineData(-5, -10, 1, 1)]
+    [InlineData(2, 25, 2, 25)]
+    [InlineData(3, 500, 3, 100)]
+    [InlineData(1, 101, 1, 100)]
+    public void Page_and_page_size_are_clamped(int page, int pageSize, int expectedPage, int expectedPageSize)
+    {
+        var (actualPage, actualPageSize) = OrderPagination.Normalize(page, pageSize);
+        Assert.Equal(expectedPage, actualPage);
+        Assert.Equal(expectedPageSize, actualPageSize);
+    }
+
+    [Fact]
+    public void Maximum_page_size_is_capped()
+    {
+        Assert.Equal(100, OrderPagination.MaxPageSize);
+    }
+}

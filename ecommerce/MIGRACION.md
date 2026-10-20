@@ -8,11 +8,11 @@ Debe actualizarse después de cada incremento funcional. No se debe marcar una e
 
 ## Estado ejecutivo
 
-El sistema evolucionó desde dos aplicaciones ASP.NET MVC 5 sobre .NET Framework 4.7.2 y SQL Server hacia un nuevo frontend ASP.NET Core 8 llamado `Front.Web`.
+El sistema evolucionó desde dos aplicaciones ASP.NET MVC 5 sobre .NET Framework 4.7.2 y SQL Server hacia una solución ASP.NET Core 8 con interfaces separadas y APIs por dominio sobre MongoDB.
 
-Actualmente `Front.Web` accede directamente a MongoDB para catálogo, clientes, ubicaciones, carrito y órdenes. Los flujos de registro, login, navegación del catálogo, carrito, checkout e historial de compras están implementados y fueron probados contra el servidor privado configurado localmente.
+Actualmente `Front.Web` consume `Catalog.Api`, `Customer.Api`, `Order.Api`, `Cart.Api` y `Location.Api` mediante HTTP/JWT y ya no accede directamente a MongoDB ni referencia `MongoDB.Driver`. Los flujos de registro, login, recuperación, catálogo, carrito, checkout e historial están implementados y fueron probados de extremo a extremo contra el servidor privado configurado localmente.
 
-El acceso directo de `Front.Web` a MongoDB es una etapa de transición. La arquitectura objetivo requiere que la interfaz deje de acceder a la base y consuma APIs de negocio mediante HTTP y JWT.
+`Admin.Web` consume `Administration.Api`, `Catalog.Api`, `Customer.Api` y `Order.Api` para autenticación administrativa, catálogo, métricas, pedidos y reportes. La propiedad de datos es por dominio; la única excepción transitoria es la colección `carritos`, propiedad de `Cart.Api` y leída/eliminada por `Order.Api` dentro de la transacción de checkout.
 
 ## Regla para interpretar el repositorio
 
@@ -28,29 +28,32 @@ Las implementaciones SQL y MVC se conservan como referencia funcional e historia
 
 ```text
 Navegador
-  └── Front.Web (.NET 8)
-        ├── MongoCatalogService
-        ├── MongoCustomerService
-        ├── MongoLocationService
-        ├── MongoCartService
-        ├── MongoOrderService
-        ├── CatalogApiClient (transición anterior)
-        ├── IdentityApiClient (fallback temporal de login)
-        └── CartApiClient (transición anterior)
+  ├── Front.Web (.NET 8)
+  │     ├── Catalog.Api (HTTP)
+  │     ├── Customer.Api (HTTP/JWT)
+  │     ├── Cart.Api (HTTP/JWT)
+  │     ├── Location.Api (HTTP)
+  │     └── Order.Api (HTTP/JWT)
+  └── Admin.Web (.NET 8)
+        ├── Administration.Api (HTTP/JWT admin)
+        ├── Catalog.Api (HTTP/JWT admin)
+        ├── Customer.Api (métricas administrativas)
+        └── Order.Api (pedidos, dashboard y reportes)
 
-Mongo services
+APIs
   └── MongoDB privado
-        ├── categorias
-        ├── marcas
-        ├── productos
-        ├── clientes
-        ├── usuarios
-        ├── ubicaciones
-        ├── carritos
-        └── ventas
+        ├── categorias      (Catalog.Api)
+        ├── marcas          (Catalog.Api)
+        ├── productos       (Catalog.Api; stock también escrito por Order.Api en checkout)
+        ├── clientes        (Customer.Api)
+        ├── usuarios        (Administration.Api)
+        ├── estados         (Location.Api)
+        ├── carritos        (Cart.Api; leída/eliminada por Order.Api en la transacción de checkout)
+        ├── ventas          (Order.Api)
+        └── auditoria       (Administration.Api/Catalog.Api)
 ```
 
-`Front.Web` utiliza sesión del servidor para `CustomerId`, nombre, correo y token. La autenticación ASP.NET Core completa mediante esquemas, middleware y políticas todavía no está implementada.
+`Front.Web` y `Admin.Web` conservan el JWT en sesión del servidor. Las APIs validan JWT y políticas por rol; los navegadores no almacenan tokens en JavaScript ni `localStorage`.
 
 ## Arquitectura objetivo
 
@@ -79,64 +82,43 @@ Reglas:
 - No se comparten modelos de persistencia entre servicios.
 - Una extracción debe aportar aislamiento, seguridad, escalabilidad o despliegue independiente; no se crean servicios sólo para aumentar su número.
 
-## Funcionalidad completada en Front.Web
+## Funcionalidad completada
 
-### Aplicación
+### Front.Web
 
-- ASP.NET Core 8.
-- Configuración local opcional mediante `appsettings.Local.json` ignorado por Git.
-- Sesión en memoria para el flujo autenticado.
-- MongoDB Driver configurado mediante inyección de dependencias.
+- ASP.NET Core 8, configuración local fuera de Git y sesión de servidor para el flujo autenticado.
+- Registro, login, recuperación y restablecimiento mediante `Customer.Api`.
+- Catálogo, filtros y detalle mediante `Catalog.Api`.
+- Ubicaciones dependientes mediante `Location.Api` y carrito persistente mediante `Cart.Api`.
+- Checkout autenticado e historial mediante `Order.Api`.
+- Creación transaccional e idempotente de órdenes, reconstrucción de precios, descuento condicional de stock y vaciado del carrito.
+- Sin `MongoDB.Driver` ni acceso directo a la base de datos.
 
-### Clientes y acceso
+### Admin.Web
 
-- Login de clientes existentes en MongoDB.
-- Fallback temporal hacia Identity API.
-- Registro de clientes en MongoDB.
-- Emisión local de JWT para usuarios autenticados desde MongoDB.
-- Inicio y cierre de sesión.
-- Consulta y actualización disponibles en `MongoCustomerService`, aunque el perfil todavía necesita un flujo de interfaz completo.
+- Login, recuperación, reset y cierre de sesión administrativos.
+- Dashboard de clientes, ventas, ingresos, productos y stock bajo.
+- Gestión de administradores, categorías, marcas, productos, stock e imágenes.
+- Pedidos de sólo lectura, detalle, reportes y exportación XLSX.
+- JWT en sesión del servidor, antiforgery global, cookies seguras y cabeceras defensivas.
 
-### Catálogo
+### APIs
 
-- Categorías activas.
-- Marcas activas.
-- Productos activos.
-- Filtros por categoría y marca.
-- Detalle de producto.
-
-### Ubicaciones
-
-- Estados mediante `GET /api/location/states`.
-- Municipios mediante `GET /api/location/municipalities/{stateId}`.
-- Localidades mediante `GET /api/location/localities/{municipalityId}`.
-- Selectores dependientes integrados en checkout.
-
-### Carrito
-
-- Consulta del carrito por cliente.
-- Agregar productos.
-- Incrementar y decrementar cantidades.
-- Eliminar productos.
-- Persistencia en MongoDB.
-
-### Órdenes
-
-- Creación desde el carrito.
-- Validación condicional de producto activo y stock suficiente.
-- Descuento de stock mediante `FindOneAndUpdate` dentro de una transacción.
-- Persistencia del detalle y datos de envío con valores de producto reconstruidos en servidor.
-- Eliminación del carrito dentro de la misma transacción de creación de orden.
-- Historial de compras del cliente.
+- `Administration.Api`: identidad administrativa, bloqueo, rate limiting, recuperación, gestión de usuarios y auditoría.
+- `Catalog.Api`: lectura pública y administración protegida de catálogo, stock e imágenes Cloudinary.
+- `Customer.Api`: identidad y recuperación de clientes, además de métrica administrativa protegida.
+- `Order.Api`: checkout, historial, pedidos administrativos, dashboard y reportes.
+- `Cart.Api`: carrito por cliente autenticado con JWT; valida producto activo, stock y máximo 99 unidades.
+- `Location.Api`: lectura pública de estados, municipios y localidades.
 
 ## Validaciones realizadas
 
-- `dotnet build Front.Web.sln` completó sin advertencias en la última validación documentada.
-- `GET /api/location/states` respondió correctamente.
-- Se probó login, agregar al carrito, checkout, descuento de stock, creación de orden, historial y vaciado del carrito.
-- Las configuraciones sensibles de MongoDB y JWT permanecen en configuración local no versionada.
-- `dotnet test Front.Web.sln --configuration Release --no-restore` completó con 7 pruebas aprobadas.
-- Las pruebas cubren hash adaptativo, contraseña incorrecta, SHA-256 heredado y hashes malformados.
+- `dotnet test Front.Web.sln --configuration Release` completó con 72 pruebas aprobadas el 2026-10-14; el comando también restauró y compiló la solución sin errores.
+- La validación integrada más reciente comprobó health checks, registro, login, carrito mediante `Cart.Api`, ubicaciones mediante `Location.Api`, checkout, historial, autorización administrativa, recuperación SMTP, dashboard, catálogo, pedidos y reportes.
+- Las configuraciones sensibles de MongoDB, JWT, SMTP y Cloudinary permanecen en configuración local no versionada.
+- Los inicializadores de Administration y Catalog detectan índices únicos equivalentes por clave y opciones, sin depender de su nombre; se validaron en vivo contra MongoDB sin código 85.
+- La auditoría de paquetes detectó y corrigió transitivos vulnerables en Customer.Api, Order.Api.UnitTests y Admin.Web.UnitTests; la repetición quedó limpia.
+- Continúan pendientes Cloudinary real, correo de establecimiento al crear administrador, checkout concurrente y rollback de fallo parcial.
 
 ## Riesgos prioritarios
 
@@ -238,23 +220,24 @@ Criterio de terminado:
 - Idempotencia, timeout, reintentos limitados y conciliación.
 - Probar aprobado, cancelado, duplicado, timeout y webhook fuera de orden.
 
-### Etapa 5 — APIs restantes
+### Etapa 5 — APIs restantes (completada el 2026-10-14)
 
-- Extraer Catalog API para MongoDB.
-- Extraer Cart API.
-- Extraer Location API o decidir proveedor externo.
-- Hacer que `Front.Web` consuma exclusivamente HTTP y JWT.
-- Retirar `MongoDB.Driver` de `Front.Web`.
+- [x] Extraer Catalog API para MongoDB.
+- [x] Extraer Cart API.
+- [x] Extraer Location API o decidir proveedor externo.
+- [x] Hacer que `Front.Web` consuma exclusivamente HTTP y JWT.
+- [x] Retirar `MongoDB.Driver` de `Front.Web`.
 
-### Etapa 6 — Administración y medios
+### Etapa 6 — Administración y medios (implementada; validación externa parcial)
 
-- Alta, edición y desactivación de productos, categorías y marcas.
-- Control de stock protegido por rol administrativo.
-- Auditoría de mutaciones.
-- Object storage para imágenes.
-- `imageUrl` en contratos públicos.
-- Validación de MIME, tamaño y extensión en cargas.
-- Retirar imágenes ilustrativas y rutas físicas heredadas.
+- [x] Alta, edición y desactivación de productos, categorías y marcas.
+- [x] Control de stock protegido por rol administrativo.
+- [x] Auditoría básica de mutaciones.
+- [x] Integración de object storage mediante Cloudinary.
+- [x] `imageUrl` en contratos públicos.
+- [x] Validación de MIME, tamaño y firma en cargas.
+- [ ] Validar Cloudinary con credenciales reales y sus casos de error.
+- [ ] Retirar imágenes ilustrativas y rutas físicas heredadas de los datos.
 
 ### Etapa 7 — Madurez operativa
 
@@ -277,17 +260,12 @@ Criterio de terminado:
 
 ## Pendientes funcionales
 
-- Recuperación de contraseña.
-- Cambio obligatorio de contraseña en la experiencia de usuario.
-- Perfil completo y actualización de datos.
-- Consulta detallada de transacciones.
-- PayPal completo.
-- Idempotencia y conciliación de pagos.
-- Webhooks de PayPal.
-- Administración de catálogo.
-- Administración de stock.
-- Almacenamiento real de imágenes y `imageUrl`.
-- Reportes administrativos.
+- Cambio obligatorio y cambio autenticado de contraseña en la experiencia de cliente.
+- Perfil completo y actualización de datos del cliente.
+- Estados y transiciones de pedidos, paquetería y guía.
+- PayPal completo, webhooks, idempotencia y conciliación.
+- Validación real de cargas y reemplazos de imágenes en Cloudinary.
+- Reportes administrativos adicionales a los ya implementados.
 - Notificaciones transaccionales.
 
 ## Configuración local
@@ -296,19 +274,22 @@ Requisitos actuales:
 
 - .NET SDK 8 compatible con el proyecto.
 - Acceso autorizado a MongoDB.
-- Valores locales para `MongoDb:ConnectionString`, `MongoDb:DatabaseName` y `Jwt:SigningKey`.
-- `Jwt:SigningKey` de al menos 32 caracteres.
+- Valores locales para `MongoDb:ConnectionString`, `MongoDb:DatabaseName` y JWT compartido.
+- `Jwt:SigningKey` de al menos 32 caracteres; issuer, audience y clave deben coincidir en todos los servicios.
+- SMTP para recuperación funcional y Cloudinary para cargas de imágenes.
 
-Los valores sensibles deben estar en `src/Services/Front/Front.Web/appsettings.Local.json`, user secrets o variables de entorno. `appsettings.Local.json` no se versiona.
+Los valores sensibles deben estar en archivos `appsettings.Local.json` de cada servicio, user-secrets o variables de entorno. `appsettings.Local.json` no se versiona.
 
 Ejecución:
 
 ```bash
-dotnet build Front.Web.sln
-dotnet run --project src/Services/Front/Front.Web/Front.Web.csproj --urls "http://localhost:5160"
+dotnet restore Front.Web.sln
+dotnet build Front.Web.sln --configuration Release
+dotnet test Front.Web.sln --configuration Release --no-build
+./start.sh
 ```
 
-No iniciar otra instancia antes de comprobar si el puerto `5160` está ocupado.
+`start.sh` comprueba y utiliza los puertos `5160`–`5167`; `stop.sh` sólo detiene los procesos que registró.
 
 ## Política de seguridad
 
@@ -640,3 +621,45 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: envío real recibido; reset devolvió `204`; contraseña anterior devolvió `401`; contraseña nueva devolvió `200`; dashboard y APIs administrativas devolvieron `200`; build Release completado con 0 errores y 0 advertencias.
 - Rollback o recuperación: restaurar el flujo anterior de `AccountController`, las vistas y la longitud mínima; los scripts previos pueden recuperarse desde control de versiones.
 - Pendientes: probar correo al crear un administrador; corregir warning MongoDB 85; pruebas automatizadas de antiforgery/paginación/autorización; Cloudinary cuando haya credenciales; checkout concurrente y rollback; extraer `Cart.Api`/`Location.Api`; formatear vistas administrativas restantes.
+
+### 2026-10-14 — Índices equivalentes y consolidación documental
+
+- Estado: completado y validado.
+- Alcance: `Administration.Api`, `Catalog.Api`, `Customer.Api`, proyectos de pruebas y documentación principal.
+- Cambios: los inicializadores enumeran índices existentes y no intentan recrearlos cuando ya existe una clave única equivalente con otro nombre; se actualizaron transitivos vulnerables; `README.md`, el estado ejecutivo, la arquitectura y el roadmap se actualizaron para reflejar el uso real de APIs y el acceso MongoDB transitorio limitado a carrito y ubicaciones.
+- Contratos: sin cambios.
+- Datos: no se crean, renombran ni eliminan índices existentes; se conserva cualquier índice único equivalente.
+- Seguridad: se mantiene la garantía de unicidad de correos e identificadores heredados.
+- Pruebas: `dotnet test Front.Web.sln --configuration Release` completó con 46 pruebas aprobadas; se agregaron cuatro casos sobre equivalencia, unicidad, índices compuestos y dirección; la auditoría de paquetes quedó sin vulnerabilidades.
+- Validación integrada: los seis servicios arrancaron correctamente; Administration y Catalog reconocieron los índices existentes contra MongoDB sin registrar código 85.
+- Rollback o recuperación: revertir los inicializadores y referencias directas de paquetes; no se aplicaron cambios destructivos a datos.
+- Pendientes: correo de establecimiento de administrador; Cloudinary; antiforgery/paginación/autorización automatizados; checkout concurrente y rollback; `Cart.Api`/`Location.Api`.
+
+### 2026-10-14 — Extracción de Cart.Api y Location.Api; Front.Web sin MongoDB
+
+- Estado: completado y validado.
+- Alcance: `Cart.Api` (nuevo, puerto 5166), `Location.Api` (nuevo, puerto 5167), `Front.Web`, scripts de arranque y solución.
+- Cambios:
+  - `Location.Api` expone lectura pública `/api/location/states`, `/api/location/municipalities/{id}` y `/api/location/localities/{id}` con validación `LocationIdValidator` (`^[A-Za-z0-9_-]{1,40}$`), propietaria de `estados`.
+  - `Cart.Api` exige JWT de cliente y deriva `customerId` del claim `nameidentifier`/`sub`; expone `GET/POST/DELETE /api/cart*` con la misma lógica de `MongoCartService` (producto activo, stock, máximo 99, reconstrucción de precio desde `productos`), propietaria de `carritos`.
+  - `Front.Web` usa `CartApiClient` y `LocationApiClient` con `IHttpClientFactory`; el carrito viaja con el JWT de sesión (`AccessToken`) y ya no con el `CustomerId` numérico.
+  - Se eliminaron `MongoCartService`, `MongoLocationService`, `MongoCatalogService` (código muerto) y `MongoDbInitializer`, junto con `MongoDB.Driver`, `SharpCompress`, `Snappier` y `System.IdentityModel.Tokens.Jwt` de `Front.Web.csproj`.
+  - `start.sh`/`stop.sh` levantan/detienen los 8 servicios (5160–5167); `Integration.Seed` ahora cubre registro → login → consulta/alta/cambio de carrito vía Cart.Api → checkout → historial → carrito vacío → limpieza.
+- Contratos: `CartController` mantiene sus rutas MVC; `api/location/*` de Front.Web conserva sus rutas públicas y validación; Cart.Api no acepta `customerId` del cliente en ningún contrato.
+- Datos: `carritos` y `estados` sin cambio de esquema; `Order.Api` sigue leyendo y eliminando `carritos` dentro de la transacción de checkout (propiedad compartida transitoria documentada).
+- Seguridad: mutaciones de carrito requieren JWT de cliente emitido por `Customer.Api`; verificado en vivo `401` sin token y con token falso; `400` ante IDs de ubicación inválidos.
+- Pruebas: suite con 72 aprobadas (16 nuevas: 7 Cart.Api + 9 Location.Api); `Integration.Seed` E2E real completó con `=== OK ===`; los 8 servicios levantaron correctamente.
+- Rollback o recuperación: restaurar los servicios Mongo en `Front.Web`, revertir controladores y `Program.cs`; las colecciones no fueron modificadas estructuralmente.
+- Pendientes: correo de establecimiento de administrador; catálogo manual y Cloudinary; antiforgery E2E con `WebApplicationFactory` y carga de archivos; checkout concurrente y rollback; decidir si `Order.Api` consulta `carritos` vía `Cart.Api` o conserva el acceso transitorio documentado; pagos y madurez operativa.
+
+### 2026-10-14 — Pruebas de seguridad administrativa y paginación
+
+- Estado: completado y validado.
+- Alcance: `Admin.Web`, `Order.Api`, `Admin.Web.UnitTests` y `Order.Api.UnitTests`.
+- Cambios: la protección por sesión administrativa se extrajo al atributo `AdminSessionRequirementAttribute` (filtro de autorización declarativo aplicado a `SecureController`), reemplazando la validación imperativa en `OnActionExecuting`; la normalización de paginación administrativa se extrajo a `OrderPagination.Normalize` con tope documentado de 100 elementos por página.
+- Contratos: sin cambios; `page` y `pageSize` siguen normalizándose con los mismos límites.
+- Datos: no aplica.
+- Seguridad: la exigencia de `AdminToken` ahora es declarativa, verificable por reflexión y cubierta por pruebas; se confirmó que los controladores públicos (Account y Home) quedan fuera del requisito.
+- Pruebas: suite completa con 56 aprobadas; se agregaron 4 pruebas de seguridad en Admin.Web (cobertura de todos los controladores seguros, exclusión de públicos, redirección sin token y acceso con token) y 6 de paginación en Order.Api (límites inferior y superior).
+- Rollback o recuperación: revertir `SecureController` a la validación imperativa anterior y eliminar `AdminSessionRequirementAttribute`, `OrderPagination` y sus pruebas.
+- Pendientes: correo de establecimiento de administrador; catálogo manual y Cloudinary; pruebas de antiforgery de extremo a extremo con `WebApplicationFactory`; checkout concurrente y rollback; `Cart.Api`/`Location.Api`.

@@ -1,23 +1,22 @@
-using Front.Web.Models;
+using Cart.Api.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Front.Web.Services;
+namespace Cart.Api.Services;
 
-public sealed class MongoCartService(IMongoDatabase database)
+public sealed class CartStore(IMongoDatabase database)
 {
     private const int MaximumQuantityPerProduct = 99;
     private readonly IMongoCollection<BsonDocument> _carritos = database.GetCollection<BsonDocument>("carritos");
     private readonly IMongoCollection<BsonDocument> _productos = database.GetCollection<BsonDocument>("productos");
     private readonly IMongoCollection<BsonDocument> _clientes = database.GetCollection<BsonDocument>("clientes");
 
-    public async Task<CartSnapshotDto> GetAsync(int customerId, CancellationToken ct)
+    public async Task<CartSnapshotResponse> GetAsync(int customerId, CancellationToken ct)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId);
-        var cart = await _carritos.Find(filter).FirstOrDefaultAsync(ct);
-        if (cart is null) return new CartSnapshotDto([]);
+        var cart = await _carritos.Find(Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId)).FirstOrDefaultAsync(ct);
+        if (cart is null) return new CartSnapshotResponse([]);
 
-        var mapped = new List<CartItemDto>();
+        var mapped = new List<CartItemResponse>();
         foreach (var item in cart["items"].AsBsonArray.Cast<BsonDocument>())
         {
             var productFilter = Builders<BsonDocument>.Filter.Eq("_id", item["idProductoRef"].AsObjectId)
@@ -25,14 +24,17 @@ public sealed class MongoCartService(IMongoDatabase database)
             var product = await _productos.Find(productFilter).FirstOrDefaultAsync(ct);
             if (product is null) continue;
 
-            var productId = ToInt32(product["idSqlOriginal"]);
-            var brandName = product["marca"]["descripcion"].AsString;
-            mapped.Add(new CartItemDto(productId, product["nombre"].AsString, brandName, ToDecimal(product["precio"]), item["cantidad"].AsInt32));
+            mapped.Add(new CartItemResponse(
+                ToInt32(product["idSqlOriginal"]),
+                product["nombre"].AsString,
+                product["marca"]["descripcion"].AsString,
+                ToDecimal(product["precio"]),
+                item["cantidad"].AsInt32));
         }
-        return new CartSnapshotDto(mapped);
+        return new CartSnapshotResponse(mapped);
     }
 
-    public async Task<CartSnapshotDto?> AddAsync(int customerId, int productId, CancellationToken ct)
+    public async Task<CartSnapshotResponse?> AddAsync(int customerId, int productId, CancellationToken ct)
     {
         var customerExists = await _clientes.Find(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", customerId)).AnyAsync(ct);
         if (!customerExists) return null;
@@ -71,22 +73,20 @@ public sealed class MongoCartService(IMongoDatabase database)
         return await GetAsync(customerId, ct);
     }
 
-    public async Task<CartSnapshotDto?> ChangeAsync(int customerId, int productId, bool increase, CancellationToken ct)
+    public async Task<CartSnapshotResponse?> ChangeAsync(int customerId, int productId, bool increase, CancellationToken ct)
     {
         var productFilter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", productId)
             & Builders<BsonDocument>.Filter.Eq("activo", true);
         var product = await _productos.Find(productFilter).FirstOrDefaultAsync(ct);
         if (product is null) return null;
 
-        var filter = Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId);
-        var cart = await _carritos.Find(filter).FirstOrDefaultAsync(ct);
+        var cart = await _carritos.Find(Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId)).FirstOrDefaultAsync(ct);
         if (cart is null) return null;
 
         var item = cart["items"].AsBsonArray.Cast<BsonDocument>().FirstOrDefault(i => i["idProductoRef"].AsObjectId == product["_id"].AsObjectId);
         if (item is null) return null;
 
-        var currentQuantity = item["cantidad"].AsInt32;
-        var newQuantity = currentQuantity + (increase ? 1 : -1);
+        var newQuantity = item["cantidad"].AsInt32 + (increase ? 1 : -1);
         if (increase && (newQuantity > ToInt32(product["stock"]) || newQuantity > MaximumQuantityPerProduct)) return null;
 
         if (newQuantity <= 0)
@@ -102,14 +102,13 @@ public sealed class MongoCartService(IMongoDatabase database)
         return await GetAsync(customerId, ct);
     }
 
-    public async Task<CartSnapshotDto> RemoveAsync(int customerId, int productId, CancellationToken ct)
+    public async Task<CartSnapshotResponse> RemoveAsync(int customerId, int productId, CancellationToken ct)
     {
         var product = await _productos.Find(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", productId)).FirstOrDefaultAsync(ct);
-        if (product is null) return new CartSnapshotDto([]);
+        if (product is null) return new CartSnapshotResponse([]);
 
-        var filter = Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId);
-        var cart = await _carritos.Find(filter).FirstOrDefaultAsync(ct);
-        if (cart is null) return new CartSnapshotDto([]);
+        var cart = await _carritos.Find(Builders<BsonDocument>.Filter.Eq("idClienteSqlOriginal", customerId)).FirstOrDefaultAsync(ct);
+        if (cart is null) return new CartSnapshotResponse([]);
 
         var item = cart["items"].AsBsonArray.Cast<BsonDocument>().FirstOrDefault(i => i["idProductoRef"].AsObjectId == product["_id"].AsObjectId);
         if (item is not null)

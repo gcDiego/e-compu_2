@@ -2,107 +2,125 @@
 
 Ecommerce en migración incremental desde ASP.NET MVC 5 y SQL Server hacia ASP.NET Core 8, MongoDB y APIs separadas por dominio.
 
-La fuente autoritativa del estado, historial, riesgos y roadmap es [`MIGRACION.md`](MIGRACION.md). Debe leerse antes de continuar cualquier incremento.
+La fuente autoritativa del estado, historial, riesgos y roadmap es [`MIGRACION.md`](MIGRACION.md). El detalle del incremento administrativo está en [`CONTINUACION_MIGRACION_ADMIN.md`](CONTINUACION_MIGRACION_ADMIN.md).
 
 ## Estado actual
 
-`Front.Web` es la interfaz vigente de la tienda. Actualmente consume MongoDB directamente para catálogo, registro y login de clientes, ubicaciones, carrito, checkout, órdenes, stock e historial de compras.
+El código activo ya no depende de SQL Server. Los identificadores `idSqlOriginal` se conservan sólo por compatibilidad con los datos migrados.
 
-Este acceso directo es temporal. El objetivo es que `Front.Web` consuma APIs HTTP y deje de incluir lógica de negocio o acceso a MongoDB.
+La arquitectura vigente es:
 
-## Componentes
+```text
+Navegador
+  ├── Front.Web
+  │     ├── Catalog.Api (HTTP)
+  │     ├── Customer.Api (HTTP/JWT)
+  │     ├── Cart.Api (HTTP/JWT)
+  │     ├── Location.Api (HTTP)
+  │     └── Order.Api (HTTP/JWT)
+  └── Admin.Web
+        ├── Administration.Api (HTTP/JWT admin)
+        ├── Catalog.Api (HTTP/JWT admin)
+        ├── Customer.Api (métricas administrativas)
+        └── Order.Api (pedidos, dashboard y reportes)
+```
+
+`Front.Web` ya no accede directamente a MongoDB: no referencia `MongoDB.Driver` ni contiene lógica de base de datos. La única excepción transitoria de propiedad es la colección `carritos`, propiedad de `Cart.Api` y leída/eliminada por `Order.Api` dentro de la transacción de checkout.
+
+## Componentes activos
 
 - `src/Services/Front/Front.Web`: tienda ASP.NET Core 8.
 - `src/Services/Front/Admin.Web`: panel administrativo ASP.NET Core 8.
-- `src/Services/Administration/Administration.Api`: identidad y usuarios administrativos sobre MongoDB.
-- `src/Services/Catalog/Catalog.Api`: catálogo público y administrativo sobre MongoDB, con imágenes en Cloudinary.
-- `src/Services/Customer/Customer.Api`: identidad de clientes sobre MongoDB.
-- `src/Services/Order/Order.Api`: checkout, historial, pedidos y reportes sobre MongoDB.
+- `src/Services/Administration/Administration.Api`: autenticación y gestión administrativa.
+- `src/Services/Catalog/Catalog.Api`: catálogo público y administrativo, stock e imágenes Cloudinary.
+- `src/Services/Customer/Customer.Api`: registro, autenticación y recuperación de clientes.
+- `src/Services/Cart/Cart.Api`: carrito persistente por cliente autenticado con JWT.
+- `src/Services/Location/Location.Api`: estados, municipios y localidades de lectura pública.
+- `src/Services/Order/Order.Api`: checkout, historial, pedidos, dashboard y reportes.
 
-El código activo no depende de SQL Server. Los identificadores `idSqlOriginal` se conservan sólo por compatibilidad con los datos migrados.
+## Funcionalidad implementada
 
-## Requisitos para Front.Web
-
-- .NET SDK 8.
-- Acceso autorizado al servidor MongoDB.
-- Configuración local de MongoDB y JWT.
+- Registro, login y recuperación de contraseña de clientes.
+- Catálogo público mediante `Catalog.Api`.
+- Carrito persistente mediante `Cart.Api` y ubicaciones dependientes mediante `Location.Api`.
+- Checkout autenticado, transaccional e idempotente mediante `Order.Api`.
+- Historial de compras.
+- Login, recuperación y gestión de administradores.
+- Gestión de categorías, marcas, productos, stock e imágenes.
+- Pedidos administrativos de sólo lectura, dashboard, reportes y exportación XLSX.
+- JWT por rol, rate limiting, bloqueo temporal, antiforgery y cabeceras de seguridad.
+- PBKDF2-SHA256 y migración progresiva de hashes SHA-256 heredados.
 
 ## Configuración local
 
-Crear `src/Services/Front/Front.Web/appsettings.Local.json` únicamente en el entorno local:
+Requisitos:
 
-```json
-{
-  "MongoDb": {
-    "ConnectionString": "<CONEXION_MONGODB>",
-    "DatabaseName": "<BASE_MONGODB>"
-  },
-  "Jwt": {
-    "Issuer": "Ecommerce.Identity",
-    "Audience": "Ecommerce.Services",
-    "SigningKey": "<CLAVE_LOCAL_DE_AL_MENOS_32_CARACTERES>",
-    "LifetimeMinutes": 30
-  }
-}
-```
+- .NET SDK 8.
+- Acceso autorizado a MongoDB.
+- Un mismo `Jwt:Issuer`, `Jwt:Audience` y `Jwt:SigningKey` en todos los servicios.
+- SMTP para recuperación de clientes y administradores.
+- Cloudinary para cargar imágenes; sin credenciales, la carga responde `503` de forma controlada.
 
-`appsettings.Local.json` debe permanecer fuera de Git. También pueden utilizarse user secrets o variables de entorno.
+Los secretos se configuran mediante `appsettings.Local.json` ignorados por Git, user-secrets o variables de entorno. Nunca deben incluirse conexiones, contraseñas, tokens ni datos personales en el repositorio.
+
+Puertos locales:
+
+- Front.Web: `5160`
+- Customer.Api: `5161`
+- Order.Api: `5162`
+- Admin.Web: `5163`
+- Administration.Api: `5164`
+- Catalog.Api: `5165`
+- Cart.Api: `5166`
+- Location.Api: `5167`
 
 ## Compilar y ejecutar
 
 ```bash
-dotnet build Front.Web.sln
+dotnet restore Front.Web.sln
+dotnet build Front.Web.sln --configuration Release
+dotnet test Front.Web.sln --configuration Release --no-build
 ./start.sh
 ```
 
-`start.sh` levanta los seis servicios en los puertos `5160`–`5165`, comprueba previamente que estén libres, espera a que cada servicio responda y guarda PID y logs en `.logs/`. Si un servicio falla, revisar su archivo `.logs/<servicio>.log`. Para observar el correo administrativo en vivo:
-
-```bash
-tail -f .logs/administration-api.log
-```
-
-Detener sólo los procesos registrados por el script:
+`start.sh` comprueba los puertos, levanta los ocho servicios y guarda PID y logs en `.logs/`. Para detener únicamente esos procesos:
 
 ```bash
 ./stop.sh
 ```
 
-También pueden ejecutarse los proyectos manualmente en terminales separadas usando los mismos puertos documentados. Abrir `http://localhost:5160` para la tienda y `http://localhost:5163` para administración. MongoDB, JWT y SMTP se configuran fuera de Git mediante `appsettings.Local.json`, user-secrets o variables de entorno. Cloudinary permanece opcional: sin credenciales, la carga de imágenes responde `503` de forma controlada.
+Abrir `http://localhost:5160` para la tienda y `http://localhost:5163` para administración.
 
 ## Validación mínima
 
 ```bash
-dotnet build Front.Web.sln
-curl -i http://localhost:5160/api/location/states
+dotnet list Front.Web.sln package --vulnerable --include-transitive
+git diff --check
 ```
 
-Validar también registro o login, catálogo, carrito, checkout, creación de orden, descuento de stock, historial y vaciado del carrito.
+Con los servicios y la infraestructura local disponibles, validar también:
 
-## Sistema heredado
+- Health checks de los seis APIs.
+- Registro o login, catálogo, carrito, checkout e historial.
+- Autorización administrativa `401`, `403` y `200` según token y rol.
+- Creación de administrador y correo de establecimiento de contraseña.
+- Alta y edición de categoría, marca y producto.
+- Carga y reemplazo de imagen en Cloudinary.
+- Checkout concurrente y rollback ante un fallo parcial.
 
-El sistema original utiliza .NET Framework 4.7.2, ASP.NET MVC 5, Forms Authentication y SQL Server. En macOS se validó temporalmente con Mono, MSBuild y XSP4:
+## Pendientes prioritarios
 
-```bash
-msbuild ecommerce.sln /t:Build /p:Configuration=Debug /verbosity:minimal
-```
-
-La tienda heredada usa el puerto `8081` y el panel administrativo el `8080`. Mono/XSP es sólo una referencia durante la migración, no la plataforma objetivo.
+1. Probar el correo de establecimiento al crear un administrador.
+2. Completar las pruebas manuales de catálogo administrativo y Cloudinary.
+3. Automatizar antiforgery de extremo a extremo y carga de archivos (autorización de sesión administrativa y paginación ya tienen cobertura unitaria).
+4. Ejecutar pruebas E2E de checkout concurrente y rollback.
+5. Implementar pagos, webhooks e idempotencia/conciliación de PayPal.
+6. Completar observabilidad, CI/CD, backups y preparación para despliegue horizontal.
 
 ## Seguridad
 
-- No versionar conexiones, contraseñas, JWT, secretos de PayPal o SMTP.
+- No versionar conexiones, contraseñas, JWT, secretos de PayPal, SMTP o Cloudinary.
 - No copiar datos personales ni tokens a documentación o logs.
 - No publicar respaldos o exportaciones de bases reales.
 - No confiar en identificadores de cliente, precios o totales enviados por el navegador.
 - Rotar cualquier secreto expuesto.
-
-## Próximo incremento
-
-1. Dejar de crear contraseñas SHA-256.
-2. Recalcular precios desde productos en servidor.
-3. Validar cliente, producto activo, stock y cantidades.
-4. Eliminar identificadores generados mediante máximo más uno.
-5. Hacer la creación de órdenes transaccional o idempotente.
-6. Agregar pruebas de concurrencia y fallos parciales.
-
-El detalle y los criterios de terminado están en [`MIGRACION.md`](MIGRACION.md).

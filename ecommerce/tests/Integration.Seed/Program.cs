@@ -12,6 +12,7 @@ var config = new ConfigurationBuilder()
 
 var customerUrl = config["CustomerUrl"] ?? "http://localhost:5161";
 var orderUrl = config["OrderUrl"] ?? "http://localhost:5162";
+var cartUrl = config["CartUrl"] ?? "http://localhost:5166";
 var mongoConnection = config["MongoDb:ConnectionString"];
 var mongoDatabaseName = config["MongoDb:DatabaseName"] ?? "ecommerce";
 
@@ -60,7 +61,9 @@ var product = new BsonDocument
     ["nombre"] = productName,
     ["precio"] = 50.0,
     ["stock"] = 100,
-    ["activo"] = true
+    ["activo"] = true,
+    ["marca"] = new BsonDocument { ["idRef"] = ObjectId.GenerateNewId(), ["descripcion"] = "SeedBrand" },
+    ["categoria"] = new BsonDocument { ["idRef"] = ObjectId.GenerateNewId(), ["descripcion"] = "SeedCategory" }
 };
 await productos.InsertOneAsync(product);
 Console.WriteLine($"Producto creado: idSqlOriginal={productId}, _id={productOid}");
@@ -113,7 +116,33 @@ using var loginDoc = JsonDocument.Parse(loginJson);
 var token = loginDoc.RootElement.GetProperty("accessToken").GetString();
 Console.WriteLine($"Token recibido (len={token?.Length ?? 0})");
 
-Console.WriteLine("=== 5. Checkout via Order.Api ===");
+Console.WriteLine("=== 5. Carrito via Cart.Api ===");
+HttpRequestMessage CartRequest(HttpMethod method, string url, object? body = null)
+{
+    var request = new HttpRequestMessage(method, $"{cartUrl}{url}");
+    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    if (body is not null)
+        request.Content = JsonContent.Create(body);
+    return request;
+}
+
+var cartGetResponse = await http.SendAsync(CartRequest(HttpMethod.Get, "/api/cart"));
+Console.WriteLine($"GET {cartUrl}/api/cart -> {(int)cartGetResponse.StatusCode}");
+if (!cartGetResponse.IsSuccessStatusCode) { Console.WriteLine(await cartGetResponse.Content.ReadAsStringAsync()); return 1; }
+using var cartGetDoc = JsonDocument.Parse(await cartGetResponse.Content.ReadAsStringAsync());
+Console.WriteLine($"Items iniciales: {cartGetDoc.RootElement.GetProperty("items").GetArrayLength()}");
+
+var cartAddResponse = await http.SendAsync(CartRequest(HttpMethod.Post, "/api/cart/items", new { ProductId = productId }));
+Console.WriteLine($"POST {cartUrl}/api/cart/items -> {(int)cartAddResponse.StatusCode}");
+if (!cartAddResponse.IsSuccessStatusCode) { Console.WriteLine(await cartAddResponse.Content.ReadAsStringAsync()); return 1; }
+using var cartAddDoc = JsonDocument.Parse(await cartAddResponse.Content.ReadAsStringAsync());
+Console.WriteLine($"Cantidad tras agregar: {cartAddDoc.RootElement.GetProperty("items")[0].GetProperty("quantity").GetInt32()}");
+
+var cartChangeResponse = await http.SendAsync(CartRequest(HttpMethod.Post, $"/api/cart/items/{productId}/change", new { Increase = false }));
+Console.WriteLine($"POST {cartUrl}/api/cart/items/{productId}/change -> {(int)cartChangeResponse.StatusCode}");
+if (!cartChangeResponse.IsSuccessStatusCode) { Console.WriteLine(await cartChangeResponse.Content.ReadAsStringAsync()); return 1; }
+
+Console.WriteLine("=== 6. Checkout via Order.Api ===");
 var checkoutPayload = new { Contacto = "Seed", Telefono = "1234567", Direccion = "Calle 123", IdLocalidad = "loc1" };
 using var checkoutRequest = new HttpRequestMessage(HttpMethod.Post, $"{orderUrl}/api/orders");
 checkoutRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -135,7 +164,7 @@ var productCount = checkoutDoc.RootElement.GetProperty("productCount").GetInt32(
 var status = checkoutDoc.RootElement.GetProperty("status").GetString();
 Console.WriteLine($"Orden creada: id={orderId}, total={orderTotal}, productCount={productCount}, status={status}");
 
-Console.WriteLine("=== 6. Ver historial ===");
+Console.WriteLine("=== 7. Ver historial ===");
 using var historyRequest = new HttpRequestMessage(HttpMethod.Get, $"{orderUrl}/api/orders/me");
 historyRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -151,7 +180,14 @@ var historyJson = await historyResponse.Content.ReadAsStringAsync();
 using var historyDoc = JsonDocument.Parse(historyJson);
 Console.WriteLine($"Ordenes en historial: {historyDoc.RootElement.GetArrayLength()}");
 
-Console.WriteLine("=== 7. Limpieza ===");
+Console.WriteLine("=== 8. Carrito vaciado tras checkout ===");
+var cartAfterResponse = await http.SendAsync(CartRequest(HttpMethod.Get, "/api/cart"));
+using var cartAfterDoc = JsonDocument.Parse(await cartAfterResponse.Content.ReadAsStringAsync());
+var remaining = cartAfterDoc.RootElement.GetProperty("items").GetArrayLength();
+Console.WriteLine($"Items tras checkout: {remaining}");
+if (remaining != 0) return 1;
+
+Console.WriteLine("=== 9. Limpieza ===");
 await clientes.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("idSqlOriginal", customerId));
 await productos.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("_id", productOid));
 await carritos.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("_id", cart["_id"].AsObjectId));
