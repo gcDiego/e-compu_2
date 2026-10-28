@@ -9,11 +9,18 @@ public sealed class StoreController(CatalogApiClient catalog) : Controller
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId, int? brandId, CancellationToken cancellationToken)
     {
-        var categoriesTask = catalog.GetCategoriesAsync(cancellationToken);
-        var brandsTask = catalog.GetBrandsAsync(categoryId, cancellationToken);
-        var productsTask = catalog.GetProductsAsync(categoryId, brandId, cancellationToken);
-        await Task.WhenAll(categoriesTask, brandsTask, productsTask);
-        return View(new CatalogViewModel(categoriesTask.Result, brandsTask.Result, productsTask.Result, categoryId, brandId));
+        try
+        {
+            var categoriesTask = catalog.GetCategoriesAsync(cancellationToken);
+            var brandsTask = catalog.GetBrandsAsync(categoryId, cancellationToken);
+            var productsTask = catalog.GetProductsAsync(categoryId, brandId, cancellationToken);
+            await Task.WhenAll(categoriesTask, brandsTask, productsTask);
+            return View(new CatalogViewModel(categoriesTask.Result, brandsTask.Result, productsTask.Result, categoryId, brandId));
+        }
+        catch (HttpRequestException)
+        {
+            return View(new CatalogViewModel([], [], [], categoryId, brandId));
+        }
     }
 
     [HttpGet]

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Front.Web.Controllers;
 
-public sealed class CartController(CartApiClient cartApi) : Controller
+public sealed class CartController(CartApiClient cartApi, PayPalClient payPal) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -13,6 +13,8 @@ public sealed class CartController(CartApiClient cartApi) : Controller
         if (token is null) return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Index", "Cart") });
 
         ViewData["Error"] = TempData["Error"] as string;
+        ViewBag.PayPalClientId = payPal.ClientId;
+        ViewBag.PayPalConfigured = payPal.IsConfigured;
         var cart = await cartApi.GetAsync(token, cancellationToken) ?? new CartSnapshotDto([]);
         return View(cart);
     }

@@ -84,3 +84,33 @@ public sealed class AdminPaginationTests
         Assert.Equal(100, OrderPagination.MaxPageSize);
     }
 }
+
+public sealed class OrderStatusValidationTests
+{
+    private static bool IsValid(UpdateOrderStatusRequest model)
+    {
+        var results = new List<ValidationResult>();
+        return Validator.TryValidateObject(model, new ValidationContext(model), results, true);
+    }
+
+    [Theory]
+    [InlineData("confirmado")]
+    [InlineData("en_proceso")]
+    [InlineData("enviado")]
+    [InlineData("entregado")]
+    [InlineData("cancelado")]
+    public void Valid_status_is_accepted(string status)
+    {
+        Assert.True(IsValid(new UpdateOrderStatusRequest(status, "DHL", "GUIA123", "En camino")));
+    }
+
+    [Theory]
+    [InlineData("invalido")]
+    [InlineData("")]
+    [InlineData("CONFIRMADO")]
+    [InlineData("pendiente")]
+    public void Invalid_status_is_rejected(string status)
+    {
+        Assert.False(IsValid(new UpdateOrderStatusRequest(status)));
+    }
+}

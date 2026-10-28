@@ -141,7 +141,7 @@ public sealed class OrderStore(IMongoDatabase database, IMongoClient mongoClient
                 ["montoTotal"] = montoTotal,
                 ["totalProducto"] = totalProductos,
                 ["detalle"] = detalle,
-                ["idTransaccion"] = $"code{newId:D4}",
+                ["idTransaccion"] = !string.IsNullOrWhiteSpace(request.IdTransaccion) ? request.IdTransaccion.Trim() : $"code{newId:D4}",
                 ["seguimiento"] = new BsonDocument
                 {
                     ["estadoActual"] = "confirmado",
@@ -227,10 +227,44 @@ public sealed class OrderStore(IMongoDatabase database, IMongoClient mongoClient
             x["nombreProducto"].AsString,
             x.TryGetValue("precioUnitario", out var price) && price.IsNumeric ? ToDecimal(price) : ToDecimal(x["total"]) / Math.Max(1, ToInt32(x["cantidad"])),
             ToInt32(x["cantidad"]), ToDecimal(x["total"]))).ToList();
+        var seguimiento = d.TryGetValue("seguimiento", out var segVal) && segVal.IsBsonDocument ? segVal.AsBsonDocument : null;
+        var courier = seguimiento?.TryGetValue("paqueteria", out var paqVal) == true && !paqVal.IsBsonNull ? paqVal.AsString : null;
+        var trackingNumber = seguimiento?.TryGetValue("numeroGuia", out var guiaVal) == true && !guiaVal.IsBsonNull ? guiaVal.AsString : null;
+        var status = seguimiento?.TryGetValue("estadoActual", out var stVal) == true && !stVal.IsBsonNull ? stVal.AsString : "confirmado";
+
         return new AdminOrderDetail(ToInt32(d["idSqlOriginal"]), d.GetValue("idTransaccion", "").AsString,
             $"{customer.GetValue("nombres", "")} {customer.GetValue("apellidos", "")}".Trim(), customer.GetValue("correo", "").AsString,
             d.GetValue("contacto", "").AsString, d.GetValue("telefono", "").AsString, d.GetValue("direccion", "").AsString,
-            ToDecimal(d["montoTotal"]), ToInt32(d["totalProducto"]), new DateTimeOffset(d["fechaVenta"].ToUniversalTime()), d["seguimiento"]["estadoActual"].AsString, items);
+            ToDecimal(d["montoTotal"]), ToInt32(d["totalProducto"]), new DateTimeOffset(d["fechaVenta"].ToUniversalTime()), status, items, courier, trackingNumber);
+    }
+
+    public async Task<(bool Success, AdminOrderDetail? Order)> UpdateOrderStatusAsync(int id, UpdateOrderStatusRequest request, CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+        var historyEntry = new BsonDocument
+        {
+            ["estado"] = request.Status,
+            ["fecha"] = now,
+            ["descripcion"] = !string.IsNullOrWhiteSpace(request.Comentario) ? request.Comentario.Trim() : $"Estado cambiado a {request.Status}",
+            ["paqueteria"] = !string.IsNullOrWhiteSpace(request.Paqueteria) ? (BsonValue)request.Paqueteria.Trim() : BsonNull.Value,
+            ["numeroGuia"] = !string.IsNullOrWhiteSpace(request.NumeroGuia) ? (BsonValue)request.NumeroGuia.Trim() : BsonNull.Value
+        };
+
+        var update = Builders<BsonDocument>.Update
+            .Set("seguimiento.estadoActual", request.Status)
+            .Push("seguimiento.historial", historyEntry);
+
+        if (!string.IsNullOrWhiteSpace(request.Paqueteria))
+            update = update.Set("seguimiento.paqueteria", request.Paqueteria.Trim());
+        if (!string.IsNullOrWhiteSpace(request.NumeroGuia))
+            update = update.Set("seguimiento.numeroGuia", request.NumeroGuia.Trim());
+
+        var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id);
+        var result = await _ventas.UpdateOneAsync(filter, update, cancellationToken: ct);
+        if (result.MatchedCount == 0) return (false, null);
+
+        var updated = await GetAdminOrderAsync(id, ct);
+        return (true, updated);
     }
 
     public async Task<DashboardResponse> GetDashboardAsync(CancellationToken ct)

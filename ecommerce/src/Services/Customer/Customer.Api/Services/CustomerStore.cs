@@ -9,6 +9,8 @@ namespace Customer.Api.Services;
 public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHasher passwordHasher, MongoSequenceService sequenceService)
 {
     private readonly IMongoCollection<BsonDocument> _clientes = database.GetCollection<BsonDocument>("clientes");
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+    private const int MaxFailedAccessAttempts = 5;
 
     public async Task<CustomerProfile?> GetCustomerByEmailAsync(string email, CancellationToken ct)
     {
@@ -46,6 +48,7 @@ public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHashe
             ["clave"] = passwordHasher.Hash(password),
             ["restablecer"] = false,
             ["fechaRegistro"] = DateTime.UtcNow,
+            ["failedLoginCount"] = 0,
             ["wallet"] = new BsonDocument
             {
                 ["privateKey"] = BsonNull.Value,
@@ -59,23 +62,51 @@ public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHashe
         return MapCustomer(doc);
     }
 
-    public async Task<CustomerProfile?> VerifyAndRehashAsync(string email, string password, CancellationToken ct)
+    public async Task<CustomerAuthResult> AuthenticateAsync(string email, string password, CancellationToken ct)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq("correo", email.Trim().ToLowerInvariant());
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var filter = Builders<BsonDocument>.Filter.Eq("correo", normalizedEmail);
         var doc = await _clientes.Find(filter).FirstOrDefaultAsync(ct);
-        if (doc is null || !doc.TryGetValue("clave", out var hashValue) || !hashValue.IsString) return null;
+        if (doc is null)
+            return CustomerAuthResult.Failed();
+
+        if (IsLocked(doc))
+            return CustomerAuthResult.Locked();
+
+        if (!doc.TryGetValue("clave", out var hashValue) || !hashValue.IsString)
+            return CustomerAuthResult.Failed();
 
         var storedHash = hashValue.AsString;
         var result = passwordHasher.Verify(storedHash, password);
-        if (result == PasswordVerificationResult.Failed) return null;
+        if (result == PasswordVerificationResult.Failed)
+        {
+            var attempts = GetInt(doc, "failedLoginCount") + 1;
+            var update = Builders<BsonDocument>.Update.Set("failedLoginCount", attempts);
+            if (attempts >= MaxFailedAccessAttempts)
+                update = update.Set("lockoutEnd", DateTime.UtcNow.Add(LockoutDuration));
+
+            await _clientes.UpdateOneAsync(Builders<BsonDocument>.Filter.Eq("_id", doc["_id"]), update, cancellationToken: ct);
+            return attempts >= MaxFailedAccessAttempts ? CustomerAuthResult.Locked() : CustomerAuthResult.Failed();
+        }
+
+        var successUpdate = Builders<BsonDocument>.Update
+            .Set("failedLoginCount", 0)
+            .Unset("lockoutEnd")
+            .Set("ultimoAcceso", DateTime.UtcNow);
 
         if (result == PasswordVerificationResult.SuccessRehashNeeded)
         {
-            var optimisticFilter = filter & Builders<BsonDocument>.Filter.Eq("clave", storedHash);
-            await _clientes.UpdateOneAsync(optimisticFilter, Builders<BsonDocument>.Update.Set("clave", passwordHasher.Hash(password)), cancellationToken: ct);
+            successUpdate = successUpdate.Set("clave", passwordHasher.Hash(password));
         }
 
-        return MapCustomer(doc);
+        await _clientes.UpdateOneAsync(Builders<BsonDocument>.Filter.Eq("_id", doc["_id"]), successUpdate, cancellationToken: ct);
+        return CustomerAuthResult.Success(MapCustomer(doc));
+    }
+
+    public async Task<CustomerProfile?> VerifyAndRehashAsync(string email, string password, CancellationToken ct)
+    {
+        var result = await AuthenticateAsync(email, password, ct);
+        return result.Customer;
     }
 
     public async Task<string?> GenerateRecoveryTokenAsync(string email, CancellationToken ct)
@@ -114,6 +145,8 @@ public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHashe
             Builders<BsonDocument>.Update
                 .Set("clave", passwordHasher.Hash(newPassword))
                 .Set("restablecer", false)
+                .Set("failedLoginCount", 0)
+                .Unset("lockoutEnd")
                 .Set("recoveryTokenHash", BsonNull.Value)
                 .Set("recoveryTokenExpiresAt", BsonNull.Value),
             cancellationToken: ct);
@@ -123,6 +156,62 @@ public sealed class CustomerStore(IMongoDatabase database, CustomerPasswordHashe
 
     public Task<long> CountAsync(CancellationToken ct) =>
         _clientes.CountDocumentsAsync(FilterDefinition<BsonDocument>.Empty, cancellationToken: ct);
+
+    public async Task<CustomerProfile?> UpdateProfileAsync(int id, string firstName, string lastName, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            return null;
+
+        var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id);
+        var update = Builders<BsonDocument>.Update
+            .Set("nombres", firstName.Trim())
+            .Set("apellidos", lastName.Trim());
+
+        var doc = await _clientes.FindOneAndUpdateAsync(
+            filter,
+            update,
+            new FindOneAndUpdateOptions<BsonDocument> { ReturnDocument = ReturnDocument.After },
+            ct);
+
+        return doc is null ? null : MapCustomer(doc);
+    }
+
+    public async Task<ChangePasswordResult> ChangePasswordAsync(int id, string currentPassword, string newPassword, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(newPassword))
+            return new ChangePasswordResult(ChangePasswordStatus.InvalidCurrentPassword);
+
+        var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id);
+        var doc = await _clientes.Find(filter).FirstOrDefaultAsync(ct);
+        if (doc is null || !doc.TryGetValue("clave", out var hashValue) || !hashValue.IsString)
+            return new ChangePasswordResult(ChangePasswordStatus.NotFound);
+
+        var storedHash = hashValue.AsString;
+        if (passwordHasher.Verify(storedHash, currentPassword) == PasswordVerificationResult.Failed)
+            return new ChangePasswordResult(ChangePasswordStatus.InvalidCurrentPassword);
+
+        var optimisticFilter = filter & Builders<BsonDocument>.Filter.Eq("clave", storedHash);
+        var updatedDoc = await _clientes.FindOneAndUpdateAsync(
+            optimisticFilter,
+            Builders<BsonDocument>.Update
+                .Set("clave", passwordHasher.Hash(newPassword))
+                .Set("restablecer", false)
+                .Set("failedLoginCount", 0)
+                .Unset("lockoutEnd"),
+            new FindOneAndUpdateOptions<BsonDocument> { ReturnDocument = ReturnDocument.After },
+            ct);
+
+        if (updatedDoc is null)
+            return new ChangePasswordResult(ChangePasswordStatus.ConcurrencyConflict);
+
+        return new ChangePasswordResult(ChangePasswordStatus.Success, MapCustomer(updatedDoc));
+    }
+
+    private static bool IsLocked(BsonDocument d) =>
+        d.TryGetValue("lockoutEnd", out var value) && value.IsValidDateTime && value.ToUniversalTime() > DateTime.UtcNow;
+
+    private static int GetInt(BsonDocument d, string key) =>
+        d.TryGetValue(key, out var v) && !v.IsBsonNull ? (v.IsInt32 ? v.AsInt32 : (int)v.AsInt64) : 0;
 
     private static CustomerProfile MapCustomer(BsonDocument d) =>
         new(

@@ -26,15 +26,22 @@ public sealed class AccountController(CustomerApiClient customerApi) : Controlle
 
         try
         {
-            var apiLogin = await customerApi.LoginAsync(input.Email, input.Password, cancellationToken);
+            var (apiLogin, isLocked, error) = await customerApi.LoginAsync(input.Email, input.Password, cancellationToken);
             if (apiLogin is not null)
             {
                 var apiCustomer = new CustomerDto(apiLogin.Id, apiLogin.FirstName, apiLogin.LastName, apiLogin.Email, apiLogin.MustResetPassword);
                 SetSession(apiCustomer, apiLogin.AccessToken);
+                if (apiCustomer.MustResetPassword)
+                {
+                    HttpContext.Session.SetString("MustResetPassword", "true");
+                    TempData["Warning"] = "Por seguridad, debes cambiar tu contraseña antes de continuar.";
+                    return RedirectToAction("ChangePassword", "Profile");
+                }
+
                 return LocalRedirect(SafeReturnUrl(returnUrl));
             }
 
-            return View(new LoginViewModel(input.Email, "Correo o contraseña incorrectos."));
+            return View(new LoginViewModel(input.Email, error ?? "Correo o contraseña incorrectos."));
         }
         catch (HttpRequestException)
         {

@@ -25,6 +25,7 @@ var mongoDatabaseName = !string.IsNullOrWhiteSpace(builder.Configuration["MongoD
     builder.Services.AddSingleton<IMongoClient>(mongoClient);
     builder.Services.AddSingleton(_ => mongoClient.GetDatabase(mongoDatabaseName));
     builder.Services.AddScoped<OrderStore>();
+    builder.Services.AddScoped<OrderEmailSender>();
     builder.Services.AddScoped<MongoSequenceService>();
 }
 
@@ -95,6 +96,32 @@ app.MapGet("/api/admin/orders", async (DateTime? from, DateTime? to, string? tra
     Results.Ok(await store.GetAdminOrdersAsync(from, to, transactionId, status, page, pageSize, ct))).RequireAuthorization("admin");
 app.MapGet("/api/admin/orders/{id:int}", async (int id, OrderStore store, CancellationToken ct) =>
     await store.GetAdminOrderAsync(id, ct) is { } order ? Results.Ok(order) : Results.NotFound()).RequireAuthorization("admin");
+app.MapPut("/api/admin/orders/{id:int}/status", async (int id, [FromBody] UpdateOrderStatusRequest request, OrderStore store, OrderEmailSender emailSender, CancellationToken ct) =>
+{
+    var results = new List<ValidationResult>();
+    if (!Validator.TryValidateObject(request, new ValidationContext(request), results, true))
+        return Results.BadRequest(results.Select(r => r.ErrorMessage).Where(m => !string.IsNullOrEmpty(m)));
+
+    var (success, order) = await store.UpdateOrderStatusAsync(id, request, ct);
+    if (!success || order is null)
+        return Results.NotFound();
+
+    if (!string.IsNullOrWhiteSpace(order.CustomerEmail))
+    {
+        await emailSender.SendOrderStatusNotificationAsync(
+            order.CustomerEmail,
+            order.CustomerName,
+            order.Id,
+            order.TransactionId,
+            order.Status,
+            order.Courier,
+            order.TrackingNumber,
+            request.Comentario,
+            ct);
+    }
+
+    return Results.Ok(order);
+}).RequireAuthorization("admin");
 app.MapGet("/api/admin/orders/dashboard", async (OrderStore store, CancellationToken ct) =>
     Results.Ok(await store.GetDashboardAsync(ct))).RequireAuthorization("admin");
 app.MapGet("/api/admin/orders/report", async (DateTime from, DateTime to, string? transactionId, OrderStore store, CancellationToken ct) =>

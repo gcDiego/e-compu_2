@@ -54,6 +54,60 @@ public sealed class SecurityInputValidationTests
         Assert.True(IsValid(model));
     }
 
+    [Fact]
+    public void Profile_rejects_empty_first_name()
+    {
+        var model = new ProfileViewModel("", "Last", "user@example.com");
+
+        Assert.False(IsValid(model));
+    }
+
+    [Theory]
+    [InlineData("   ", "Last")]
+    [InlineData("First", "   ")]
+    public void Profile_rejects_whitespace_names(string first, string last)
+    {
+        var model = new ProfileViewModel(first, last, "user@example.com");
+
+        Assert.False(IsValid(model));
+    }
+
+    [Fact]
+    public void Profile_accepts_valid_names()
+    {
+        var model = new ProfileViewModel("Name", "Last", "user@example.com");
+
+        Assert.True(IsValid(model));
+    }
+
+    [Theory]
+    [InlineData("four")]
+    [InlineData("sixteen-chars-long")]
+    public void ChangePassword_rejects_password_outside_length_limits(string password)
+    {
+        var model = new ChangePasswordViewModel { CurrentPassword = "current", NewPassword = password };
+
+        Assert.False(IsValid(model));
+    }
+
+    [Theory]
+    [InlineData("     ")]
+    [InlineData("        ")]
+    public void ChangePassword_rejects_whitespace_new_password(string password)
+    {
+        var model = new ChangePasswordViewModel { CurrentPassword = "current", NewPassword = password };
+
+        Assert.False(IsValid(model));
+    }
+
+    [Fact]
+    public void ChangePassword_accepts_valid_password()
+    {
+        var model = new ChangePasswordViewModel { CurrentPassword = "current", NewPassword = "valid1" };
+
+        Assert.True(IsValid(model));
+    }
+
     private static bool IsValid(object model) =>
         Validator.TryValidateObject(model, new ValidationContext(model), [], true);
 }

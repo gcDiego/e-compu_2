@@ -15,7 +15,8 @@ public sealed class ProductInput { public int? Id {get;set;} [Required,StringLen
 public sealed record OrderModel(int Id,string CustomerEmail,decimal Total,int ProductCount,DateTimeOffset Date,string Status);
 public sealed record PagedOrders(IReadOnlyList<OrderModel> Items,long Total,int Page,int PageSize);
 public sealed record OrderItemModel(int ProductId,string ProductName,decimal UnitPrice,int Quantity,decimal Total);
-public sealed record OrderDetailModel(int Id,string TransactionId,string CustomerName,string CustomerEmail,string Contact,string Phone,string Address,decimal Total,int ProductCount,DateTimeOffset Date,string Status,IReadOnlyList<OrderItemModel> Items);
+public sealed record OrderDetailModel(int Id,string TransactionId,string CustomerName,string CustomerEmail,string Contact,string Phone,string Address,decimal Total,int ProductCount,DateTimeOffset Date,string Status,IReadOnlyList<OrderItemModel> Items,string? Courier=null,string? TrackingNumber=null);
+public sealed class UpdateOrderStatusInput { [Required] public string Status { get; set; } = "confirmado"; [StringLength(100)] public string? Courier { get; set; } [StringLength(100)] public string? TrackingNumber { get; set; } [StringLength(250)] public string? Comment { get; set; } }
 public sealed record DashboardOrders(long Sales,decimal Revenue);
 public sealed record CustomerCount(long Count);
 public sealed record ReportRow(DateTimeOffset Date,string Customer,string Product,decimal UnitPrice,int Quantity,decimal Total,string TransactionId);

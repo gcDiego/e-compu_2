@@ -126,6 +126,13 @@
                 <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Terminar y Procesar Pago
             </button>
+            <div style="margin: 16px 0 10px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 14px;">
+                <span style="font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">O pagar con PayPal Sandbox</span>
+            </div>
+            <button class="btn-checkout" type="button" id="btnPaypalSandbox" style="background:#0070ba; color:#fff;" @(items.Count == 0 ? "disabled" : null)>
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;margin-right:6px;"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.003.541 5.313.277 5.678.277h7.24c2.404 0 4.281.542 5.228 1.63 1.01 1.161 1.258 2.87.72 4.946-.68 2.628-2.316 4.312-4.863 5.006-.402.109-.844.186-1.32.228-.48.042-.916.064-1.302.064H8.718l-1.642 9.186zm1.18-11.411h2.247c1.472 0 2.574-.326 3.197-.946.61-.607.828-1.574.63-2.795-.213-1.312-.871-2.126-1.954-2.422-.444-.121-1.077-.182-1.897-.182H7.288l-.948 6.345h1.916z"/></svg>
+                Pagar con PayPal Sandbox (v2)
+            </button>
         </form>
     </aside>
 </div>
@@ -135,6 +142,7 @@
     const municipalitySelect = document.getElementById('municipalityId');
     const localitySelect = document.getElementById('localityId');
     const idLocalidad = document.getElementById('idLocalidad');
+    const btnPaypalSandbox = document.getElementById('btnPaypalSandbox');
 
     async function loadSelect(url, select, placeholder) {
         select.innerHTML = `<option value="">${placeholder}</option>`;
@@ -174,6 +182,77 @@
     localitySelect.addEventListener('change', () => {
         idLocalidad.value = localitySelect.value || municipalitySelect.value;
     });
+
+    if (btnPaypalSandbox) {
+        btnPaypalSandbox.addEventListener('click', async () => {
+            const form = document.querySelector('form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const contacto = document.getElementById('contacto').value.trim();
+            const direccion = document.getElementById('direccion').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const locId = idLocalidad.value.trim();
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput ? tokenInput.value : '';
+
+            btnPaypalSandbox.disabled = true;
+            const originalText = btnPaypalSandbox.innerHTML;
+            btnPaypalSandbox.innerHTML = 'Conectando con PayPal Sandbox...';
+
+            try {
+                const createRes = await fetch('/Checkout/CreatePayPalOrder', {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                });
+
+                if (!createRes.ok) {
+                    const errData = await createRes.json().catch(() => ({}));
+                    alert(errData.error || 'No se pudo iniciar el pago con PayPal Sandbox.');
+                    btnPaypalSandbox.disabled = false;
+                    btnPaypalSandbox.innerHTML = originalText;
+                    return;
+                }
+
+                const createData = await createRes.json();
+                btnPaypalSandbox.innerHTML = 'Procesando captura en PayPal...';
+
+                const captureRes = await fetch('/Checkout/CapturePayPalOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify({
+                        payPalOrderId: createData.orderId,
+                        shipping: {
+                            contacto: contacto,
+                            direccion: direccion,
+                            telefono: telefono,
+                            idLocalidad: locId
+                        }
+                    })
+                });
+
+                if (!captureRes.ok) {
+                    const errData = await captureRes.json().catch(() => ({}));
+                    alert(errData.error || 'No se pudo capturar el pago con PayPal Sandbox.');
+                    btnPaypalSandbox.disabled = false;
+                    btnPaypalSandbox.innerHTML = originalText;
+                    return;
+                }
+
+                const captureData = await captureRes.json();
+                window.location.href = captureData.redirectUrl || '/Order';
+            } catch (err) {
+                alert('Ocurrió un error de red al procesar el pago con PayPal.');
+                btnPaypalSandbox.disabled = false;
+                btnPaypalSandbox.innerHTML = originalText;
+            }
+        });
+    }
 </script>
 </body>
 </html>

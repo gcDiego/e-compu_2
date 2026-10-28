@@ -88,6 +88,7 @@ Reglas:
 
 - ASP.NET Core 8, configuración local fuera de Git y sesión de servidor para el flujo autenticado.
 - Registro, login, recuperación y restablecimiento mediante `Customer.Api`.
+- Perfil de cliente (consulta y actualización de nombre/apellido) y cambio autenticado de contraseña mediante `Customer.Api`.
 - Catálogo, filtros y detalle mediante `Catalog.Api`.
 - Ubicaciones dependientes mediante `Location.Api` y carrito persistente mediante `Cart.Api`.
 - Checkout autenticado e historial mediante `Order.Api`.
@@ -191,16 +192,18 @@ Criterio de terminado:
 - Un fallo después de reservar stock deja un estado recuperable y trazable.
 - Build y pruebas pasan sin secretos versionados.
 
-### Etapa 2 — Customer.Api (en progreso)
+### Etapa 2 — Customer.Api (completada)
 
-- Convertir Customer/Identity en fuente autoritativa.
-- Registro, login, perfil y actualización de datos.
-- Cambio obligatorio y cambio autenticado de contraseña.
-- Recuperación mediante token opaco de un solo uso.
-- JWT, roles, bloqueo, rate limiting y políticas.
-- Migración progresiva de hashes heredados.
-- Retirar acceso de `Front.Web` a la colección `clientes`.
+- [x] Convertir Customer/Identity en fuente autoritativa.
+- [x] Registro, login, perfil y actualización de datos.
+- [x] Cambio autenticado de contraseña.
+- [x] Cambio obligatorio de contraseña cuando `mustResetPassword=true`.
+- [x] Recuperación mediante token opaco de un solo uso.
+- [x] JWT, roles, bloqueo temporal (5 intentos / 15 min), rate limiting y políticas completas.
+- [x] Migración progresiva de hashes heredados.
+- [x] Retirar acceso de `Front.Web` a la colección `clientes`.
 - **Hecho en este paso:** creación del proyecto `Customer.Api`; `Front.Web` consume `Customer.Api` y `AccountController` ya no tiene fallback a `MongoCustomerService`.
+- **Hecho el 2026-10-27:** `Customer.Api` expone `GET/PUT /api/customers/me` y `POST /api/customers/change-password` protegidos con JWT; `Front.Web` agregó `ProfileController` con las vistas `Profile/Index` y `Profile/ChangePassword`, enlazadas desde la barra de navegación autenticada. Bloqueo temporal por fuerza bruta (5 intentos fallidos / 15 minutos), rate limiting en endpoints sensibles de `Customer.Api`, validación estricta de espacios en blanco y cambio obligatorio forzado cuando `mustResetPassword=true`.
 
 ### Etapa 3 — Order.Api (en progreso)
 
@@ -263,8 +266,6 @@ Criterio de terminado:
 
 ## Pendientes funcionales
 
-- Cambio obligatorio y cambio autenticado de contraseña en la experiencia de cliente.
-- Perfil completo y actualización de datos del cliente.
 - Estados y transiciones de pedidos, paquetería y guía.
 - PayPal completo, webhooks, idempotencia y conciliación.
 - Validación real de cargas y reemplazos de imágenes en Cloudinary.
@@ -689,3 +690,47 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: `POST /api/admin/users` devolvió `201` y el servidor SMTP aceptó el mensaje. Se agregaron 3 pruebas de imagen: SVG rechazado, archivo mayor de 5 MB rechazado y PNG válido que exige configuración Cloudinary. Suite completa: 75 aprobadas.
 - Rollback o recuperación: volver a `System.Net.Mail`, retirar `AdminCreation` y las secciones opcionales del seed; no hay migración de datos.
 - Pendientes: confirmar visualmente la recepción del mensaje; crear una cuenta Cloudinary si el proyecto decide mantener ese proveedor y validar carga/reemplazo/compensación reales.
+
+### 2026-10-27 — Perfil de cliente y cambio autenticado de contraseña
+
+- Estado: completado y validado en vivo.
+- Alcance: `Customer.Api`, `Front.Web` y `tests/Customer.Api.UnitTests` (nuevo proyecto).
+- Cambios: `Customer.Api` agregó `UpdateProfileRequest`, `ChangePasswordRequest` y `ChangePasswordResult`; `CustomerStore.UpdateProfileAsync` actualiza nombre/apellido con `FindOneAndUpdateAsync`; `CustomerStore.ChangePasswordAsync` verifica la contraseña actual con `CustomerPasswordHasher.Verify` y rehashea con PBKDF2-SHA256 usando un filtro optimista sobre el hash leído. Se expusieron `GET/PUT /api/customers/me` y `POST /api/customers/change-password`, los tres protegidos con `RequireAuthorization()` y resolviendo `customerId` desde los claims `nameidentifier`/`sub` del JWT, igual que en `Cart.Api`/`Order.Api`. `Front.Web` agregó los métodos correspondientes a `CustomerApiClient`, los modelos `ProfileViewModel`/`ChangePasswordViewModel`, el nuevo `ProfileController` (acciones `Index` y `ChangePassword`, con antiforgery y rate limiting en el cambio de contraseña) y las vistas `Profile/Index.cshtml` y `Profile/ChangePassword.cshtml`; se agregó el enlace "Mi perfil" a la barra de navegación autenticada. `StoreController.Index` se envolvió en `try/catch (HttpRequestException)` para degradar con catálogo vacío si `Catalog.Api` no responde, consistente con el resto de controladores.
+- Contratos: nuevos endpoints `GET /api/customers/me`, `PUT /api/customers/me` (`UpdateProfileRequest`: `firstName`, `lastName`) y `POST /api/customers/change-password` (`ChangePasswordRequest`: `currentPassword`, `newPassword`); todos requieren `Authorization: Bearer <token>` de `Customer.Api`. No se expone ni acepta `customerId` desde el cliente.
+- Datos: no hay cambio de esquema; se reutilizan los campos existentes `nombres`, `apellidos` y `clave` de `clientes`.
+- Seguridad: el cambio de contraseña exige conocer la contraseña actual (comparación en tiempo constante vía `CustomerPasswordHasher.Verify`); el perfil y la contraseña sólo pueden modificarse para el `customerId` derivado del JWT, nunca para un ID enviado por el cliente; se validó en vivo `401` sin token y con token falso en los tres endpoints.
+- Pruebas: se creó `tests/Customer.Api.UnitTests` (8 pruebas: round-trip PBKDF2, rehash de SHA-256 heredado, validación de `UpdateProfileRequest` y `ChangePasswordRequest`) y se agregaron 4 pruebas a `Front.Web.UnitTests` para `ProfileViewModel`/`ChangePasswordViewModel`. Suite completa: 88 aprobadas (antes 75). `dotnet build Front.Web.sln --configuration Release`: 0 advertencias, 0 errores. `dotnet list package --vulnerable --include-transitive`: sin vulnerabilidades. Validación en vivo contra MongoDB real: registro → login → `GET /api/customers/me` (`200`) → `PUT /api/customers/me` (`200`, y `400` con nombre vacío) → `POST /api/customers/change-password` con contraseña actual incorrecta (`400`) y correcta (`204`) → login con contraseña anterior (`401`) y con la nueva (`200`). Los dos clientes de prueba creados para la validación se eliminaron de `clientes` al finalizar.
+- Rollback o recuperación: eliminar `ProfileController`, las vistas `Profile/*`, los métodos nuevos de `CustomerApiClient` y el enlace del layout; revertir los tres endpoints y los métodos nuevos de `CustomerStore` en `Customer.Api`; eliminar `tests/Customer.Api.UnitTests` y quitarlo de `Front.Web.sln`. Ningún cambio es destructivo sobre datos existentes.
+- Pendientes: forzar el cambio de contraseña cuando `mustResetPassword` es verdadero; agregar bloqueo temporal y rate limiting de login a `Customer.Api` (hoy sólo cubre `Administration.Api`); continuar con Payment.Api o estados de pedidos según prioridad de negocio.
+
+### 2026-10-27 — Bloqueo temporal, rate limiting en Customer.Api y cambio obligatorio de contraseña
+
+- Estado: completado y validado con pruebas unitarias y compilación Release.
+- Alcance: `Customer.Api`, `Front.Web`, `tests/Customer.Api.UnitTests` y `tests/Front.Web.UnitTests`.
+- Cambios:
+  - **Defectos de code review corregidos**: `CustomerStore.ChangePasswordAsync` ahora utiliza `FindOneAndUpdateAsync` atómico con filtro optimista sobre el hash previo y devuelve `ConcurrencyConflict` si el hash cambió entre la lectura y la actualización, evitando falsos éxitos. Se agregó `IValidatableObject` en los modelos de request (`RegisterRequest`, `UpdateProfileRequest`, `ChangePasswordRequest`, `ProfileViewModel`, `ChangePasswordViewModel`) para rechazar cadenas de solo espacios en blanco antes de invocar los hashers y evitar excepciones 500 no capturadas. En `ProfileController`, `model.Success` y `ViewData["Success"]` se unificaron limpiamente.
+  - **Bloqueo temporal por fuerza bruta**: `CustomerStore.AuthenticateAsync` implementó contadores de fallos y bloqueo idénticos a `Administration.Api` (bloqueo por 15 minutos tras 5 intentos fallidos consecutivos). Al autenticarse correctamente, restablecer o cambiar contraseña, se reinician `failedLoginCount` y `lockoutEnd`. `Customer.Api/Program.cs` devuelve HTTP 423 (Locked) ante cuentas bloqueadas. `Front.Web` detecta el estado 423 y muestra advertencia informativa al cliente.
+  - **Rate Limiting en Customer.Api**: se registró middleware y política de rate limiting fija (`PermitLimit = 10`, ventana de 1 minuto por IP/UserAgent) en `POST /api/customers/login`, `POST /api/customers/recover`, `POST /api/customers/reset`, `POST /api/customers/register` y `POST /api/customers/change-password`.
+  - **Cambio obligatorio de contraseña (`mustResetPassword=true`)**: al iniciar sesión con `MustResetPassword=true`, `Front.Web` guarda la bandera en sesión de servidor y redirige forzosamente a `/Profile/ChangePassword`. Se agregó un middleware en el pipeline de `Front.Web` que intercepta cualquier intento de navegar a la tienda, carrito o checkout mientras la bandera permanezca activa, forzando al usuario a cambiar su contraseña antes de continuar (permitiendo solo el cambio de contraseña o salir de la sesión). `PUT /api/customers/me` en `Customer.Api` valida además el claim `must_reset_password` y rechaza mutaciones de perfil con 403 Forbidden hasta que se actualice la clave.
+  - **Refresco de JWT tras cambio de contraseña**: `POST /api/customers/change-password` devuelve un nuevo token JWT emitido sin `must_reset_password`, el cual `ProfileController` actualiza en sesión permitiendo continuar la navegación fluida sin tener que reiniciar sesión.
+- Contratos: `POST /api/customers/login` puede devolver 423 Locked; `POST /api/customers/change-password` responde 200 OK con `{ accessToken, expiresAt }` al cambiar exitosamente.
+- Seguridad: protección contra ataques de fuerza bruta en cuentas de clientes, limitación de tasa por IP contra scraping/fuerza bruta de endpoints de autenticación, rechazo de contraseñas de solo espacios y forzado del cambio de credenciales provisionales/heredadas antes de interactuar con el comercio.
+- Pruebas: `UnitTest1.cs` renombrado y reformateado a `SecurityTests.cs` en `Customer.Api.UnitTests`. Cobertura total de pruebas unitarias aumentó a **100 pruebas aprobadas** (0 fallidas, 0 omitidas). Auditoría de paquetes limpia (0 vulnerabilidades).
+- Rollback o recuperación: revertir commits correspondientes a `CustomerStore.cs`, `Program.cs`, `CustomerApiClient.cs`, `AccountController.cs` y `ProfileController.cs`. No requiere migraciones destructivas sobre MongoDB.
+- Pendientes: estados y transiciones de pedidos; Payment.Api (PayPal); Cloudinary real.
+
+### 2026-10-28 — Estados de pedidos, paquetería, notificaciones por correo y PayPal Sandbox REST v2
+
+- Estado: completado y validado con pruebas unitarias, compilación Release y auditoría de paquetes.
+- Alcance: `Order.Api`, `Admin.Web`, `Front.Web`, `tests/Order.Api.UnitTests` y `tests/Front.Web.UnitTests`.
+- Cambios:
+  - **Estados de pedidos y paquetería**: se agregó `UpdateOrderStatusRequest` a `Order.Api` (`confirmado`, `en_proceso`, `enviado`, `entregado`, `cancelado`) y el endpoint `PUT /api/admin/orders/{id}/status` con registro histórico en `seguimiento.historial`. En `Admin.Web`, `Orders/Details` ahora incluye el formulario para actualizar estado, paquetería, número de guía y notas.
+  - **Notificaciones por correo de status**: se implementó `OrderEmailSender` en `Order.Api` usando `MailKit 4.16.0` y `System.Security.Cryptography.Pkcs 8.0.2` para enviar un correo resumen al cliente al cambiar el estado de su pedido, con degradación controlada a log en modo demo cuando SMTP no está configurado.
+  - **PayPal Sandbox REST v2**: se creó `PayPalClient` en `Front.Web` que soporta la API REST v2 de PayPal Sandbox (`/v1/oauth2/token`, `/v2/checkout/orders` y `/v2/checkout/orders/{id}/capture`), con modo simulador sandbox para demos locales sin credenciales de desarrollador. En `Front.Web`, el carrito y checkout (`Views/Cart/Index.cshtml`) agregaron el botón de pago con PayPal Sandbox y los endpoints `CreatePayPalOrder` y `CapturePayPalOrder` que asocian el `IdTransaccion` de PayPal a la orden creada.
+  - **Manejo de errores de Cloudinary**: `CatalogController` en `Admin.Web` ahora distingue explícitamente cuando el guardado fue exitoso pero la subida de imagen devolvió `503 Service Unavailable` por falta de configuración de Cloudinary en `Catalog.Api`, mostrando una advertencia informativa (`.notice.warning`) en lugar de un error de versión.
+- Contratos: nuevos endpoints `PUT /api/admin/orders/{id}/status` en `Order.Api`, `POST /Checkout/CreatePayPalOrder` y `POST /Checkout/CapturePayPalOrder` en `Front.Web`. `CheckoutRequest` en `Order.Api` ahora admite `IdTransaccion` opcional.
+- Datos: `ventas.seguimiento` ahora persiste transiciones de estado, paquetería y número de guía en la base MongoDB.
+- Seguridad: todos los endpoints administrativos requieren rol `admin`; la creación y captura de PayPal exigen sesión autenticada con JWT de cliente y validan antiforgery; la auditoría de vulnerabilidades quedó con 0 paquetes vulnerables.
+- Pruebas: se agregaron pruebas para `UpdateOrderStatusRequest` en `Order.Api.UnitTests` y para `PayPalClient` y `CheckoutInputModel` en `Front.Web.UnitTests`. Suite completa: **112 pruebas aprobadas** (0 fallidas, 0 omitidas). Build en Release sin errores ni advertencias.
+- Rollback o recuperación: revertir cambios en `Order.Api`, `Admin.Web` y `Front.Web`; los campos agregados en MongoDB son compatibles y no destructivos.
+- Pendientes: configurar credenciales locales de Cloudinary y PayPal Sandbox en archivos `appsettings.Local.json` cuando se deseen probar contra los servicios en vivo de terceros.

@@ -50,6 +50,8 @@ builder.Services.AddHttpClient<CartApiClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Services:Cart"] ?? "http://localhost:5166"));
 builder.Services.AddHttpClient<LocationApiClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Services:Location"] ?? "http://localhost:5167"));
+builder.Services.AddHttpClient("PayPal");
+builder.Services.AddScoped<PayPalClient>();
 
 var app = builder.Build();
 
@@ -90,6 +92,27 @@ app.UseRouting();
 app.UseRateLimiter();
 
 app.UseSession();
+app.Use(async (context, next) =>
+{
+    if (context.Session.GetString("MustResetPassword") == "true")
+    {
+        var path = context.Request.Path;
+        var isAllowed = path.StartsWithSegments("/Profile/ChangePassword", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWithSegments("/Account/Logout", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWithSegments("/css", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWithSegments("/js", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWithSegments("/images", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWithSegments("/favicon.ico", StringComparison.OrdinalIgnoreCase);
+
+        if (!isAllowed)
+        {
+            context.Response.Redirect("/Profile/ChangePassword");
+            return;
+        }
+    }
+
+    await next();
+});
 app.UseAuthorization();
 
 app.MapControllerRoute(
