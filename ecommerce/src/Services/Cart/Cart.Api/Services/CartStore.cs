@@ -29,7 +29,8 @@ public sealed class CartStore(IMongoDatabase database)
                 product["nombre"].AsString,
                 product["marca"]["descripcion"].AsString,
                 ToDecimal(product["precio"]),
-                item["cantidad"].AsInt32));
+                item["cantidad"].AsInt32,
+                product.TryGetValue("imageUrl", out var img) && img.IsString ? img.AsString : null));
         }
         return new CartSnapshotResponse(mapped);
     }

@@ -3,6 +3,7 @@ using Catalog.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using System.ComponentModel.DataAnnotations;
 
 namespace Catalog.Api.UnitTests;

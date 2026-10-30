@@ -44,7 +44,7 @@ public sealed class CatalogStore(IMongoDatabase database, MongoSequenceService s
         }
         else
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id.Value) & Builders<BsonDocument>.Filter.Eq("version", r.Version);
+            var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id.Value) & VersionFilter(r.Version);
             var update = Builders<BsonDocument>.Update.Set("nombre", r.Name.Trim()).Set("descripcion", r.Description.Trim()).Set("marca", Ref(brand)).Set("categoria", Ref(category)).Set("precio", r.Price).Set("stock", r.Stock).Set("activo", r.IsActive).Inc("version", 1).Set("fechaModificacion", DateTime.UtcNow);
             doc = await _products.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<BsonDocument> { ReturnDocument = ReturnDocument.After }, ct);
             if (doc is null) return null;
@@ -54,7 +54,7 @@ public sealed class CatalogStore(IMongoDatabase database, MongoSequenceService s
     }
     public async Task<bool> SetStockAsync(int id, StockRequest request, int actor, CancellationToken ct)
     {
-        var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id) & Builders<BsonDocument>.Filter.Eq("version", request.Version);
+        var filter = Builders<BsonDocument>.Filter.Eq("idSqlOriginal", id) & VersionFilter(request.Version);
         var result = await _products.UpdateOneAsync(filter, Builders<BsonDocument>.Update.Set("stock", request.Stock).Inc("version", 1).Set("fechaModificacion", DateTime.UtcNow), cancellationToken: ct);
         if (result.ModifiedCount > 0) await Audit(actor, "stock", "producto", id, ct); return result.ModifiedCount > 0;
     }
@@ -77,6 +77,13 @@ public sealed class CatalogStore(IMongoDatabase database, MongoSequenceService s
     private async Task Audit(int actor, string action, string entity, int id, CancellationToken ct) => await _audit.InsertOneAsync(new BsonDocument { ["actorId"] = actor, ["action"] = action, ["entity"] = entity, ["entityId"] = id, ["timestamp"] = DateTime.UtcNow }, cancellationToken: ct);
     private static async Task<int> Maximum(IMongoCollection<BsonDocument> c, CancellationToken ct) { var value = await c.Find(FilterDefinition<BsonDocument>.Empty).SortByDescending(x => x["idSqlOriginal"]).Project(x => x["idSqlOriginal"]).FirstOrDefaultAsync(ct); return value?.ToInt32() ?? 0; }
     private static BsonDocument Ref(BsonDocument d) => new() { ["idRef"] = d["_id"], ["descripcion"] = GetString(d, "descripcion", "") };
+    private static FilterDefinition<BsonDocument> VersionFilter(long version) =>
+        version == 0
+            ? Builders<BsonDocument>.Filter.Or(
+                Builders<BsonDocument>.Filter.Eq("version", 0L),
+                Builders<BsonDocument>.Filter.Eq("version", BsonNull.Value),
+                Builders<BsonDocument>.Filter.Exists("version", false))
+            : Builders<BsonDocument>.Filter.Eq("version", version);
     private static CategoryResponse MapCategory(BsonDocument d) => new(GetInt(d,"idSqlOriginal"), GetString(d,"descripcion","")!, GetBool(d,"activo",true));
     private static BrandResponse MapBrand(BsonDocument d) => new(GetInt(d,"idSqlOriginal"), GetString(d,"descripcion","")!, GetBool(d,"activo",true));
     private static ProductResponse MapProduct(BsonDocument d, Dictionary<ObjectId,BsonDocument> categories, Dictionary<ObjectId,BsonDocument> brands) { var cr = d["categoria"]["idRef"].AsObjectId; var br = d["marca"]["idRef"].AsObjectId; var c = categories.GetValueOrDefault(cr); var b = brands.GetValueOrDefault(br); return new(GetInt(d,"idSqlOriginal"), GetString(d,"nombre","")!, GetString(d,"descripcion","")!, b is null ? new(0,GetString(d["marca"].AsBsonDocument,"descripcion","")!,true) : MapBrand(b), c is null ? new(0,GetString(d["categoria"].AsBsonDocument,"descripcion","")!,true) : MapCategory(c), GetDecimal(d,"precio"), GetInt(d,"stock"), GetBool(d,"activo",true), GetString(d,"imageUrl",null), d.TryGetValue("version",out var v) && v.IsNumeric ? v.ToInt64() : 0); }

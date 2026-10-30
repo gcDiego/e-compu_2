@@ -4,8 +4,8 @@ namespace Front.Web.Models;
 
 public sealed record CategoryDto(int Id, string Description, bool IsActive);
 public sealed record BrandDto(int Id, string Description, bool IsActive);
-public sealed record ProductDto(int Id, string Name, string Description, BrandDto Brand, CategoryDto Category, decimal Price, int Stock, bool IsActive);
-public sealed record CartItemDto(int ProductId, string ProductName, string BrandName, decimal UnitPrice, int Quantity);
+public sealed record ProductDto(int Id, string Name, string Description, BrandDto Brand, CategoryDto Category, decimal Price, int Stock, bool IsActive, string? ImageUrl = null);
+public sealed record CartItemDto(int ProductId, string ProductName, string BrandName, decimal UnitPrice, int Quantity, string? ImageUrl = null);
 public sealed record CartSnapshotDto(IReadOnlyList<CartItemDto> Items)
 {
     public int DistinctItemCount => Items.Count;

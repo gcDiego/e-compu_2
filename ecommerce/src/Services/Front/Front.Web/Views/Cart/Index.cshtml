@@ -56,7 +56,7 @@
             @foreach (var item in items)
             {
                 <div class="cart-item">
-                    <div class="item-image"><img src="~/images/computadora.png" alt="@item.ProductName" /></div>
+                    <div class="item-image"><img src="@(item.ImageUrl ?? Url.Content("~/images/computadora.png"))" alt="@item.ProductName" /></div>
                     <div class="item-info">
                         <div class="item-brand">@item.BrandName</div>
                         <div class="item-name">@item.ProductName</div>

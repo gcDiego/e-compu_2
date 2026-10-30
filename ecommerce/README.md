@@ -45,9 +45,11 @@ Navegador
 - Carrito persistente mediante `Cart.Api` y ubicaciones dependientes mediante `Location.Api`.
 - Checkout autenticado, transaccional e idempotente mediante `Order.Api`.
 - Historial de compras.
+- Pago con PayPal Sandbox REST v2 en `Front.Web` (simulador `PAYPAL-SIM-*` sin credenciales; API real configurable con `PayPal:ClientId`/`ClientSecret`).
+- Imágenes de productos en Cloudinary (subida desde `Admin.Web`, renderizado en catálogo, detalle y carrito de `Front.Web`).
 - Login, recuperación y gestión de administradores.
 - Gestión de categorías, marcas, productos, stock e imágenes.
-- Pedidos administrativos de sólo lectura, dashboard, reportes y exportación XLSX.
+- Pedidos administrativos con cambio de estado, paquetería, número de guía, notificación por correo al cliente, dashboard, reportes y exportación XLSX.
 - JWT por rol, rate limiting, bloqueo temporal, antiforgery y cabeceras de seguridad.
 - PBKDF2-SHA256 y migración progresiva de hashes SHA-256 heredados.
 
@@ -59,7 +61,9 @@ Requisitos:
 - Acceso autorizado a MongoDB.
 - Un mismo `Jwt:Issuer`, `Jwt:Audience` y `Jwt:SigningKey` en todos los servicios.
 - SMTP para recuperación de clientes y administradores.
-- Cloudinary para cargar imágenes; sin credenciales, la carga responde `503` de forma controlada.
+- Cloudinary para cargar imágenes; sin credenciales, la carga responde `503` de forma controlada (configuradas en `Catalog.Api/appsettings.Local.json`, no versionado).
+- Opcional: SMTP en `Order.Api` (`Email:*`) para correos de cambio de estado de pedido; sin configurar, el envío degrada a log.
+- Opcional: `PayPal:ClientId`/`ClientSecret`/`BaseUrl` en `Front.Web` para PayPal Sandbox real; sin credenciales opera el simulador demo.
 
 Los secretos se configuran mediante `appsettings.Local.json` ignorados por Git, user-secrets o variables de entorno. Nunca deben incluirse conexiones, contraseñas, tokens ni datos personales en el repositorio.
 
@@ -110,12 +114,12 @@ Con los servicios y la infraestructura local disponibles, validar también:
 
 ## Pendientes prioritarios
 
-1. Confirmar visualmente la recepción del correo de establecimiento enviado y aceptado por SMTP.
-2. Completar las pruebas manuales de catálogo administrativo; Cloudinary real queda pendiente hasta crear una cuenta y configurar credenciales.
+1. Probar el flujo PayPal con credenciales reales de PayPal Developer Sandbox (`PayPal:ClientId`/`ClientSecret` en `Front.Web/appsettings.Local.json`); sin ellas opera el simulador.
+2. Probar envío real de correos de estado de pedido configurando SMTP en `Order.Api`.
 3. Automatizar antiforgery de extremo a extremo y carga de archivos (autorización de sesión administrativa, paginación y validación local de imágenes ya tienen cobertura).
 4. Mantener el E2E de concurrencia y rollback de `Integration.Seed` como regresión.
-5. Implementar pagos, webhooks e idempotencia/conciliación de PayPal.
-6. Completar observabilidad, CI/CD, backups y preparación para despliegue horizontal.
+5. Limpieza opcional de `rutaImagen`/`nombreImagen` legados en `productos`; los productos sin `imageUrl` muestran placeholder.
+6. Madurez operativa (Etapa 7): gateway, OpenAPI, observabilidad, sesiones/rate limiting distribuidos, CI/CD y backups — fuera de alcance de la demo.
 
 ## Seguridad
 

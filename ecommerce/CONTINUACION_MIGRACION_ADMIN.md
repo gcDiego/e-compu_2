@@ -345,7 +345,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 1. ~~Crear un administrador y comprobar que SMTP acepta el correo de establecimiento~~ **Completado el 2026-10-20** mediante `Integration.Seed`; resta confirmar visualmente la recepción en la bandeja.
 2. Crear categoría y marca.
 3. Crear y editar producto sin imagen; comprobar su aparición en la tienda a través de Catalog.Api.
-4. Cuando exista una cuenta Cloudinary, probar alta/reemplazo real y compensación; SVG, formato inválido y archivo mayor de 5 MB ya tienen validación local automatizada.
+4. ~~Cuando exista una cuenta Cloudinary, probar alta/reemplazo real y compensación~~ **Completado el 2026-10-28**: credenciales reales en `Catalog.Api/appsettings.Local.json`, subida JPG validada en vivo y renderizado en `Front.Web` (requirió `img-src ... res.cloudinary.com` en la CSP). SVG, formato inválido y archivo mayor de 5 MB ya tienen validación local automatizada.
 5. ~~Ejecutar dos checkouts simultáneos y confirmar una sola orden y un solo descuento de stock~~ **Completado el 2026-10-20** mediante la sección 9 de `Integration.Seed`: dos `POST /api/orders` paralelos devolvieron `200` y `400`, con una sola orden en `ventas` y un solo descuento de stock.
 6. ~~Validar rollback ante un fallo parcial de checkout~~ **Completado el 2026-10-20**: un carrito multiartículo cuyo segundo producto no tenía stock devolvió `400`, no creó orden, no descontó stock y conservó el carrito.
 7. ~~Ejecutar regresión completa de carrito, checkout e historial después de futuras extracciones~~ **Completado el 2026-10-14** mediante `Integration.Seed` extendido con Cart.Api.
@@ -357,7 +357,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 
 2. **E2E parcialmente pendiente**
    - MongoDB, SMTP, recuperación, cambio de contraseña, login, dashboard, catálogo, pedidos, reportes y regresión básica están validados.
-   - Checkout concurrente, rollback parcial y aceptación SMTP del correo de establecimiento se validaron el 2026-10-20. Cloudinary real sigue pendiente porque no existe cuenta ni credenciales.
+   - Checkout concurrente, rollback parcial y aceptación SMTP del correo de establecimiento se validaron el 2026-10-20. Cloudinary real se validó el 2026-10-28 con credenciales configuradas y subida JPG en vivo.
 
 3. ~~**Conflicto de nombres de índices MongoDB**~~ **Resuelto y validado el 2026-10-14**
    - Los inicializadores de Administration y Catalog enumeran los índices y reutilizan cualquier índice único equivalente por clave y opciones, independientemente del nombre.
@@ -375,7 +375,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
    - Las rutas físicas Windows antiguas no se migran automáticamente. Los productos sin `imageUrl` se muestran sin imagen hasta cargar una nueva en Cloudinary.
 
 7. **Pedidos**
-   - Son deliberadamente de sólo lectura; no se implementaron cambios de estado, paquetería ni guía.
+   - ~~Son deliberadamente de sólo lectura~~ **Actualizado el 2026-10-28**: `Order.Api` expone `PUT /api/admin/orders/{id}/status` con estados `confirmado`, `en_proceso`, `enviado`, `entregado`, `cancelado`, paquetería, número de guía y notas (persistidos en `ventas.seguimiento.historial`). `Admin.Web/Orders/Details` incluye el formulario. `OrderEmailSender` (MailKit en `Order.Api`) notifica al cliente por correo o degrada a log sin SMTP.
 
 8. **Filtros de Admin.Web**
    - La API admite filtros tipados, pero la primera interfaz de pedidos muestra principalmente paginación básica. El reporte sí admite fechas y transacción.
@@ -385,7 +385,7 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 10. **Pruebas faltantes respecto al plan completo**
    - ~~No se crearon proyectos separados para Order.Api.UnitTests y Admin.Web.UnitTests.~~ **Resuelto el 2026-10-13**: se crearon ambos proyectos y se añadieron a la solución (8 y 7 pruebas respectivamente: validación de checkout, claims de cliente, modelos de Admin.Web).
    - **Actualizado el 2026-10-14**: se agregaron pruebas de autorización de sesión administrativa (filtro `AdminSessionRequirement`, cobertura de todos los controladores seguros) y de paginación de `Order.Api` (límites inferior y superior, tope de 100). La autorización HTTP 401/403 además se validó de forma integrada contra servicios reales.
-   - Siguen faltando pruebas de antiforgery de extremo a extremo con `WebApplicationFactory`, carga de archivos y compensación Cloudinary (bloqueada hasta tener credenciales).
+   - Siguen faltando pruebas de antiforgery de extremo a extremo con `WebApplicationFactory` y compensación Cloudinary ante fallo del producto (la subida real ya se validó manualmente).
 
 11. **Auditoría**
     - Es funcional pero básica. No guarda diff detallado; sólo actor, acción, entidad, ID y fecha.
@@ -418,9 +418,9 @@ Revisar cuidadosamente `git status` y `git diff` antes de confirmar. No incluir 
 
 1. Leer `MIGRACION.md` como fuente autoritativa y este archivo como detalle administrativo; no repetir los E2E ya completados.
 2. Confirmar visualmente la recepción del correo de establecimiento; la creación y aceptación SMTP ya se validaron.
-3. Crear categoría, marca y producto desde el panel y validar su aparición en la tienda.
+3. ~~Crear categoría, marca y producto desde el panel y validar su aparición en la tienda~~ **Completado el 2026-10-28** con subida de imagen JPG a Cloudinary y visualización en `Front.Web`; se corrigió además el defecto de productos heredados sin campo `version` que provocaba `409` (ver entrada en `MIGRACION.md`).
 4. Añadir pruebas de antiforgery de extremo a extremo con `WebApplicationFactory` (autorización y paginación ya tienen cobertura unitaria).
-5. Cuando existan credenciales, completar las pruebas de Cloudinary y su compensación.
+5. ~~Cuando existan credenciales, completar las pruebas de Cloudinary y su compensación~~ **Completado el 2026-10-28** (subida real validada; la compensación ante fallo del producto sigue sin prueba automatizada).
 6. ~~Ejecutar E2E concurrente y rollback parcial de checkout~~ **Completado el 2026-10-20** (incluyó reintento ante `TransientTransactionError`, una sola orden/descuento bajo concurrencia y rollback total ante segundo producto sin stock).
 7. ~~Extraer `Cart.Api` y `Location.Api` para retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-10-14**.
 8. Formatear las vistas/controladores administrativos restantes que todavía contienen líneas excesivamente largas.

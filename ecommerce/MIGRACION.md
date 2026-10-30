@@ -100,7 +100,7 @@ Reglas:
 - Login, recuperación, reset y cierre de sesión administrativos.
 - Dashboard de clientes, ventas, ingresos, productos y stock bajo.
 - Gestión de administradores, categorías, marcas, productos, stock e imágenes.
-- Pedidos de sólo lectura, detalle, reportes y exportación XLSX.
+- Pedidos con detalle, cambio de estado (confirmado, en preparación, enviado, entregado, cancelado), paquetería y número de guía, reportes y exportación XLSX.
 - JWT en sesión del servidor, antiforgery global, cookies seguras y cabeceras defensivas.
 
 ### APIs
@@ -121,7 +121,8 @@ Reglas:
 - La auditoría de paquetes detectó y corrigió transitivos vulnerables en Customer.Api, Order.Api.UnitTests y Admin.Web.UnitTests; la repetición quedó limpia.
 - El checkout concurrente se validó en vivo el 2026-10-20: dos requests paralelos producen una sola orden, un solo descuento de stock y ningún error 5xx.
 - El rollback de fallo parcial y el correo de establecimiento al crear administrador se validaron en vivo el 2026-10-20.
-- Continúan pendientes Cloudinary real y antiforgery de extremo a extremo.
+- Cloudinary validado en vivo el 2026-10-28: credenciales reales configuradas, subida JPG desde `Admin.Web` y renderizado en `Front.Web` tras ampliar `img-src` de la CSP a `res.cloudinary.com`.
+- Continúa pendiente el antiforgery de extremo a extremo automatizado.
 
 ## Riesgos prioritarios
 
@@ -215,16 +216,16 @@ Criterio de terminado:
 - Exponer historial y detalle.
 - Retirar `MongoOrderService` de `Front.Web`.
 - **Hecho en este paso:** creación del proyecto `Order.Api`; `CheckoutController` y `OrderController` ya no tienen fallback a `MongoOrderService`; `Front.Web` depende de HTTP/JWT para login, registro, checkout e historial.
+- **Hecho el 2026-10-28:** `PUT /api/admin/orders/{id}/status` permite cambiar estado (`confirmado`, `en_proceso`, `enviado`, `entregado`, `cancelado`) con paquetería, número de guía y notas; se persiste historial en `ventas.seguimiento.historial` y `OrderEmailSender` (MailKit) notifica al cliente por correo o degrada a log si SMTP no está configurado. `Admin.Web/Orders/Details` expone el formulario de actualización.
 
-### Etapa 4 — Payment.Api
+### Etapa 4 — Pagos (integración parcial en Front.Web el 2026-10-28)
 
-- Integrar PayPal detrás de una abstracción de gateway.
-- Crear y capturar pagos desde la orden persistida.
-- Guardar intentos y estados.
-- URLs de retorno y cancelación por ambiente.
-- Webhooks firmados como confirmación autoritativa.
-- Idempotencia, timeout, reintentos limitados y conciliación.
-- Probar aprobado, cancelado, duplicado, timeout y webhook fuera de orden.
+- [x] Integrar PayPal Sandbox REST v2 en `Front.Web` (`PayPalClient`: oauth2/token, create order, capture) con simulador `PAYPAL-SIM-*` cuando no hay credenciales.
+- [x] Flujo de checkout con botón PayPal Sandbox en `Cart/Index`; el `captureId` se guarda como `idTransaccion` en la orden.
+- [ ] Decidir si se extrae a un `Payment.Api` dedicado o permanece integrado en `Front.Web` para la demo.
+- [ ] Configurar `PayPal:ClientId`/`ClientSecret` de Sandbox en `appsettings.Local.json` para probar contra la API real.
+- [ ] Webhooks firmados como confirmación autoritativa (descartado para demo; la captura directa del botón es la confirmación).
+- [ ] Idempotencia de pagos a nivel de gateway, conciliación y pruebas de timeout/webhook fuera de orden (fuera de alcance de la demo).
 
 ### Etapa 5 — APIs restantes (completada el 2026-10-14)
 
@@ -242,8 +243,8 @@ Criterio de terminado:
 - [x] Integración de object storage mediante Cloudinary.
 - [x] `imageUrl` en contratos públicos.
 - [x] Validación de MIME, tamaño y firma en cargas.
-- [ ] Validar Cloudinary con credenciales reales y sus casos de error.
-- [ ] Retirar imágenes ilustrativas y rutas físicas heredadas de los datos.
+- [x] Validar Cloudinary con credenciales reales y sus casos de error (subida real desde `Admin.Web` el 2026-10-28).
+- [ ] Retirar imágenes ilustrativas y rutas físicas heredadas de los datos (`rutaImagen`/`nombreImagen` de Windows en documentos antiguos; hoy se muestra placeholder local).
 
 ### Etapa 7 — Madurez operativa
 
@@ -266,11 +267,12 @@ Criterio de terminado:
 
 ## Pendientes funcionales
 
-- Estados y transiciones de pedidos, paquetería y guía.
-- PayPal completo, webhooks, idempotencia y conciliación.
-- Validación real de cargas y reemplazos de imágenes en Cloudinary.
+- ~~Estados y transiciones de pedidos, paquetería y guía~~ **Completado el 2026-10-28** (`PUT /api/admin/orders/{id}/status` + formulario en `Admin.Web/Orders/Details`).
+- PayPal: flujo Sandbox REST v2 implementado en `Front.Web` el 2026-10-28; pendiente probar con credenciales reales de PayPal Developer y decidir si se extrae a `Payment.Api`. Webhooks, idempotencia de gateway y conciliación quedan fuera del alcance de la demo.
+- ~~Validación real de cargas y reemplazos de imágenes en Cloudinary~~ **Completado el 2026-10-28** (subida JPG real verificada).
+- Notificaciones transaccionales de cambio de estado de pedido implementadas el 2026-10-28 en `Order.Api` (MailKit); pendiente SMTP en `Order.Api` para envío real. Recuperación de contraseña usa SMTP en `Customer.Api`/`Administration.Api`.
 - Reportes administrativos adicionales a los ya implementados.
-- Notificaciones transaccionales.
+- Limpieza opcional de `rutaImagen`/`nombreImagen` legados de Windows en documentos antiguos de `productos`.
 
 ## Configuración local
 
@@ -280,7 +282,9 @@ Requisitos actuales:
 - Acceso autorizado a MongoDB.
 - Valores locales para `MongoDb:ConnectionString`, `MongoDb:DatabaseName` y JWT compartido.
 - `Jwt:SigningKey` de al menos 32 caracteres; issuer, audience y clave deben coincidir en todos los servicios.
-- SMTP para recuperación funcional y Cloudinary para cargas de imágenes.
+- SMTP para recuperación funcional; `Email:*` en `Order.Api` para correos de estado de pedido.
+- `Cloudinary:CloudName`/`ApiKey`/`ApiSecret` en `Catalog.Api` (configuradas el 2026-10-28; la carga responde `503` controlado si faltan).
+- Opcional: `PayPal:ClientId`, `PayPal:ClientSecret` y `PayPal:BaseUrl` en `Front.Web` para PayPal Sandbox real; sin credenciales opera el simulador `PAYPAL-SIM-*`.
 
 Los valores sensibles deben estar en archivos `appsettings.Local.json` de cada servicio, user-secrets o variables de entorno. `appsettings.Local.json` no se versiona.
 
@@ -734,3 +738,20 @@ Agregar entradas nuevas al final de esta sección:
 - Pruebas: se agregaron pruebas para `UpdateOrderStatusRequest` en `Order.Api.UnitTests` y para `PayPalClient` y `CheckoutInputModel` en `Front.Web.UnitTests`. Suite completa: **112 pruebas aprobadas** (0 fallidas, 0 omitidas). Build en Release sin errores ni advertencias.
 - Rollback o recuperación: revertir cambios en `Order.Api`, `Admin.Web` y `Front.Web`; los campos agregados en MongoDB son compatibles y no destructivos.
 - Pendientes: configurar credenciales locales de Cloudinary y PayPal Sandbox en archivos `appsettings.Local.json` cuando se deseen probar contra los servicios en vivo de terceros.
+
+### 2026-10-28 — Cloudinary en vivo, propagación de imageUrl al frontend y corrección de versión heredada
+
+- Estado: completado y validado en vivo.
+- Alcance: `Catalog.Api`, `Cart.Api`, `Admin.Web`, `Front.Web` y configuración local.
+- Cambios:
+  - **Credenciales Cloudinary configuradas**: `Catalog.Api/appsettings.Local.json` (no versionado) recibió `Cloudinary:CloudName`, `ApiKey` y `ApiSecret`. Se validó en vivo: subida real de JPG desde `Admin.Web` → `POST /api/admin/catalog/products/{id}/image` → `res.cloudinary.com` responde `SecureUrl` y `publicId`; el documento `productos` quedó con `imageUrl` y `imagePublicId`.
+  - **Defecto de concurrencia optimista con productos heredados corregido**: los documentos migrados desde SQL Server no tienen campo `version` en MongoDB (ej. `idSqlOriginal=8`). El filtro `Eq("version", r.Version)` no coincidía cuando `version` está ausente y `PUT /api/admin/catalog/products/{id}` devolvía `409` antes de siquiera llegar a la subida de imagen. Se agregó `VersionFilter` en `CatalogStore`: cuando el cliente reporta versión `0`, acepta documentos con `version` en `0`, `null` o inexistente; el `$inc` inicializa el campo en la primera escritura. Aplicado también en `SetStockAsync`.
+  - **Propagación de imageUrl a la tienda**: `ProductDto` y `CartItemDto` en `Front.Web` ahora deserializan `imageUrl`; `Cart.Api` agregó `imageUrl` a `CartItemResponse` (leída de `productos`); las vistas `Store/Index`, `Store/Detail` y `Cart/Index` muestran la imagen de Cloudinary con fallback a `~/images/computadora.png` cuando el producto no tiene imagen.
+  - **CSP de Front.Web actualizada**: `img-src` pasó de `'self' data:` a `'self' data: https://res.cloudinary.com`; sin esto el navegador bloqueaba las imágenes externas aunque el HTML las referenciara correctamente.
+  - **Auditoría de paquetes**: `System.Security.Cryptography.Pkcs` se fijó en `8.0.2` como referencia directa en `Order.Api` y `Order.Api.UnitTests` para eliminar el transitivo vulnerable `8.0.1` arrastrado por MailKit.
+- Contratos: `CartItemResponse` ahora incluye `imageUrl` opcional; `ProductResponse`/`ProductDto` ya lo exponían.
+- Datos: los productos heredados sin `version` se normalizan a `version=1` en su primera edición desde el panel.
+- Seguridad: la subida de imágenes sigue validando MIME/tamaño/firma antes de invocar Cloudinary; la CSP sigue restringida a un único dominio externo de imágenes.
+- Pruebas: suite completa en Release con **112 aprobadas**, 0 fallidas; `dotnet list package --vulnerable --include-transitive` limpio; validación visual confirmada por el usuario: imagen JPG subida desde `Admin.Web` y renderizada en `Front.Web`.
+- Rollback o recuperación: revertir `VersionFilter`, el campo `imageUrl` en contratos y el cambio de CSP; eliminar las credenciales de `appsettings.Local.json`.
+- Pendientes: migrar/limpiar `rutaImagen`/`nombreImagen` legados de Windows en documentos antiguos (opcional; los productos sin `imageUrl` muestran placeholder local); configurar credenciales reales de PayPal Sandbox cuando se quiera el flujo contra la API v2 en vivo (sin credenciales opera el simulador `PAYPAL-SIM-*`); notificaciones por correo de status de pedido ya implementadas, requieren SMTP en `Order.Api` para envío real.

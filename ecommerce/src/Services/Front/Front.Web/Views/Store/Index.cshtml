@@ -12,7 +12,7 @@
     <section class="products">
         @foreach (var product in Model.Products)
         {
-            <article class="product-card"><div class="product-image"><img src="~/images/computadora.png" alt="@product.Name" /></div><h3>@product.Name</h3><strong>$@product.Price.ToString("N2") MXN</strong><div class="actions"><a class="button dark" asp-action="Detail" asp-route-id="@product.Id">Ver detalles</a>@if (Context.Session.GetString("AccessToken") is not null){<form asp-controller="Cart" asp-action="Add" method="post"><input type="hidden" name="productId" value="@product.Id" /><button class="button primary full" type="submit">Agregar al carrito</button></form>}</div></article>
+            <article class="product-card"><div class="product-image"><img src="@(product.ImageUrl ?? Url.Content("~/images/computadora.png"))" alt="@product.Name" /></div><h3>@product.Name</h3><strong>$@product.Price.ToString("N2") MXN</strong><div class="actions"><a class="button dark" asp-action="Detail" asp-route-id="@product.Id">Ver detalles</a>@if (Context.Session.GetString("AccessToken") is not null){<form asp-controller="Cart" asp-action="Add" method="post"><input type="hidden" name="productId" value="@product.Id" /><button class="button primary full" type="submit">Agregar al carrito</button></form>}</div></article>
         }
     </section>
 </main>
