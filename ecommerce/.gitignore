@@ -18,6 +18,9 @@
 **/appsettings.*.local.json
 *.log
 
+# Documentos ajenos a la migración; el estado del proyecto vive en README.md
+*.docx
+
 # Legacy build output
 /CapaPresentacionTienda/bin/
 

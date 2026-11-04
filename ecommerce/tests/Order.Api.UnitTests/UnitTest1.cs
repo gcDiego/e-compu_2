@@ -114,3 +114,34 @@ public sealed class OrderStatusValidationTests
         Assert.False(IsValid(new UpdateOrderStatusRequest(status)));
     }
 }
+
+public sealed class OrderIndexTests
+{
+    [Fact]
+    public void Checkout_key_is_unique_and_sparse()
+    {
+        var index = Assert.Single(OrderDbInitializer.UniqueIndexes.Where(x => x.Field == "checkoutKey"));
+        Assert.True(index.Sparse, "Las ventas heredadas no tienen checkoutKey: el índice único debe ser sparse.");
+    }
+
+    [Fact]
+    public void Legacy_id_is_unique()
+    {
+        Assert.Contains(OrderDbInitializer.UniqueIndexes, x => x.Field == "idSqlOriginal" && !x.Sparse);
+    }
+
+    [Fact]
+    public void Equivalent_unique_index_is_detected_regardless_of_name()
+    {
+        var indexes = new[] { MongoDB.Bson.BsonDocument.Parse("{ key: { checkoutKey: 1 }, name: 'checkoutKey_unique', unique: true }") };
+        Assert.True(OrderDbInitializer.HasEquivalentUniqueIndex(indexes, "checkoutKey"));
+        Assert.False(OrderDbInitializer.HasEquivalentUniqueIndex(indexes, "idSqlOriginal"));
+    }
+
+    [Fact]
+    public void Non_unique_index_is_not_enough()
+    {
+        var indexes = new[] { MongoDB.Bson.BsonDocument.Parse("{ key: { checkoutKey: 1 }, name: 'checkoutKey_1' }") };
+        Assert.False(OrderDbInitializer.HasEquivalentUniqueIndex(indexes, "checkoutKey"));
+    }
+}

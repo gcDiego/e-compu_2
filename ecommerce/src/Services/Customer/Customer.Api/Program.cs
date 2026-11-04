@@ -31,6 +31,7 @@ var mongoDatabaseName = !string.IsNullOrWhiteSpace(builder.Configuration["MongoD
     builder.Services.AddSingleton(_ => mongoClient.GetDatabase(mongoDatabaseName));
     builder.Services.AddScoped<CustomerStore>();
     builder.Services.AddScoped<MongoSequenceService>();
+    builder.Services.AddHostedService<CustomerDbInitializer>();
 
     var smtpHost = builder.Configuration["Email:SmtpHost"];
     if (string.IsNullOrWhiteSpace(smtpHost))

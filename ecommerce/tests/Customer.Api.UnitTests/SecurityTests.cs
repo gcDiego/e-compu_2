@@ -102,3 +102,21 @@ public sealed class SecurityTests
         Assert.False(Validator.TryValidateObject(model, new ValidationContext(model), results, true));
     }
 }
+
+public sealed class CustomerIndexTests
+{
+    [Fact]
+    public void Email_and_legacy_id_are_unique()
+    {
+        Assert.Contains(CustomerDbInitializer.UniqueIndexes, x => x.Field == "correo");
+        Assert.Contains(CustomerDbInitializer.UniqueIndexes, x => x.Field == "idSqlOriginal");
+    }
+
+    [Fact]
+    public void Equivalent_unique_index_is_detected_regardless_of_name()
+    {
+        var indexes = new[] { MongoDB.Bson.BsonDocument.Parse("{ key: { correo: 1 }, name: 'correo_unique', unique: true }") };
+        Assert.True(CustomerDbInitializer.HasEquivalentUniqueIndex(indexes, "correo"));
+        Assert.False(CustomerDbInitializer.HasEquivalentUniqueIndex(indexes, "idSqlOriginal"));
+    }
+}

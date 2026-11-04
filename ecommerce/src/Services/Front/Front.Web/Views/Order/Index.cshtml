@@ -1,3 +1,42 @@
 @model IReadOnlyList<Front.Web.Models.OrderDto>
-@{ ViewData["Title"] = "Mis compras"; }
-<main class="cart-layout"><section class="cart-panel"><div class="cart-header"><h1>Mis compras</h1><a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a></div>@if (Model.Count == 0){<p>No tienes compras registradas.</p>}else{<div class="cart-items">@foreach (var order in Model){<article class="cart-item"><div><h3>Orden #@order.Id</h3><span class="brand">@order.Status</span><strong>$@order.Total.ToString("N2") MXN</strong><small>@order.Date.ToString("g")</small></div><span>@order.ProductCount productos</span></article>}</div>}</section></main>
+@{
+    ViewData["Title"] = "Mis compras";
+    string Label(string status) => status switch
+    {
+        "confirmado" => "Confirmado",
+        "en_proceso" => "En preparación",
+        "enviado" => "Enviado",
+        "entregado" => "Entregado",
+        "cancelado" => "Cancelado",
+        _ => status
+    };
+}
+<main class="detail-wrap">
+    <section class="cart-panel">
+        <div class="cart-header">
+            <h1>Mis compras</h1>
+            <a class="button dark" asp-controller="Store" asp-action="Index">Seguir comprando</a>
+        </div>
+        @if (Model.Count == 0)
+        {
+            <p class="order-empty">No tienes compras registradas.</p>
+        }
+        else
+        {
+            <div class="order-list">
+                @foreach (var order in Model)
+                {
+                    <article class="order-card">
+                        <div>
+                            <h3>Orden #@order.Id</h3>
+                            <small class="order-date">@order.Date.LocalDateTime.ToString("dd/MM/yyyy · HH:mm")</small>
+                        </div>
+                        <span class="order-status">@Label(order.Status)</span>
+                        <span class="order-count">@order.ProductCount @(order.ProductCount == 1 ? "producto" : "productos")</span>
+                        <strong class="order-total">$@order.Total.ToString("N2") MXN</strong>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</main>

@@ -27,6 +27,7 @@ var mongoDatabaseName = !string.IsNullOrWhiteSpace(builder.Configuration["MongoD
     builder.Services.AddScoped<OrderStore>();
     builder.Services.AddScoped<OrderEmailSender>();
     builder.Services.AddScoped<MongoSequenceService>();
+    builder.Services.AddHostedService<OrderDbInitializer>();
 }
 
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "Ecommerce.Identity";

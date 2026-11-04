@@ -14,9 +14,7 @@
       "descripcion": "DELL"
     },
     "nombre": "Laptop HP",
-    "nombreImagen": "6.jpg",
     "precio": 78,
-    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
     "stock": 27
   },
   {
@@ -34,9 +32,7 @@
       "descripcion": "Nvidia"
     },
     "nombre": "RAM DDR4",
-    "nombreImagen": "7.jpeg",
     "precio": 700,
-    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
     "stock": 24
   },
   {
@@ -54,9 +50,7 @@
       "descripcion": "Samsung"
     },
     "nombre": "DISCO DURO SAMSUNG",
-    "nombreImagen": "8.jpg",
     "precio": 800,
-    "rutaImagen": "C:\\Users\\irvin\\source\\repos\\ProyectoSI\\ecommerce\\CapaPresentacionAdmin\\Imagenes_Carrito",
     "stock": 18
   },
   {
@@ -74,9 +68,7 @@
       "descripcion": "DELL"
     },
     "nombre": "Mousepad Gamer Extended",
-    "nombreImagen": "9.jpeg",
     "precio": 500,
-    "rutaImagen": "imagenes",
     "stock": 7
   }
 ]

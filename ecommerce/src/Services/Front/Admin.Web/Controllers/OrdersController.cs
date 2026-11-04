@@ -1,3 +1,4 @@
+using Admin.Web.Models;
 using Admin.Web.Services;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Admin.Web.Controllers;
 public sealed class OrdersController(AdminApiClient api):SecureController
 {
-    public async Task<IActionResult> Index(CancellationToken ct,int page=1)=>View(await api.Orders(page,ct));
+    public async Task<IActionResult> Index(OrderFilterInput filter,CancellationToken ct)=>View(new OrdersViewModel(await api.Orders(filter,ct),filter));
     [HttpGet] public async Task<IActionResult> Details(int id,CancellationToken ct)=>await api.OrderDetail(id,ct) is { } order?View(order):NotFound();
     [HttpPost] public async Task<IActionResult> UpdateStatus(int id,Admin.Web.Models.UpdateOrderStatusInput model,CancellationToken ct){if(!ModelState.IsValid){TempData["Error"]="Verifica los datos del estado.";return RedirectToAction("Details",new{id});}var r=await api.UpdateOrderStatus(id,model,ct);TempData[r.IsSuccessStatusCode?"Message":"Error"]=r.IsSuccessStatusCode?"Estado del pedido actualizado y notificación enviada.":"No se pudo actualizar el estado del pedido.";return RedirectToAction("Details",new{id});}
     [HttpGet] public async Task<IActionResult> Report(DateTime? from,DateTime? to,string? transactionId,CancellationToken ct){var start=from??DateTime.UtcNow.Date.AddDays(-30);var end=to??DateTime.UtcNow.Date;ViewBag.From=start;ViewBag.To=end;ViewBag.Transaction=transactionId;return View(await api.Report(start,end,transactionId,ct));}

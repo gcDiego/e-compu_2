@@ -20,7 +20,18 @@ var client = new MongoClient(mongoConnection);
 var db = client.GetDatabase(mongoDatabaseName);
 var ventas = db.GetCollection<BsonDocument>("ventas");
 
+var productos = db.GetCollection<BsonDocument>("productos");
+var legacyImageFilter = Builders<BsonDocument>.Filter.Or(
+    Builders<BsonDocument>.Filter.Exists("rutaImagen"),
+    Builders<BsonDocument>.Filter.Exists("nombreImagen"));
+var legacyImageUpdate = await productos.UpdateManyAsync(
+    legacyImageFilter,
+    Builders<BsonDocument>.Update.Unset("rutaImagen").Unset("nombreImagen"));
+Console.WriteLine($"productos: {legacyImageUpdate.ModifiedCount} documentos sin campos de imagen heredados (rutaImagen/nombreImagen).");
+
+// Las ventas heredadas no tienen checkoutKey; sin este filtro todas caerían en el grupo null y se borrarían.
 var groups = ventas.Aggregate()
+    .Match(Builders<BsonDocument>.Filter.Type("checkoutKey", BsonType.String))
     .Group(new BsonDocument
     {
         ["_id"] = "$checkoutKey",
@@ -41,7 +52,7 @@ int deleted = 0;
 
 foreach (var group in groups)
 {
-    var checkoutKey = group["_id"].IsBsonNull ? null : group["_id"].AsString;
+    var checkoutKey = group["_id"].AsString;
     var ids = group["ids"].AsBsonArray.Select(v => v.AsObjectId).ToList();
     Console.WriteLine($"checkoutKey='{checkoutKey}' tiene {ids.Count} duplicados.");
 

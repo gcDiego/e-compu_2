@@ -17,8 +17,8 @@ Actualmente `Front.Web` consume `Catalog.Api`, `Customer.Api`, `Order.Api`, `Car
 ## Punto de partida para continuar en otra sesión
 
 1. Leer este archivo completo; el anexo final tiene el detalle administrativo.
-2. Levantar y verificar el entorno: `dotnet build Front.Web.sln --configuration Release`, `dotnet test Front.Web.sln --configuration Release --no-build` (114 pruebas aprobadas el 2026-11-03), `dotnet list Front.Web.sln package --vulnerable --include-transitive`, `./start.sh`.
-3. Trabajo abierto, en orden sugerido: probar PayPal con credenciales reales de Sandbox; configurar SMTP en `Order.Api` para los correos de estado; automatizar la carga de archivos de extremo a extremo; reportes administrativos adicionales; Etapa 7 de madurez operativa (fuera de alcance de la demo).
+2. Levantar y verificar el entorno: `dotnet build Front.Web.sln --configuration Release`, `dotnet test Front.Web.sln --configuration Release --no-build` (133 pruebas aprobadas el 2026-11-04), `dotnet list Front.Web.sln package --vulnerable --include-transitive`, `./start.sh`.
+3. Trabajo abierto, en orden sugerido: reportes administrativos adicionales; formatear las vistas y controladores administrativos con líneas excesivamente largas; Etapa 7 de madurez operativa (fuera de alcance de la demo). PayPal con credenciales reales y los correos de estado de pedido quedaron descartados por decisión del 2026-11-04 (ver "Decisiones de alcance de la demo").
 4. Al terminar un incremento, actualizar "Validaciones realizadas", "Pendientes funcionales" y agregar una entrada de historial con la plantilla del final.
 
 ## Componentes activos
@@ -146,6 +146,10 @@ Reglas:
 - Cloudinary validado en vivo el 2026-10-28: credenciales reales configuradas, subida JPG desde `Admin.Web` y renderizado en `Front.Web` tras ampliar `img-src` de la CSP a `res.cloudinary.com`.
 - Antiforgery de extremo a extremo automatizado el 2026-11-03 en `tests/Admin.Web.UnitTests/AntiforgeryTests.cs` con `WebApplicationFactory<Program>`: un POST sin token a `/Account/Logout` responde `400` y el mismo POST con el token obtenido de `/Account/Login` responde `302`.
 - Los campos de imagen heredados de Windows (`rutaImagen`/`nombreImagen`) se eliminaron del dump `mongo/productos.json` y `tests/MongoCleanup` los borra de los documentos existentes de `productos`.
+- `dotnet test Front.Web.sln --configuration Release` completó con 133 pruebas aprobadas el 2026-11-04 (30 Front.Web + 27 Order + 20 Admin.Web + 17 Customer + 15 Catalog + 9 Location + 8 Administration + 7 Cart).
+- Índices verificados en vivo contra MongoDB el 2026-11-04: `ventas` tiene `checkoutKey` e `idSqlOriginal` únicos, `clientes` tiene `correo` e `idSqlOriginal` únicos, y `usuarios`, `productos`, `categorias` y `marcas` tienen sus índices únicos. `Order.Api` y `Customer.Api` arrancaron contra la base real y reconocieron los índices existentes sin intentar recrearlos y sin código 85.
+- Se comprobó en una base desechable el 2026-11-04 que un índice único no sparse sobre `ventas.checkoutKey` **no se puede crear** cuando existen ventas heredadas sin ese campo (falla con `11000`), que la variante sparse sí se crea y que sigue rechazando `checkoutKey` duplicados. La base desechable se eliminó al terminar.
+- La carga de imágenes quedó automatizada de extremo a extremo sobre HTTP real con `WebApplicationFactory<Program>` en `Catalog.Api`, sin necesidad de MongoDB ni Cloudinary.
 
 ## Riesgos prioritarios
 
@@ -159,11 +163,18 @@ El checkout ya reconstruye nombre y precio desde el producto vigente. Falta vali
 
 ### Consistencia de checkout
 
-La creación de orden, el descuento de stock y la eliminación del carrito usan una transacción con `checkoutKey` como clave de idempotencia única. Si dos operaciones concurrentes intentan crear una orden para el mismo carrito, el índice único en `ventas.checkoutKey` hace fallar la segunda y `OrderStore` devuelve la orden ya existente. Desde el 2026-10-20 la operación reintenta hasta 3 veces ante `TransientTransactionError` (conflicto de escritura entre transacciones), por lo que un request perdedor devuelve `400` controlado en lugar de `500`; validado en vivo con dos requests paralelos contra MongoDB con replica set. También se validó el rollback con un carrito multiartículo cuyo segundo producto no tenía stock: no se creó orden, el stock reservado por el primer artículo se restauró y el carrito permaneció disponible.
+La creación de orden, el descuento de stock y la eliminación del carrito usan una transacción con `checkoutKey` como clave de idempotencia única. Si dos operaciones concurrentes intentan crear una orden para el mismo carrito, el índice único en `ventas.checkoutKey` hace fallar la segunda y `OrderStore` devuelve la orden ya existente. Ese índice lo garantiza `OrderDbInitializer` al arrancar y es **sparse** a propósito: las ventas heredadas no tienen `checkoutKey` y un índice único normal no se puede crear sobre ellas (verificado el 2026-11-04: falla con `11000` sin sparse, se crea con sparse y sigue rechazando `checkoutKey` duplicados). Desde el 2026-10-20 la operación reintenta hasta 3 veces ante `TransientTransactionError` (conflicto de escritura entre transacciones), por lo que un request perdedor devuelve `400` controlado en lugar de `500`; validado en vivo con dos requests paralelos contra MongoDB con replica set. También se validó el rollback con un carrito multiartículo cuyo segundo producto no tenía stock: no se creó orden, el stock reservado por el primer artículo se restauró y el carrito permaneció disponible.
 
 ### Concurrencia de identificadores
 
-Los nuevos IDs heredados se asignan mediante contadores atómicos. Falta revisar duplicados preexistentes y crear índices únicos antes de considerar cerrada la garantía de unicidad.
+Los nuevos IDs heredados se asignan mediante contadores atómicos y cada servicio garantiza sus índices únicos al arrancar (2026-11-04). `tests/MongoCleanup` sigue siendo la herramienta para revisar duplicados preexistentes de `ventas.checkoutKey` antes de recrear un entorno.
+
+## Decisiones de alcance de la demo
+
+Tomadas el 2026-11-04. El proyecto no saldrá a producción; estas decisiones no son deuda pendiente sino alcance cerrado:
+
+- **Sin correos de cambio de estado de pedido.** `OrderEmailSender` queda implementado y degrada a log cuando no hay SMTP. No se configura `Email:*` en `Order.Api`: para demostrar el flujo basta el cambio de estado en `Admin.Web` y su registro en `ventas.seguimiento.historial` y en logs. Configurar SMTP sólo gastaría recursos en cada compra.
+- **Sin pagos acreditables.** PayPal se queda en el simulador `PAYPAL-SIM-*`; no se configuran credenciales de Sandbox. El objetivo es mostrar cómo funcionaría el flujo, no cobrar de forma verificable. Como consecuencia, `CheckoutController.CapturePayPalOrder` no valida que la captura quede `COMPLETED` (marcado con un comentario `shortcut:` en el código) y el total capturado no se reconcilia con el total que recalcula `Order.Api`. Si algún día se usan credenciales reales, ambas cosas deben resolverse antes de aceptar un pago.
 
 ## Inventario de dependencias SQL pendientes
 
@@ -203,7 +214,7 @@ Estado: implementada en código y pruebas unitarias; validación integrada de Mo
 - [x] Recalcular precios desde productos durante checkout.
 - [x] Validar cliente, producto activo, cantidad y stock en carrito.
 - [x] Eliminar IDs calculados únicamente con máximo más uno mediante contadores atómicos.
-- [x] Revisar duplicados y agregar índices únicos mediante `MongoDbInitializer`.
+- [x] Revisar duplicados y agregar índices únicos. El `MongoDbInitializer` original vivía en `Front.Web` y desapareció al retirar `MongoDB.Driver` el 2026-10-14; desde el 2026-11-04 cada servicio propietario los garantiza: `AdminDbInitializer` (`usuarios`), `CatalogDbInitializer` (`categorias`, `marcas`, `productos`), `OrderDbInitializer` (`ventas`) y `CustomerDbInitializer` (`clientes`).
 - [x] Ejecutar checkout dentro de una transacción MongoDB.
 - [x] Probar concurrencia de checkout contra MongoDB real (2026-10-20: una sola orden y un solo descuento de stock; reintento `TransientTransactionError` agregado).
 - [x] Probar rollback ante fallo parcial (2026-10-20: carrito multiartículo con segundo producto sin stock, sin orden ni descuento residual).
@@ -241,14 +252,13 @@ Criterio de terminado:
 - **Hecho en este paso:** creación del proyecto `Order.Api`; `CheckoutController` y `OrderController` ya no tienen fallback a `MongoOrderService`; `Front.Web` depende de HTTP/JWT para login, registro, checkout e historial.
 - **Hecho el 2026-10-28:** `PUT /api/admin/orders/{id}/status` permite cambiar estado (`confirmado`, `en_proceso`, `enviado`, `entregado`, `cancelado`) con paquetería, número de guía y notas; se persiste historial en `ventas.seguimiento.historial` y `OrderEmailSender` (MailKit) notifica al cliente por correo o degrada a log si SMTP no está configurado. `Admin.Web/Orders/Details` expone el formulario de actualización.
 
-### Etapa 4 — Pagos (integración parcial en Front.Web el 2026-10-28)
+### Etapa 4 — Pagos (cerrada el 2026-11-04 con el simulador)
 
 - [x] Integrar PayPal Sandbox REST v2 en `Front.Web` (`PayPalClient`: oauth2/token, create order, capture) con simulador `PAYPAL-SIM-*` cuando no hay credenciales.
 - [x] Flujo de checkout con botón PayPal Sandbox en `Cart/Index`; el `captureId` se guarda como `idTransaccion` en la orden.
-- [x] Decidido el 2026-11-03: el pago permanece integrado en `Front.Web` (`PayPalClient`) y no se crea `Payment.Api`. La demo no necesita despliegue, escalado ni aislamiento independientes del pago, y la captura ya se confirma contra PayPal antes de crear la orden. Si más adelante se agregan webhooks, conciliación o varios proveedores, la extracción se reevalúa.
-- [ ] Configurar `PayPal:ClientId`/`ClientSecret` de Sandbox en `appsettings.Local.json` para probar contra la API real.
-- [ ] Webhooks firmados como confirmación autoritativa (descartado para demo; la captura directa del botón es la confirmación).
-- [ ] Idempotencia de pagos a nivel de gateway, conciliación y pruebas de timeout/webhook fuera de orden (fuera de alcance de la demo).
+- [x] Decidido el 2026-11-03: el pago permanece integrado en `Front.Web` (`PayPalClient`) y no se crea `Payment.Api`. La demo no necesita despliegue, escalado ni aislamiento independientes del pago. Si más adelante se agregan webhooks, conciliación o varios proveedores, la extracción se reevalúa.
+- [x] Descartado el 2026-11-04: no se configuran credenciales de Sandbox ni se valida el estado de la captura. La etapa se cierra con el simulador; ver "Decisiones de alcance de la demo".
+- [x] Descartados para la demo: webhooks firmados, idempotencia a nivel de gateway, conciliación y pruebas de timeout o webhook fuera de orden.
 
 ### Etapa 5 — APIs restantes (completada el 2026-10-14)
 
@@ -280,22 +290,25 @@ Criterio de terminado:
 - CI/CD, imágenes de contenedor, escaneo de secretos y dependencias.
 - Backups y simulacros de restauración.
 
-### Etapa 8 — Retiro del legado
+### Etapa 8 — Retiro del legado (completada el 2026-11-04)
 
-- Verificar que Admin y Tienda antiguas no reciben tráfico.
-- Confirmar que el frontend no referencia `CapaNegocio`, `CapaDatos`, `CapaEntidad` ni SQL Server.
-- Confirmar que ventas históricas están disponibles.
-- Deshabilitar primero, observar y eliminar después.
-- Revocar secretos y accesos del sistema retirado.
+- [x] Admin y Tienda antiguas no reciben tráfico: sus proyectos ya no existen en el repositorio ni en `start.sh`.
+- [x] El frontend no referencia `CapaNegocio`, `CapaDatos`, `CapaEntidad` ni SQL Server; tampoco `MongoDB.Driver`.
+- [x] Las ventas históricas están disponibles en la colección `ventas` y se exponen por `Order.Api`.
+- [x] Deshabilitar, observar y eliminar: las carpetas `Capa*` y los servicios SQL intermedios se eliminaron el 2026-09-24 tras comprobar que no tenían código activo.
+- [x] No queda nada que revocar: el sistema retirado no tiene secretos vigentes en el repositorio y las cadenas SQL desaparecieron con sus `Web.config`.
 
 ## Pendientes funcionales
 
 - ~~Estados y transiciones de pedidos, paquetería y guía~~ **Completado el 2026-10-28** (`PUT /api/admin/orders/{id}/status` + formulario en `Admin.Web/Orders/Details`).
-- PayPal: flujo Sandbox REST v2 implementado en `Front.Web` el 2026-10-28; el 2026-11-03 se decidió mantenerlo integrado en `Front.Web` sin `Payment.Api`. Pendiente probar con credenciales reales de PayPal Developer. Webhooks, idempotencia de gateway y conciliación quedan fuera del alcance de la demo.
+- ~~PayPal con credenciales reales de Sandbox~~ **Descartado el 2026-11-04**: la demo se queda con el simulador `PAYPAL-SIM-*`. Ver "Decisiones de alcance de la demo".
 - ~~Validación real de cargas y reemplazos de imágenes en Cloudinary~~ **Completado el 2026-10-28** (subida JPG real verificada).
-- Notificaciones transaccionales de cambio de estado de pedido implementadas el 2026-10-28 en `Order.Api` (MailKit); pendiente SMTP en `Order.Api` para envío real. Recuperación de contraseña usa SMTP en `Customer.Api`/`Administration.Api`.
+- ~~SMTP en `Order.Api` para los correos de estado de pedido~~ **Descartado el 2026-11-04**: el cambio de estado se demuestra con `Admin.Web`, el historial de `ventas.seguimiento.historial` y el log. Recuperación de contraseña sí usa SMTP en `Customer.Api`/`Administration.Api`.
 - Reportes administrativos adicionales a los ya implementados.
-- Automatizar de extremo a extremo la carga de archivos (antiforgery ya quedó automatizado el 2026-11-03; autorización de sesión administrativa, paginación y validación local de imágenes ya tienen cobertura).
+- ~~Automatizar de extremo a extremo la carga de archivos~~ **Completado el 2026-11-04** (`tests/Catalog.Api.UnitTests/ImageUploadTests.cs`: `401` sin token, `400` ante SVG disfrazado de PNG, `503` con PNG válido y Cloudinary sin credenciales, más tres pruebas de la compensación).
+- ~~Índices únicos sin dueño tras retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-11-04** (`OrderDbInitializer` y `CustomerDbInitializer`).
+- ~~Filtros de pedidos sólo disponibles en la API~~ **Completado el 2026-11-04** (`Admin.Web/Orders/Index` filtra por estado, fechas y transacción, y pagina conservando los filtros).
+- Formatear las vistas y controladores administrativos que todavía tienen líneas excesivamente largas.
 - Madurez operativa (Etapa 7): gateway, OpenAPI, observabilidad, sesiones y rate limiting distribuidos, CI/CD y backups. Fuera del alcance de la demo.
 - ~~Limpieza de `rutaImagen`/`nombreImagen` legados de Windows en documentos antiguos de `productos`~~ **Completado el 2026-11-03** (dump `mongo/productos.json` y `tests/MongoCleanup`; ejecutar `dotnet run --project tests/MongoCleanup` contra la base en uso para aplicarlo).
 
@@ -307,9 +320,9 @@ Requisitos actuales:
 - Acceso autorizado a MongoDB.
 - Valores locales para `MongoDb:ConnectionString`, `MongoDb:DatabaseName` y JWT compartido.
 - `Jwt:SigningKey` de al menos 32 caracteres; issuer, audience y clave deben coincidir en todos los servicios.
-- SMTP para recuperación funcional; `Email:*` en `Order.Api` para correos de estado de pedido.
+- SMTP (`Email:*`) sólo en `Customer.Api` y `Administration.Api`, para la recuperación de contraseña. `Order.Api` no lo lleva por decisión del 2026-11-04 y `Cart.Api`/`Location.Api` no envían correo.
 - `Cloudinary:CloudName`/`ApiKey`/`ApiSecret` en `Catalog.Api` (configuradas el 2026-10-28; la carga responde `503` controlado si faltan).
-- Opcional: `PayPal:ClientId`, `PayPal:ClientSecret` y `PayPal:BaseUrl` en `Front.Web` para PayPal Sandbox real; sin credenciales opera el simulador `PAYPAL-SIM-*`.
+- `PayPal:ClientId`, `PayPal:ClientSecret` y `PayPal:BaseUrl` en `Front.Web` quedan deliberadamente sin configurar: la demo opera con el simulador `PAYPAL-SIM-*`.
 
 Los valores sensibles deben estar en archivos `appsettings.Local.json` de cada servicio, user-secrets o variables de entorno. `appsettings.Local.json` no se versiona.
 
@@ -369,6 +382,16 @@ Un incremento está terminado cuando:
 - Se actualizó este documento.
 
 ## Historial por etapas
+
+### Índices por servicio, carga de imágenes automatizada, filtros de pedidos y cierre de alcance — 2026-11-04
+
+- **Índices únicos sin dueño (corregido).** Al retirar `MongoDB.Driver` de `Front.Web` el 2026-10-14 desapareció el `MongoDbInitializer` que creaba los índices de `ventas` y `clientes`; desde entonces sólo `Administration.Api` y `Catalog.Api` garantizaban los suyos. La base en uso seguía funcionando porque conservaba los índices creados por el inicializador antiguo (`checkoutKey_unique`, `correo_unique`), pero un entorno nuevo restaurado desde `mongo/*.json` se habría quedado sin ellos y el checkout habría perdido su idempotencia en silencio. Se agregaron `OrderDbInitializer` (`ventas.checkoutKey` sparse y `ventas.idSqlOriginal`) y `CustomerDbInitializer` (`clientes.correo` y `clientes.idSqlOriginal`), registrados como `IHostedService` igual que los otros dos.
+- **`tests/MongoCleanup` borraba ventas heredadas (corregido).** Agrupaba duplicados por `checkoutKey` incluyendo los documentos que no tienen el campo, de modo que las 5 ventas del dump caían todas en el grupo `null` y el script habría eliminado 4 de ellas. Ahora sólo considera documentos cuyo `checkoutKey` es una cadena.
+- **Carga de imágenes automatizada.** La compensación ante fallo se extrajo a `ProductImage.ApplyAsync` y tiene tres pruebas (se borra la imagen nueva si el producto no existe, se borra la anterior si sí existe, no se borra nada si no había anterior). Se añadieron tres pruebas de extremo a extremo sobre HTTP con `WebApplicationFactory<Program>`: `401` sin token, `400` ante un SVG con nombre `.png` y `503` con un PNG válido sin credenciales de Cloudinary.
+- **Filtros de pedidos en `Admin.Web`.** `Orders/Index` filtra por estado, rango de fechas y transacción, y pagina conservando los filtros. `OrderFilterInput` concentra los filtros en un único lugar que alimenta tanto la consulta a `Order.Api` como los enlaces de paginación, descarta estados desconocidos y tiene 7 pruebas. Antes la vista no tenía ni filtros ni forma de cambiar de página.
+- **Higiene.** Se eliminaron las credenciales SMTP copiadas en `appsettings.Local.json` de `Cart.Api` y `Location.Api`, que no envían correo. `DOCUMENTACION_TECNICA_ECOMMERCE_PADUKI.docx` y `Documentacion_Pruebas.docx` salieron del control de versiones (seguían rastreados, al contrario de lo que afirmaba el anexo) y `*.docx` entró en `.gitignore`. Etapa 8 se cerró porque su contenido ya estaba hecho desde el 2026-09-24.
+- **Alcance cerrado por decisión.** Sin SMTP en `Order.Api` y sin credenciales reales de PayPal; ver "Decisiones de alcance de la demo".
+- `dotnet test Front.Web.sln --configuration Release`: 133 pruebas aprobadas, 0 fallidas, 0 advertencias (114 previas más 19).
 
 ### Antiforgery automatizado, limpieza de imágenes heredadas y decisión de pagos — 2026-11-03
 
@@ -1105,7 +1128,7 @@ Requiere:
 
 #### Customer.Api y Order.Api
 
-Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recuperación de clientes.
+Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recuperación de clientes; Order.Api no lleva SMTP por decisión del 2026-11-04. Ambos garantizan sus índices únicos al arrancar (`ventas`, `clientes`).
 
 #### Puertos documentados
 
@@ -1187,15 +1210,16 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 7. **Pedidos**
    - ~~Son deliberadamente de sólo lectura~~ **Actualizado el 2026-10-28**: `Order.Api` expone `PUT /api/admin/orders/{id}/status` con estados `confirmado`, `en_proceso`, `enviado`, `entregado`, `cancelado`, paquetería, número de guía y notas (persistidos en `ventas.seguimiento.historial`). `Admin.Web/Orders/Details` incluye el formulario. `OrderEmailSender` (MailKit en `Order.Api`) notifica al cliente por correo o degrada a log sin SMTP.
 
-8. **Filtros de Admin.Web**
-   - La API admite filtros tipados, pero la primera interfaz de pedidos muestra principalmente paginación básica. El reporte sí admite fechas y transacción.
+8. ~~**Filtros de Admin.Web**~~ **Resuelto el 2026-11-04**
+   - `Orders/Index` expone estado, rango de fechas y transacción, y los conserva al paginar. El reporte ya admitía fechas y transacción.
 
 9. ~~Detalle de pedido en UI~~ **Resuelto el 2026-10-08**: se agregó `Orders/Details` en `Admin.Web` (acción, vista, `AdminApiClient.OrderDetail`, `OrderDetailModel`) con enlace desde el listado.
 
 10. **Pruebas faltantes respecto al plan completo**
    - ~~No se crearon proyectos separados para Order.Api.UnitTests y Admin.Web.UnitTests.~~ **Resuelto el 2026-10-13**: se crearon ambos proyectos y se añadieron a la solución (8 y 7 pruebas respectivamente: validación de checkout, claims de cliente, modelos de Admin.Web).
    - **Actualizado el 2026-10-14**: se agregaron pruebas de autorización de sesión administrativa (filtro `AdminSessionRequirement`, cobertura de todos los controladores seguros) y de paginación de `Order.Api` (límites inferior y superior, tope de 100). La autorización HTTP 401/403 además se validó de forma integrada contra servicios reales.
-   - **Actualizado el 2026-11-03**: `tests/Admin.Web.UnitTests/AntiforgeryTests.cs` cubre el antiforgery de extremo a extremo con `WebApplicationFactory<Program>` (POST sin token `400`, POST con token `302`). Sigue faltando la prueba de compensación Cloudinary ante fallo del producto (la subida real ya se validó manualmente).
+   - **Actualizado el 2026-11-03**: `tests/Admin.Web.UnitTests/AntiforgeryTests.cs` cubre el antiforgery de extremo a extremo con `WebApplicationFactory<Program>` (POST sin token `400`, POST con token `302`).
+   - **Actualizado el 2026-11-04**: `tests/Catalog.Api.UnitTests/ImageUploadTests.cs` cubre la compensación de Cloudinary ante fallo del producto y la carga de imágenes sobre HTTP real; `tests/Order.Api.UnitTests` y `tests/Customer.Api.UnitTests` cubren los índices únicos de sus servicios; `tests/Admin.Web.UnitTests` cubre los filtros de pedidos.
 
 11. **Auditoría**
     - Es funcional pero básica. No guarda diff detallado; sólo actor, acción, entidad, ID y fecha.
@@ -1209,8 +1233,8 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 14. **Eliminación física**
     - No se implementó, deliberadamente. Se utiliza activación/desactivación para conservar referencias históricas.
 
-15. **Documento ajeno sin seguimiento**
-    - `DOCUMENTACION_TECNICA_ECOMMERCE_PADUKI.docx` ya estaba sin seguimiento antes de esta implementación. No fue modificado ni debe incluirse accidentalmente.
+15. **Documentos ajenos**
+    - `DOCUMENTACION_TECNICA_ECOMMERCE_PADUKI.docx` y `Documentacion_Pruebas.docx` seguían rastreados en Git hasta el 2026-11-04, cuando se sacaron del índice con `git rm --cached` y `*.docx` se agregó a `.gitignore`. Los archivos continúan en disco; no fueron modificados.
 
 ### Siguiente incremento recomendado
 
@@ -1218,8 +1242,9 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 2. Confirmar visualmente la recepción del correo de establecimiento; la creación y aceptación SMTP ya se validaron.
 3. ~~Crear categoría, marca y producto desde el panel y validar su aparición en la tienda~~ **Completado el 2026-10-28** con subida de imagen JPG a Cloudinary y visualización en `Front.Web`; se corrigió además el defecto de productos heredados sin campo `version` que provocaba `409` (ver la entrada de historial del 2026-10-28).
 4. ~~Añadir pruebas de antiforgery de extremo a extremo con `WebApplicationFactory`~~ **Completado el 2026-11-03** (`tests/Admin.Web.UnitTests/AntiforgeryTests.cs`).
-5. ~~Cuando existan credenciales, completar las pruebas de Cloudinary y su compensación~~ **Completado el 2026-10-28** (subida real validada; la compensación ante fallo del producto sigue sin prueba automatizada).
+5. ~~Cuando existan credenciales, completar las pruebas de Cloudinary y su compensación~~ **Completado**: subida real validada el 2026-10-28 y compensación automatizada el 2026-11-04 (`tests/Catalog.Api.UnitTests/ImageUploadTests.cs`).
 6. ~~Ejecutar E2E concurrente y rollback parcial de checkout~~ **Completado el 2026-10-20** (incluyó reintento ante `TransientTransactionError`, una sola orden/descuento bajo concurrencia y rollback total ante segundo producto sin stock).
 7. ~~Extraer `Cart.Api` y `Location.Api` para retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-10-14**.
 8. Formatear las vistas/controladores administrativos restantes que todavía contienen líneas excesivamente largas.
-9. No incluir `appsettings.Local.json`, secretos ni `DOCUMENTACION_TECNICA_ECOMMERCE_PADUKI.docx` en un commit.
+9. No incluir `appsettings.Local.json` ni secretos en un commit; los `.docx` ya están ignorados.
+10. Antes de recrear un entorno desde `mongo/*.json`, ejecutar `dotnet run --project tests/MongoCleanup` y luego arrancar los servicios para que creen sus índices únicos. Comprobar que `ventas.checkoutKey` quedó creado: sin él el checkout pierde la idempotencia sin avisar.

@@ -65,7 +65,8 @@ public sealed class CheckoutController(OrderApiClient orderApi, CartApiClient ca
         if (!TryValidateModel(request.Shipping))
             return BadRequest(new { error = "Los datos de envío no son válidos." });
 
-        var (txId, status, captureError) = await payPal.CaptureOrderAsync(request.PayPalOrderId, cancellationToken);
+        // shortcut: sólo se comprueba que PayPal respondió, no que el pago quede COMPLETED; revisar si la demo pasa a cobros acreditables.
+        var (txId, _, captureError) = await payPal.CaptureOrderAsync(request.PayPalOrderId, cancellationToken);
         if (captureError is not null)
             return BadRequest(new { error = captureError });
 
