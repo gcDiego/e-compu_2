@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("src/Services/Customer/Customer.Api/appsettings.Local.json", optional: true)
+    .AddInMemoryCollection(DotEnv.Read(".env"))
     .Build();
 
 var mongoConnection = config["MongoDb:ConnectionString"];

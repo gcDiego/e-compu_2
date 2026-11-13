@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("src/Services/Customer/Customer.Api/appsettings.Local.json", optional: true)
+    .AddInMemoryCollection(DotEnv.Read(".env"))
     .AddEnvironmentVariables()
     .Build();
 

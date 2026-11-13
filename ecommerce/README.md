@@ -173,7 +173,7 @@ Los nuevos IDs heredados se asignan mediante contadores atómicos y cada servici
 
 Tomadas el 2026-11-04. El proyecto no saldrá a producción; estas decisiones no son deuda pendiente sino alcance cerrado:
 
-- **Sin correos de cambio de estado de pedido.** `OrderEmailSender` queda implementado y degrada a log cuando no hay SMTP. No se configura `Email:*` en `Order.Api`: para demostrar el flujo basta el cambio de estado en `Admin.Web` y su registro en `ventas.seguimiento.historial` y en logs. Configurar SMTP sólo gastaría recursos en cada compra.
+- ~~**Sin correos de cambio de estado de pedido.**~~ **Revertido el 2026-11-13.** La decisión del 2026-11-04 nunca estuvo en efecto: el `.env` de la raíz ya definía `Email__*` para todos los servicios y `start.sh` se los exportaba, así que `Order.Api` siempre tuvo SMTP y enviaba correos reales al cambiar el estado de un pedido. Al descubrirlo se decidió dejarlo encendido: ya funciona y no cuesta mantenerlo. `OrderEmailSender` sigue degradando a log si algún día se quita `Email__SmtpHost`.
 - **Sin pagos acreditables.** PayPal se queda en el simulador `PAYPAL-SIM-*`; no se configuran credenciales de Sandbox. El objetivo es mostrar cómo funcionaría el flujo, no cobrar de forma verificable. Como consecuencia, `CheckoutController.CapturePayPalOrder` no valida que la captura quede `COMPLETED` (marcado con un comentario `shortcut:` en el código) y el total capturado no se reconcilia con el total que recalcula `Order.Api`. Si algún día se usan credenciales reales, ambas cosas deben resolverse antes de aceptar un pago.
 
 ## Inventario de dependencias SQL pendientes
@@ -303,7 +303,7 @@ Criterio de terminado:
 - ~~Estados y transiciones de pedidos, paquetería y guía~~ **Completado el 2026-10-28** (`PUT /api/admin/orders/{id}/status` + formulario en `Admin.Web/Orders/Details`).
 - ~~PayPal con credenciales reales de Sandbox~~ **Descartado el 2026-11-04**: la demo se queda con el simulador `PAYPAL-SIM-*`. Ver "Decisiones de alcance de la demo".
 - ~~Validación real de cargas y reemplazos de imágenes en Cloudinary~~ **Completado el 2026-10-28** (subida JPG real verificada).
-- ~~SMTP en `Order.Api` para los correos de estado de pedido~~ **Descartado el 2026-11-04**: el cambio de estado se demuestra con `Admin.Web`, el historial de `ventas.seguimiento.historial` y el log. Recuperación de contraseña sí usa SMTP en `Customer.Api`/`Administration.Api`.
+- ~~SMTP en `Order.Api` para los correos de estado de pedido~~ **Resuelto el 2026-11-13**: siempre estuvo activo a través del `.env` de la raíz y se decidió conservarlo. Pendiente confirmar visualmente la recepción de uno de esos correos.
 - Reportes administrativos adicionales a los ya implementados.
 - ~~Automatizar de extremo a extremo la carga de archivos~~ **Completado el 2026-11-04** (`tests/Catalog.Api.UnitTests/ImageUploadTests.cs`: `401` sin token, `400` ante SVG disfrazado de PNG, `503` con PNG válido y Cloudinary sin credenciales, más tres pruebas de la compensación).
 - ~~Índices únicos sin dueño tras retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-11-04** (`OrderDbInitializer` y `CustomerDbInitializer`).
@@ -318,13 +318,29 @@ Requisitos actuales:
 
 - .NET SDK 8 compatible con el proyecto.
 - Acceso autorizado a MongoDB.
-- Valores locales para `MongoDb:ConnectionString`, `MongoDb:DatabaseName` y JWT compartido.
-- `Jwt:SigningKey` de al menos 32 caracteres; issuer, audience y clave deben coincidir en todos los servicios.
-- SMTP (`Email:*`) sólo en `Customer.Api` y `Administration.Api`, para la recuperación de contraseña. `Order.Api` no lo lleva por decisión del 2026-11-04 y `Cart.Api`/`Location.Api` no envían correo.
-- `Cloudinary:CloudName`/`ApiKey`/`ApiSecret` en `Catalog.Api` (configuradas el 2026-10-28; la carga responde `503` controlado si faltan).
-- `PayPal:ClientId`, `PayPal:ClientSecret` y `PayPal:BaseUrl` en `Front.Web` quedan deliberadamente sin configurar: la demo opera con el simulador `PAYPAL-SIM-*`.
 
-Los valores sensibles deben estar en archivos `appsettings.Local.json` de cada servicio, user-secrets o variables de entorno. `appsettings.Local.json` no se versiona.
+**Toda la configuración local vive en un único archivo: `.env` en la raíz del repositorio** (desde el 2026-11-13; antes estaba repartida en siete `appsettings.Local.json`). No se versiona. `./start.sh` lo carga con `set -a; source .env` y lo exporta a los ocho servicios; cada `Program.cs` lee las variables de entorno **después** del JSON, por lo que el `.env` manda.
+
+Claves que contiene:
+
+| Grupo | Claves | Quién las usa |
+| --- | --- | --- |
+| `MongoDb__` | `ConnectionString`, `DatabaseName` | los siete servicios con acceso a datos |
+| `Jwt__` | `Issuer`, `Audience`, `SigningKey` (≥32 caracteres), `LifetimeMinutes` | todos; deben coincidir exactamente |
+| `Services__` | `Customer`, `Order` | `Front.Web` y `Admin.Web` |
+| `Email__` | `SmtpHost`, `SmtpPort`, `SmtpUsername`, `SmtpPassword`, `From`, `FromName`, `SmtpUseSsl`, `CheckCertificateRevocation` | `Customer.Api`, `Administration.Api` y `Order.Api` |
+| `Email__ResetBaseUrl` | enlace de restablecimiento de la tienda (`http://localhost:5160`) | `Customer.Api` |
+| `Email__AdminResetBaseUrl` | enlace de restablecimiento del panel (`http://localhost:5163`) | `Administration.Api` |
+| `Cloudinary__` | `CloudName`, `ApiKey`, `ApiSecret` | `Catalog.Api`; la carga responde `503` controlado si faltan |
+
+Notas:
+
+- Las dos URL de restablecimiento son distintas **a propósito**: el cliente debe aterrizar en la tienda y el administrador en el panel. Una sola clave compartida mandaba al administrador a `http://localhost:5160`, donde el formulario no existe.
+- SMTP: puerto `587` con STARTTLS y contraseña de aplicación de Gmail sin espacios. Se comprobó el 2026-11-13 que Gmail también acepta el puerto `465` y la contraseña con espacios, pero se conserva la combinación documentada.
+- `PayPal:ClientId`, `PayPal:ClientSecret` y `PayPal:BaseUrl` quedan deliberadamente ausentes: la demo opera con el simulador `PAYPAL-SIM-*`.
+- Si ejecutas un servicio suelto con `dotnet run`, **no** leerá el `.env`: ejecuta antes `set -a; source .env; set +a`, o usa `./start.sh`.
+- `tests/Integration.Seed` y `tests/MongoCleanup` leen el `.env` de la raíz directamente (`DotEnv.cs`), así que se siguen ejecutando desde la raíz sin preparación previa.
+- Los `Program.cs` conservan `AddJsonFile("appsettings.Local.json", optional: true)`. Si creas uno, el `.env` lo sobrescribirá; no lo uses.
 
 Puertos locales:
 
@@ -382,6 +398,18 @@ Un incremento está terminado cuando:
 - Se actualizó este documento.
 
 ## Historial por etapas
+
+### Configuración local unificada en un solo `.env` — 2026-11-13
+
+- **Estado anterior.** La configuración estaba repartida entre un `.env` en la raíz (que `start.sh` ya cargaba) y siete `appsettings.Local.json`, uno por servicio. Como cada `Program.cs` añade las variables de entorno **después** del JSON, el `.env` ya ganaba silenciosamente: los JSON eran en su mayoría peso muerto, salvo Cloudinary, que sólo existía en el de `Catalog.Api` porque en el `.env` estaba comentado bajo un encabezado equivocado.
+- **Tres conflictos encontrados al comparar valores**, todos en `Administration.Api`:
+  1. `Email:ResetBaseUrl` valía `http://localhost:5163` en su JSON y `http://localhost:5160` en el `.env`. Ganaba el `.env`, así que **los correos de recuperación de administrador enviaban al administrador a la tienda**, donde no existe el formulario. Las dos URL son necesarias y distintas, así que `AdminEmailSender` ahora lee `Email:AdminResetBaseUrl` con respaldo a `Email:ResetBaseUrl`.
+  2. Puerto SMTP `587` en el JSON contra `465` en el `.env`.
+  3. Contraseña de aplicación sin espacios (16 caracteres) en el JSON contra con espacios (19) en el `.env`.
+  Se probó la autenticación real contra `smtp.gmail.com` sin enviar ningún correo: las tres combinaciones autentican, así que 2 y 3 eran inocuas. Se conservó la combinación documentada (`587` + contraseña sin espacios).
+- **Resultado.** Un único `.env` en la raíz con 21 claves agrupadas y comentadas. Los siete `appsettings.Local.json` se movieron a `.secrets-respaldo/` (ignorada por Git) en vez de borrarse. `tests/Integration.Seed` y `tests/MongoCleanup`, que leían el JSON de `Customer.Api`, ahora leen el `.env` mediante `DotEnv.cs`.
+- **Verificado en vivo.** Los ocho servicios arrancan sólo con el `.env`: health checks `200` en los seis APIs, `200` en tienda y panel, los inicializadores reconocen los índices de `ventas` y `clientes`, la carga de imagen con un JWT firmado con la clave del `.env` sube a Cloudinary y compensa el borrado (`404` ante producto inexistente), y `tests/Integration.Seed` completó `=== OK ===` incluyendo checkout concurrente y rollback.
+- **Efecto colateral documentado.** Al consolidar quedó a la vista que `Order.Api` siempre recibió SMTP desde el `.env`; la decisión del 2026-11-04 de no enviar correos de estado nunca estuvo en efecto y se revirtió conscientemente.
 
 ### Índices por servicio, carga de imágenes automatizada, filtros de pedidos y cierre de alcance — 2026-11-04
 
@@ -1104,7 +1132,7 @@ Todos los servicios que validan JWT deben compartir exactamente:
 - `Jwt:Audience`
 - `Jwt:SigningKey` de al menos 32 caracteres
 
-Crear archivos `appsettings.Local.json` ignorados por Git.
+Desde el 2026-11-13 todo esto vive en el único `.env` de la raíz; ya no se crean `appsettings.Local.json` por servicio. El desglose por servicio que sigue indica qué consume cada uno de ese archivo.
 
 #### Administration.Api
 
@@ -1114,7 +1142,7 @@ Requiere:
 - `MongoDb:DatabaseName`
 - JWT compartido
 - SMTP opcional pero necesario para recuperación funcional
-- `Email:ResetBaseUrl` apuntando a `Admin.Web`, por ejemplo `http://localhost:5163`
+- `Email:AdminResetBaseUrl` apuntando a `Admin.Web`, por ejemplo `http://localhost:5163`. Si falta, cae a `Email:ResetBaseUrl`, que es el de la tienda.
 
 #### Catalog.Api
 
@@ -1246,5 +1274,5 @@ Requieren MongoDB y el mismo JWT. Customer.Api también requiere SMTP para recup
 6. ~~Ejecutar E2E concurrente y rollback parcial de checkout~~ **Completado el 2026-10-20** (incluyó reintento ante `TransientTransactionError`, una sola orden/descuento bajo concurrencia y rollback total ante segundo producto sin stock).
 7. ~~Extraer `Cart.Api` y `Location.Api` para retirar `MongoDB.Driver` de `Front.Web`~~ **Completado el 2026-10-14**.
 8. Formatear las vistas/controladores administrativos restantes que todavía contienen líneas excesivamente largas.
-9. No incluir `appsettings.Local.json` ni secretos en un commit; los `.docx` ya están ignorados.
+9. No incluir `.env`, `.secrets-respaldo/` ni secretos en un commit; los `.docx` ya están ignorados.
 10. Antes de recrear un entorno desde `mongo/*.json`, ejecutar `dotnet run --project tests/MongoCleanup` y luego arrancar los servicios para que creen sus índices únicos. Comprobar que `ventas.checkoutKey` quedó creado: sin él el checkout pierde la idempotencia sin avisar.

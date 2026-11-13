@@ -16,6 +16,7 @@
 **/.env.*
 **/appsettings.Local.json
 **/appsettings.*.local.json
+/.secrets-respaldo/
 *.log
 
 # Documentos ajenos a la migración; el estado del proyecto vive en README.md

@@ -10,7 +10,8 @@ public sealed class AdminEmailSender(IConfiguration configuration)
     {
         var host = configuration["Email:SmtpHost"];
         if (string.IsNullOrWhiteSpace(host)) return;
-        var baseUrl = configuration["Email:ResetBaseUrl"] ?? "";
+        // El enlace debe apuntar a Admin.Web, no a la tienda: Email:ResetBaseUrl es el de Customer.Api.
+        var baseUrl = configuration["Email:AdminResetBaseUrl"] ?? configuration["Email:ResetBaseUrl"] ?? "";
         var link = $"{baseUrl.TrimEnd('/')}/Account/Reset?email={Uri.EscapeDataString(address)}&token={Uri.EscapeDataString(token)}";
         var message = new MimeMessage();
         message.From.Add(MailboxAddress.Parse(configuration["Email:From"] ?? "noreply@example.invalid"));
