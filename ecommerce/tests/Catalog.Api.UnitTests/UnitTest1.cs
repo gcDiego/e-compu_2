@@ -21,6 +21,29 @@ public sealed class InputValidationTests
         Assert.False(Validator.TryValidateObject(model,new ValidationContext(model),results,true));
     }
 
+    [Fact]
+    public void Product_name_with_numbers_is_accepted()
+    {
+        var model=new SaveProductRequest("Laptop 15", "Description",1,1,10,1,true,0);
+        var results=new List<ValidationResult>();
+        Assert.True(Validator.TryValidateObject(model,new ValidationContext(model),results,true));
+    }
+
+    [Fact]
+    public void Product_name_with_special_characters_is_rejected()
+    {
+        var model=new SaveProductRequest("Laptop;", "Description",1,1,10,1,true,0);
+        var results=new List<ValidationResult>();
+        Assert.False(Validator.TryValidateObject(model,new ValidationContext(model),results,true));
+    }
+
+    [Fact] public void Accented_lookup_name_is_accepted()
+    {
+        var model=new SaveLookupRequest("Computación Portátil");
+        var results=new List<ValidationResult>();
+        Assert.True(Validator.TryValidateObject(model,new ValidationContext(model),results,true));
+    }
+
     [Fact] public void No_dynamic_filter_fields_exist_on_catalog_contract()
     {
         var names=typeof(SaveProductRequest).GetProperties().Select(x=>x.Name).ToArray();

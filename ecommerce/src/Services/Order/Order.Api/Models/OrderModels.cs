@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Order.Api.Models;
 
-public sealed record CheckoutRequest([property: Required, StringLength(120, MinimumLength = 2)] string Contacto = "", [property: Required, RegularExpression(@"^[0-9+() .-]{7,25}$")] string Telefono = "", [property: Required, StringLength(250, MinimumLength = 5)] string Direccion = "", [property: Required, StringLength(40, MinimumLength = 1)] string IdLocalidad = "", [property: StringLength(100)] string? IdTransaccion = null);
+public sealed record CheckoutRequest([property: Required, StringLength(120, MinimumLength = 2), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] string Contacto = "", [property: Required, RegularExpression(@"^[0-9+() .-]{7,25}$")] string Telefono = "", [property: Required, StringLength(250, MinimumLength = 5)] string Direccion = "", [property: Required, StringLength(40, MinimumLength = 1)] string IdLocalidad = "", [property: StringLength(100)] string? IdTransaccion = null);
 public sealed record OrderItemResponse(int ProductId, string ProductName, int Quantity, decimal Total);
 public sealed record OrderResponse(int Id, string CustomerEmail, decimal Total, int ProductCount, DateTimeOffset Date, string Status);
 public sealed record AdminOrderItem(int ProductId, string ProductName, decimal UnitPrice, int Quantity, decimal Total);

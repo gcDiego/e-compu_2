@@ -15,8 +15,8 @@ public sealed record LoginResponseDto(int Id, string FirstName, string LastName,
 public sealed record CustomerDto(int Id, string FirstName, string LastName, string Email, bool MustResetPassword);
 public sealed class RegisterViewModel
 {
-    [Required, StringLength(80, MinimumLength = 1)] public string FirstName { get; set; } = "";
-    [Required, StringLength(100, MinimumLength = 1)] public string LastName { get; set; } = "";
+    [Required, StringLength(80, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] public string FirstName { get; set; } = "";
+    [Required, StringLength(100, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] public string LastName { get; set; } = "";
     [Required, EmailAddress, StringLength(254)] public string Email { get; set; } = "";
     [Required, StringLength(15, MinimumLength = 5)] public string Password { get; set; } = "";
     public string? Error { get; set; }
@@ -56,8 +56,8 @@ public sealed class ResetViewModel
 
 public sealed class ProfileViewModel : IValidatableObject
 {
-    [Required, StringLength(80, MinimumLength = 1)] public string FirstName { get; set; } = "";
-    [Required, StringLength(100, MinimumLength = 1)] public string LastName { get; set; } = "";
+    [Required, StringLength(80, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] public string FirstName { get; set; } = "";
+    [Required, StringLength(100, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] public string LastName { get; set; } = "";
     public string Email { get; set; } = "";
     public string? Error { get; set; }
     public string? Success { get; set; }
@@ -117,7 +117,7 @@ public sealed class LoginInputModel
 }
 public sealed class CheckoutInputModel
 {
-    [Required, StringLength(120, MinimumLength = 2)] public string Contacto { get; set; } = "";
+    [Required, StringLength(120, MinimumLength = 2), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] public string Contacto { get; set; } = "";
     [Required, RegularExpression(@"^[0-9+() .-]{7,25}$")] public string Telefono { get; set; } = "";
     [Required, StringLength(250, MinimumLength = 5)] public string Direccion { get; set; } = "";
     [Required, RegularExpression(@"^[A-Za-z0-9_-]{1,40}$")] public string IdLocalidad { get; set; } = "";

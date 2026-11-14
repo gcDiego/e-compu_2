@@ -47,10 +47,21 @@ public sealed class SecurityTests
         Assert.False(Validator.TryValidateObject(modelLast, new ValidationContext(modelLast), resultsLast, true));
     }
 
+    [Theory]
+    [InlineData("Nombre1", "Apellido")]
+    [InlineData("Nombre", "Apellido;")]
+    [InlineData("Robert'); DROP TABLE clientes;--", "Apellido")]
+    public void UpdateProfileRequest_rejects_non_letter_names(string firstName, string lastName)
+    {
+        var model = new UpdateProfileRequest(firstName, lastName);
+        var results = new List<ValidationResult>();
+        Assert.False(Validator.TryValidateObject(model, new ValidationContext(model), results, true));
+    }
+
     [Fact]
     public void UpdateProfileRequest_accepts_valid_names()
     {
-        var model = new UpdateProfileRequest("Nombre", "Apellido");
+        var model = new UpdateProfileRequest("María José", "Muñoz Álvarez");
         var results = new List<ValidationResult>();
         Assert.True(Validator.TryValidateObject(model, new ValidationContext(model), results, true));
     }

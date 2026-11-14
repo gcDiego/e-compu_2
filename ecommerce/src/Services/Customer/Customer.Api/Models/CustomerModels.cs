@@ -9,8 +9,8 @@ public sealed record LoginRequest(
     [property: Required, StringLength(128, MinimumLength = 1)] string Password = "");
 
 public sealed record RegisterRequest(
-    [property: Required, StringLength(80, MinimumLength = 1)] string FirstName = "",
-    [property: Required, StringLength(100, MinimumLength = 1)] string LastName = "",
+    [property: Required, StringLength(80, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] string FirstName = "",
+    [property: Required, StringLength(100, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] string LastName = "",
     [property: Required, EmailAddress, StringLength(254)] string Email = "",
     [property: Required, StringLength(15, MinimumLength = 5)] string Password = "") : IValidatableObject
 {
@@ -36,8 +36,8 @@ public sealed record ResetRequest(
     [property: Required, StringLength(128, MinimumLength = 12)] string NewPassword = "");
 
 public sealed record UpdateProfileRequest(
-    [property: Required, StringLength(80, MinimumLength = 1)] string FirstName = "",
-    [property: Required, StringLength(100, MinimumLength = 1)] string LastName = "") : IValidatableObject
+    [property: Required, StringLength(80, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] string FirstName = "",
+    [property: Required, StringLength(100, MinimumLength = 1), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "Solo se permiten letras y espacios.")] string LastName = "") : IValidatableObject
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

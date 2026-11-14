@@ -21,6 +21,8 @@ public sealed class CheckoutValidationTests
     }
 
     [Theory]
+    [InlineData("Juan1", "5512345678", "Calle 123, Colonia Centro", "loc1")]
+    [InlineData("Juan;", "5512345678", "Calle 123, Colonia Centro", "loc1")]
     [InlineData("", "5512345678", "Calle 123, Colonia Centro", "loc1")]
     [InlineData("Juan Perez", "abc", "Calle 123, Colonia Centro", "loc1")]
     [InlineData("Juan Perez", "5512345678", "Ca", "loc1")]

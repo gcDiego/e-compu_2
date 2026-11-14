@@ -50,14 +50,14 @@
                     <label for="nombre">Nombre</label>
                     <div class="input-wrap">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                        <input id="nombre" name="firstName" type="text" value="@Model.FirstName" placeholder="Tu nombre" autocomplete="given-name" required />
+                        <input id="nombre" name="firstName" type="text" value="@Model.FirstName" placeholder="Tu nombre" autocomplete="given-name" maxlength="80" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo se permiten letras y espacios" data-name-field required />
                     </div>
                 </div>
                 <div class="field">
                     <label for="apellidos">Apellidos</label>
                     <div class="input-wrap">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                        <input id="apellidos" name="lastName" type="text" value="@Model.LastName" placeholder="Tus apellidos" autocomplete="family-name" required />
+                        <input id="apellidos" name="lastName" type="text" value="@Model.LastName" placeholder="Tus apellidos" autocomplete="family-name" maxlength="100" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo se permiten letras y espacios" data-name-field required />
                     </div>
                 </div>
             </div>
@@ -118,5 +118,6 @@
     });
     confirmation.addEventListener('input', () => confirmation.setCustomValidity(''));
 </script>
+<script src="~/js/name-fields.js" asp-append-version="true"></script>
 </body>
 </html>
